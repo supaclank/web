@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en" class="bg-paper text-ink font-sans antialiased" style="background:#FAF8F4">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%sveltekit.assets%/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#FA5573" />
+    <!-- Fonts are self-hosted (static/fonts/) with `font-display: swap`
+         (@font-face in app.css): preloaded same-origin they're ~always ready
+         at first paint; on a rare cold miss, text starts in a metric-matched
+         fallback so the swap repaints glyphs without moving layout.
+         crossorigin is required on font preloads even same-origin, or the
+         browser fetches the file twice. -->
+    <link rel="preload" href="%sveltekit.assets%/fonts/inter-latin-var.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="%sveltekit.assets%/fonts/jetbrains-mono-latin-var.woff2" as="font" type="font/woff2" crossorigin />
+    %sveltekit.head%
+  </head>
+  <body data-sveltekit-preload-data="hover">
+    <div style="display: contents">%sveltekit.body%</div>
+  </body>
+</html>

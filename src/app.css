@@ -1,0 +1,157 @@
+@import 'tailwindcss';
+
+/* Self-hosted variable fonts (woff2 slices in static/fonts/). Same-origin +
+   the preloads in app.html mean the fonts are ~always ready at first paint,
+   so `font-display: swap` rarely engages; when it does (cold cache on a slow
+   link) text starts in 'Inter Fallback' below and repaints to Inter without
+   moving — glyph shapes change once, layout holds. (`optional` was tried
+   first: no repaint ever, but a first-ever visit then renders entirely in
+   the fallback face and only shows Inter after a reload.) */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/inter-latin-var.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/inter-latin-ext-var.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-latin-var.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-latin-ext-var.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* Arial size-adjusted to Inter's metrics (values from next/font's generated
+   fallback). This is what makes `swap` safe: the pre-swap render occupies
+   near-identical space to the Inter render, so the swap repaints glyphs
+   without reflowing the page. */
+@font-face {
+  font-family: 'Inter Fallback';
+  font-style: normal;
+  font-weight: 400 700;
+  src: local('Arial');
+  ascent-override: 90.2%;
+  descent-override: 22.48%;
+  line-gap-override: 0%;
+  size-adjust: 107.4%;
+}
+
+/* Supaclank brand tokens — coral-pink (#FA5573) on warm paper, mirrored
+   from clank-mobile's design system (src/lib/theme.ts) so web + app read
+   as one product. Light default. These @theme entries generate the
+   utility classes used across the app: bg-paper, text-ink, text-brand,
+   border-line, font-mono, … */
+@theme {
+  --color-brand: #fa5573;
+  --color-brand-muted: #e23e5d;
+  --color-brand-dim: rgba(250, 85, 115, 0.12);
+
+  --color-paper: #faf8f4;
+  --color-surface: #f2f0ea;
+  --color-elevated: #ffffff;
+
+  --color-ink: #1a1714;
+  --color-muted: #6b6862;
+  --color-dim: #9a968e;
+
+  --color-line: rgba(0, 0, 0, 0.1);
+  --color-line-subtle: rgba(0, 0, 0, 0.06);
+
+  --color-success: #2fa37a;
+  --color-warning: #b5832f;
+  --color-danger: #d6504f;
+  --color-info: #3e8fb0;
+
+  --font-sans: 'Inter', 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
+/* Smooth the warm paper canvas + selection in brand pink. */
+::selection {
+  background: var(--color-brand-dim);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Floating phone showcase — a 3D phone that idly hovers (held in a hand),
+   "flicks" forward to raise the prompt box, then spins 360° to reveal the
+   app it just built. The transform values assume a resting tilt of
+   rotateY(-16deg) rotateX(1deg).
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Resting tilt with no motion — used under prefers-reduced-motion. */
+.phone-static {
+  transform: rotateY(-16deg) rotateX(1deg);
+}
+
+/* Idle hover, as if held in a hand. */
+@keyframes phone-hold {
+  0%   { transform: rotateY(-16deg)   rotateX(1deg)    translateY(0px)    translateX(0px); }
+  15%  { transform: rotateY(-15deg)   rotateX(0.5deg)  translateY(-1px)   translateX(0.5px); }
+  30%  { transform: rotateY(-16.5deg) rotateX(1.5deg)  translateY(0.5px)  translateX(-0.5px); }
+  45%  { transform: rotateY(-15.5deg) rotateX(0.75deg) translateY(-0.5px) translateX(0.25px); }
+  60%  { transform: rotateY(-17deg)   rotateX(1.25deg) translateY(1px)    translateX(-0.25px); }
+  75%  { transform: rotateY(-15.5deg) rotateX(0.5deg)  translateY(0px)    translateX(0.5px); }
+  90%  { transform: rotateY(-16.5deg) rotateX(1.25deg) translateY(-0.5px) translateX(-0.25px); }
+  100% { transform: rotateY(-16deg)   rotateX(1deg)    translateY(0px)    translateX(0px); }
+}
+.phone-hold {
+  animation: phone-hold 8s ease-in-out infinite;
+}
+
+/* Forearm "flick" — dives toward the viewer with a twist, then settles. */
+@keyframes phone-flick {
+  0%   { transform: rotateY(-16deg) rotateX(1deg)   rotateZ(0deg)  translateY(0px)  translateZ(0px); }
+  25%  { transform: rotateY(-20deg) rotateX(-10deg) rotateZ(-4deg) translateY(10px) translateZ(40px); }
+  55%  { transform: rotateY(-14deg) rotateX(2.5deg) rotateZ(1deg)  translateY(-2px) translateZ(-5px); }
+  100% { transform: rotateY(-16deg) rotateX(1deg)   rotateZ(0deg)  translateY(0px)  translateZ(0px); }
+}
+.phone-flick {
+  animation: phone-flick 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Full 360° spin used for screen transitions (344° + 16° base = 360°). */
+@keyframes phone-spin {
+  0%   { transform: rotateY(-16deg) rotateX(1deg) translateY(0px) translateZ(0px); }
+  100% { transform: rotateY(344deg) rotateX(1deg) translateY(0px) translateZ(0px); }
+}
+.phone-spin {
+  animation: phone-spin 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Soft contact shadow that tracks the phone during flick / spin. */
+@keyframes shadow-flick {
+  0%   { transform: translateX(-50%) translateX(-10%); }
+  25%  { transform: translateX(-50%) translateX(-25%); }
+  55%  { transform: translateX(-50%) translateX(-5%); }
+  100% { transform: translateX(-50%) translateX(-10%); }
+}
+.shadow-flick {
+  animation: shadow-flick 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes shadow-spin {
+  0%   { transform: translateX(-50%) translateX(-10%) scale(1);   opacity: 1; }
+  50%  { transform: translateX(-50%) translateX(0%)   scale(0.8); opacity: 0.5; }
+  100% { transform: translateX(-50%) translateX(-10%) scale(1);   opacity: 1; }
+}
+.shadow-spin {
+  animation: shadow-spin 1s cubic-bezier(0.4, 0, 0.2, 1);
+}

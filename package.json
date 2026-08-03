@@ -1,0 +1,36 @@
+{
+  "name": "supaclank-web",
+  "description": "The production frontend for Supaclank.",
+  "private": true,
+  "version": "0.0.1",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/supaclank/web.git"
+  },
+  "bugs": {
+    "url": "https://github.com/supaclank/web/issues"
+  },
+  "homepage": "https://supaclank.com",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "test": "node --test 'src/**/*.test.js'",
+    "preview": "vite preview",
+    "prepare": "svelte-kit sync"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-static": "^3",
+    "@sveltejs/kit": "^2",
+    "@sveltejs/vite-plugin-svelte": "^6",
+    "@tailwindcss/vite": "^4",
+    "svelte": "^5",
+    "tailwindcss": "^4",
+    "vite": "^7"
+  },
+  "dependencies": {
+    "@plausible-analytics/tracker": "^0.4.5",
+    "@supabase/supabase-js": "^2"
+  }
+}
