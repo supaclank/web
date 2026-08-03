@@ -4,9 +4,11 @@ This repository contains the frontend that runs at [supaclank.com](https://supac
 
 ## Run it
 
+Requires Bun 1.3.11.
+
 ```sh
-npm install
-npm run dev
+bun install
+bun run dev
 ```
 
 The development server uses local defaults. To point it at another Supabase or Clank gateway environment, copy `.env.example` to `.env` and change the public values.
@@ -21,9 +23,9 @@ clank preview
 ## Commands
 
 ```sh
-npm test
-npm run build
-npm run preview
+bun test
+bun run build
+bun run preview
 ```
 
 ## Production

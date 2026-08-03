@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import test from 'node:test';
+import { test } from 'bun:test';
 import { isSupaclankPreviewHostname } from './preview-host.js';
 import {
   CLANK_APP_BASE_URL,
@@ -23,7 +23,7 @@ test('local setup uses Homebrew and Clank preview', () => {
 test('Clank launches the production frontend', async () => {
   const launchConfig = await readFile(launchConfigURL, 'utf8');
 
-  assert.match(launchConfig, /npm ci && npm run dev/);
+  assert.match(launchConfig, /bun install --frozen-lockfile && bun run dev/);
   assert.match(launchConfig, /ready:\n\s+path: \/demo/);
 });
 
