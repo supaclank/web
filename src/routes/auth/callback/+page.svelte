@@ -3,10 +3,12 @@
   import { safeReturnTo } from '$lib/navigation.js';
 
   let error = $state('');
+  let retryHref = $state('/signup');
 
   onMount(async () => {
     try {
       const returnTo = safeReturnTo(new URLSearchParams(location.search).get('return_to'));
+      if (returnTo !== '/welcome') retryHref = `/signup?return_to=${encodeURIComponent(returnTo)}`;
       const { createSupabase } = await import('$lib/supabase');
       const supabase = createSupabase();
       const { data, error: authError } = await supabase.auth.getSession();
@@ -29,7 +31,7 @@
     {#if error}
       <h1 class="text-xl font-semibold">Sign-in didn’t finish</h1>
       <p class="mt-2 text-sm text-danger">{error}</p>
-      <a href="/signup" class="mt-5 inline-block rounded-lg bg-brand px-5 py-2.5 font-medium text-white">Try again</a>
+      <a href={retryHref} class="mt-5 inline-block rounded-lg bg-brand px-5 py-2.5 font-medium text-white">Try again</a>
     {:else}
       <span class="mx-auto block h-3 w-3 animate-pulse rounded-full bg-brand"></span>
       <h1 class="mt-4 text-xl font-semibold">Finishing sign-in…</h1>
