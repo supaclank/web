@@ -55,8 +55,8 @@
         return;
       }
       // The endpoint is idempotent, so "try again" is always safe advice.
-      const body = await res.text().catch(() => '');
-      error = body.trim() || `Deletion failed (HTTP ${res.status}). Please try again.`;
+      const data = await res.json().catch(() => null);
+      error = data?.error || `Deletion failed (HTTP ${res.status}). Please try again.`;
     } catch (e) {
       error = `Could not reach the server: ${e}`;
     }
