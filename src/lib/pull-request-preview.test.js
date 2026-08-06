@@ -3,6 +3,7 @@ import { test } from 'bun:test';
 
 import {
   defaultPresetFor,
+  groupProviderChoices,
   launchRequestForApprovedRevision,
   onlyConnectedProvider,
   pollUntil
@@ -36,6 +37,20 @@ test('onlyConnectedProvider auto-selects only an unambiguous backend', () => {
   assert.equal(onlyConnectedProvider([connected, { ...connected, provider_id: 'other' }]), connected);
   assert.equal(onlyConnectedProvider([connected, { ...connected, provider_id: 'codex', backend: 'codex' }]), null);
   assert.equal(onlyConnectedProvider([disconnected]), null);
+});
+
+test('groupProviderChoices keeps connected providers visible and filters the collapsed catalog', () => {
+  const providers = [
+    { provider_id: 'anthropic', display_name: 'Anthropic', backend: 'claude-code', connected: true },
+    { provider_id: 'github-copilot', display_name: 'GitHub Copilot', backend: 'opencode', connected: false },
+    { provider_id: 'openai', display_name: 'OpenAI', backend: 'codex', connected: false }
+  ];
+
+  assert.deepEqual(groupProviderChoices(providers, 'github'), {
+    connected: [providers[0]],
+    available: [providers[1]]
+  });
+  assert.deepEqual(groupProviderChoices(providers, '').available, providers.slice(1));
 });
 
 test('pollUntil reports intermediate values and returns the terminal value', async () => {
