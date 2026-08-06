@@ -215,7 +215,8 @@
       <li>restrict or object to processing based on legitimate interest.</li>
     </ul>
     <p>
-      Delete your account directly in the app, or email
+      Delete your account directly in the app, on the web at
+      <a href="/delete-account">supaclank.com/delete-account</a>, or email
       <a href="mailto:privacy@supaclank.com">privacy@supaclank.com</a> for this or any other
       request; we respond within 30 days. If you are unhappy with how we handle your data, you can
       complain to the Swedish Authority for Privacy Protection (IMY, imy.se) or your local
