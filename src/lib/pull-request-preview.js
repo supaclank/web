@@ -32,13 +32,13 @@ export function onlyConnectedProvider(providers) {
 
 export function groupProviderChoices(providers, query) {
   const connected = providers.filter((provider) => provider.connected);
-  const term = query.trim().toLocaleLowerCase();
+  const term = (typeof query === 'string' ? query : '').trim().toLowerCase();
   const available = providers.filter((provider) => {
     if (provider.connected) return false;
     if (!term) return true;
     return [provider.display_name, provider.provider_id, provider.backend]
       .filter(Boolean)
-      .some((value) => value.toLocaleLowerCase().includes(term));
+      .some((value) => value.toLowerCase().includes(term));
   });
   return { connected, available };
 }

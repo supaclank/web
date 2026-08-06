@@ -51,6 +51,7 @@ test('groupProviderChoices keeps connected providers visible and filters the col
     available: [providers[1]]
   });
   assert.deepEqual(groupProviderChoices(providers, '').available, providers.slice(1));
+  assert.deepEqual(groupProviderChoices(providers, undefined).available, providers.slice(1));
 });
 
 test('pollUntil reports intermediate values and returns the terminal value', async () => {
