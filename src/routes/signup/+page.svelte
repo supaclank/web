@@ -36,8 +36,8 @@
 
   onDestroy(() => authSubscription?.unsubscribe());
 
-  // The storage listener above misses sessions written before it attached, so
-  // poll while waiting; getSession re-reads storage on every call.
+  // The auth-state listener above misses sessions written before it attached,
+  // so poll while waiting; getSession re-reads storage on every call.
   $effect(() => {
     if (view !== 'confirm' || !supabase) return;
     const interval = setInterval(async () => {
@@ -153,7 +153,8 @@
   }
 
   async function resend() {
-    if (resendCooldown > 0) return;
+    if (busy || resendCooldown > 0) return;
+    busy = true;
     error = '';
     notice = '';
     const { error: err } = await supabase.auth.resend({
@@ -161,6 +162,7 @@
       email,
       options: { emailRedirectTo: authCallbackURL() }
     });
+    busy = false;
     if (err) {
       error = err.message;
       return;
@@ -219,7 +221,7 @@
       </button>
       <button
         onclick={resend}
-        disabled={resendCooldown > 0}
+        disabled={busy || resendCooldown > 0}
         class="mt-2.5 w-full rounded-lg border border-line px-4 py-2.5 text-sm font-medium transition-colors hover:bg-surface disabled:opacity-50"
       >
         {resendCooldown > 0 ? `Resend email (${resendCooldown}s)` : 'Resend email'}
