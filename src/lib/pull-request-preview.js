@@ -30,6 +30,19 @@ export function onlyConnectedProvider(providers) {
   return backends.size === 1 ? connected[0] : null;
 }
 
+export function groupProviderChoices(providers, query) {
+  const connected = providers.filter((provider) => provider.connected);
+  const term = (typeof query === 'string' ? query : '').trim().toLowerCase();
+  const available = providers.filter((provider) => {
+    if (provider.connected) return false;
+    if (!term) return true;
+    return [provider.display_name, provider.provider_id, provider.backend]
+      .filter(Boolean)
+      .some((value) => value.toLowerCase().includes(term));
+  });
+  return { connected, available };
+}
+
 export async function pollUntil(load, isDone, {
   timeoutMs = 240_000,
   intervalMs = 1_500,

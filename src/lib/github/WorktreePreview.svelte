@@ -37,7 +37,6 @@
     error = '';
     try {
       providers = await gateway.providers();
-      if (!providers.length) throw new Error('Your Clank host does not offer any agent providers for this preview.');
       const onlyConnected = onlyConnectedProvider(providers);
       if (onlyConnected) {
         await usePreviewProvider(onlyConnected);

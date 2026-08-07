@@ -1,6 +1,7 @@
 <script>
   import { onDestroy } from 'svelte';
-  import { pollUntil } from '$lib/pull-request-preview.js';
+  import { FREE_AI_CHOICE } from '$lib/free-ai.js';
+  import { groupProviderChoices, pollUntil } from '$lib/pull-request-preview.js';
 
   let { gateway, providers, onconnected } = $props();
   let selected = $state(null);
@@ -10,8 +11,12 @@
   let oauthCode = $state('');
   let metadata = $state({});
   let error = $state('');
+  let showProviderCatalog = $state(false);
+  let providerQuery = $state('');
   let isAlive = true;
   const controller = new AbortController();
+  let providerGroups = $derived(groupProviderChoices(providers, providerQuery));
+  let hasAvailableProviders = $derived(providers.some((provider) => !provider.connected));
 
   onDestroy(() => {
     isAlive = false;
@@ -26,6 +31,11 @@
       return;
     }
     phase = provider.auth_type === 'api' ? 'apikey' : 'confirm';
+  }
+
+  function toggleProviderCatalog() {
+    showProviderCatalog = !showProviderCatalog;
+    if (!showProviderCatalog) providerQuery = '';
   }
 
   async function start() {
@@ -91,18 +101,66 @@
 </script>
 
 <div class="rounded-2xl border border-line bg-elevated p-6 shadow-sm">
-  <h2 class="text-lg font-semibold">Choose an agent for this preview</h2>
-  <p class="mt-1 text-sm text-muted">The web overlay will use this backend for a new editing session. If the repo needs a preview recipe, the same agent will prepare it first.</p>
+  <h2 class="text-lg font-semibold">Choose AI for this preview</h2>
+  <p class="mt-1 text-sm text-muted">Start instantly with free OpenCode, or connect an account you already use. The same choice powers preview setup and editing.</p>
 
   {#if phase === 'choose'}
-    <div class="mt-5 grid gap-2">
-      {#each providers as provider}
-        <button class="flex items-center justify-between rounded-xl border border-line px-4 py-3 text-left hover:bg-surface" onclick={() => choose(provider)}>
-          <span><span class="block text-sm font-medium">{provider.display_name}</span><span class="block text-xs text-muted">{provider.backend}</span></span>
-          <span class={provider.connected ? 'text-xs font-medium text-success' : 'text-xs text-muted'}>{provider.connected ? 'Use connected' : 'Connect'}</span>
-        </button>
-      {/each}
-    </div>
+    <button
+      class="mt-5 w-full rounded-xl bg-brand px-4 py-3.5 text-left text-white shadow-sm hover:brightness-95"
+      onclick={() => onconnected(FREE_AI_CHOICE)}
+    >
+      <span class="flex items-center justify-between gap-3">
+        <span class="font-semibold">Start with free AI</span>
+        <span class="rounded-full bg-white/15 px-2 py-1 font-mono text-[10px] uppercase tracking-wide">No credentials</span>
+      </span>
+      <span class="mt-1 block text-sm text-white/80">{FREE_AI_CHOICE.display_name} · currently {FREE_AI_CHOICE.current_model_name}</span>
+    </button>
+    <p class="mt-2 text-xs leading-5 text-dim">The free model is rate-limited and may produce lower-quality results.</p>
+
+    {#if providerGroups.connected.length > 0}
+      <p class="mt-5 font-mono text-[10px] uppercase tracking-wide text-dim">Connected providers</p>
+      <div class="mt-2 grid gap-2">
+        {#each providerGroups.connected as provider}
+          <button class="flex items-center justify-between rounded-xl border border-line px-4 py-3 text-left hover:bg-surface" onclick={() => choose(provider)}>
+            <span><span class="block text-sm font-medium">{provider.display_name}</span><span class="block text-xs text-muted">{provider.backend}</span></span>
+            <span class="text-xs font-medium text-success">Use connected</span>
+          </button>
+        {/each}
+      </div>
+    {/if}
+
+    {#if hasAvailableProviders}
+      <button
+        class="mt-5 flex w-full items-center justify-between rounded-xl border border-line px-4 py-3 text-left text-sm font-medium hover:bg-surface"
+        aria-expanded={showProviderCatalog}
+        onclick={toggleProviderCatalog}
+      >
+        <span>Connect your own provider</span>
+        <span class="text-xs text-muted">{showProviderCatalog ? 'Hide' : `${providerGroups.available.length} choices`}</span>
+      </button>
+
+      {#if showProviderCatalog}
+        <div class="mt-3 rounded-xl border border-line bg-paper p-3">
+          <input
+            class="w-full rounded-lg border border-line bg-elevated px-3 py-2 text-sm"
+            type="search"
+            placeholder="Search providers"
+            aria-label="Search AI providers"
+            bind:value={providerQuery}
+          />
+          <div class="mt-2 grid max-h-72 gap-2 overflow-y-auto pr-1">
+            {#each providerGroups.available as provider}
+              <button class="flex items-center justify-between rounded-lg px-3 py-2.5 text-left hover:bg-surface" onclick={() => choose(provider)}>
+                <span><span class="block text-sm font-medium">{provider.display_name}</span><span class="block text-xs text-muted">{provider.backend}</span></span>
+                <span class="text-xs text-muted">Connect</span>
+              </button>
+            {:else}
+              <p class="px-3 py-4 text-center text-sm text-muted">No providers match that search.</p>
+            {/each}
+          </div>
+        </div>
+      {/if}
+    {/if}
   {:else if phase === 'confirm'}
     <button class="mt-5 w-full rounded-lg bg-brand px-4 py-2.5 font-medium text-white" onclick={start}>Continue with {selected.display_name}</button>
   {:else if phase === 'waiting' && flow}
