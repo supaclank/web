@@ -131,6 +131,25 @@
     }
   }
 
+  async function forgotPassword() {
+    error = '';
+    notice = '';
+    if (!email) {
+      error = 'Enter your email above and we’ll send you a reset link.';
+      return;
+    }
+    busy = true;
+    const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${location.origin}/auth/reset`
+    });
+    busy = false;
+    if (err) {
+      error = err.message;
+      return;
+    }
+    notice = 'Check your email for a link to reset your password.';
+  }
+
   // Confirmation can happen in this browser (session already synced here) or
   // on another device (sign in with the credentials we hold).
   async function confirmAndContinue() {
@@ -292,6 +311,16 @@
         </button>
       </form>
 
+      {#if mode === 'signin'}
+        <p class="mt-3 text-center text-sm">
+          <button
+            class="text-muted transition-colors hover:text-ink"
+            disabled={!supabase || busy}
+            onclick={forgotPassword}>Forgot your password?</button
+          >
+        </p>
+      {/if}
+
       {#if error}<p class="mt-3 text-sm text-danger">{error}</p>{/if}
       {#if notice}<p class="mt-3 text-sm text-success">{notice}</p>{/if}
 
@@ -321,7 +350,7 @@
       {:else}
         New here?
         <button class="font-medium text-brand hover:underline" onclick={() => (mode = 'signup')}
-          >Get started</button
+          >Sign up</button
         >
       {/if}
     </p>
