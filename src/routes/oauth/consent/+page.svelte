@@ -3,6 +3,8 @@
   // production CSP, and relies on Svelte escaping client names and scopes.
   import { onMount } from 'svelte';
   import { analyticsEvents, trackEvent } from '$lib/analytics.js';
+  import { GATEWAY_URL } from '$lib/config.js';
+  import { firstPartyClientId, authorizationClientId } from '$lib/oauth-first-party.js';
 
   let view = $state('loading');
   let errorMsg = $state('');
@@ -19,6 +21,10 @@
       supabase = createSupabase();
       authId = new URLSearchParams(location.search).get('authorization_id');
       if (!authId) return fail('missing authorization_id in URL');
+
+      // Started early so it overlaps the getUser/getAuthorizationDetails
+      // round-trips; awaited only at the first-party check below.
+      const firstPartyId = firstPartyClientId(GATEWAY_URL);
 
       // 1. Require a signed-in user; bounce to login while preserving the request.
       const {
@@ -60,9 +66,23 @@
         return;
       }
 
-      // 4. Otherwise render the consent UI.
-      clientName = details?.client?.client_name || details?.client_name || 'this app';
-      scopes = details?.scopes || details?.scope?.split(' ').filter(Boolean) || [];
+      // 4. Our own app skips the consent card: Clank is the sole
+      //    first-party client of an OIDC server nobody else can register
+      //    with, and users signing in to our own app shouldn't be asked
+      //    to authorize it like a stranger. Approval is pinned to the
+      //    client id the gateway advertises — on mismatch, gateway
+      //    outage, or unset GATEWAY_URL we fall back to asking.
+      const clientId = authorizationClientId(details);
+      if (clientId && clientId === (await firstPartyId)) {
+        await decide(true, 'first_party');
+        return;
+      }
+
+      // 5. Otherwise render the consent UI. `client` is {id, name, ...}
+      //    (supabase/auth ClientDetailsResponse) — reading `client_name`
+      //    here previously always missed, showing "this app".
+      clientName = details?.client?.name || 'this app';
+      scopes = details?.scope?.split(' ').filter(Boolean) || [];
       view = 'consent';
     } catch (e) {
       fail(`unexpected: ${e?.message || e}`);
@@ -75,7 +95,7 @@
     console.error('[oauth/consent]', msg);
   }
 
-  async function decide(approved) {
+  async function decide(approved, approval = 'explicit') {
     busy = true;
     try {
       const r = approved
@@ -85,7 +105,7 @@
       const redirect = r.data?.redirect_to || r.data?.redirect_url;
       if (!redirect) throw new Error("Supabase didn't return a redirect URL");
       if (approved) {
-        await trackEvent(analyticsEvents.oauthAuthorized, { approval: 'explicit' });
+        await trackEvent(analyticsEvents.oauthAuthorized, { approval });
       }
       location.href = redirect;
     } catch (e) {
