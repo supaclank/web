@@ -20,7 +20,8 @@ export async function firstPartyClientId(gatewayUrl, fetcher = fetch) {
   if (!base) return '';
   try {
     const response = await fetcher(`${base}/auth-config`, {
-      headers: { Accept: 'application/json' }
+      headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(3000)
     });
     if (!response.ok) return '';
     const config = await response.json();
