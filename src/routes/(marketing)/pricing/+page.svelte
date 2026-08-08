@@ -3,6 +3,7 @@
   import QrPlay from '$lib/QrPlay.svelte';
   import PlayBadge from '$lib/PlayBadge.svelte';
   import { analyticsEvents, trackEvent } from '$lib/analytics.js';
+  import { CLOUD_MONTHLY_PLAN } from '$lib/pricing.js';
 
   // Each install action can swap its plan card for an in-place QR code.
   let showQr = $state(false);
@@ -70,7 +71,7 @@
   <title>Pricing: Supaclank</title>
   <meta
     name="description"
-    content="Supaclank pricing: free and open source with your own compute, a managed cloud plan with a 7-day free trial (no card to start), and API access to run a fleet of sandboxes."
+    content={`Supaclank pricing: free and open source with your own compute, a managed cloud plan for ${CLOUD_MONTHLY_PLAN.price} per ${CLOUD_MONTHLY_PLAN.interval} after a 7-day free trial (no card to start), and API access to run a fleet of sandboxes.`}
   />
 </svelte:head>
 
@@ -173,8 +174,8 @@
       <h2 class="text-lg font-semibold">Supaclank</h2>
       <p class="mt-1 min-h-10 text-sm text-muted">Close your laptop. Use your phone. Your cloud dev environment.</p>
       <div class="mt-5 flex items-baseline gap-1">
-        <span class="text-3xl font-semibold tracking-tight">$4</span>
-        <span class="text-muted">/ month</span>
+        <span class="text-3xl font-semibold tracking-tight">{CLOUD_MONTHLY_PLAN.price}</span>
+        <span class="text-muted">/ {CLOUD_MONTHLY_PLAN.interval}</span>
       </div>
       <ul class="mt-6 space-y-2.5 text-sm">
         {#each ['7-day free trial', 'Code from anywhere, no laptop', 'Create & manage pull requests', 'Share private cloud previews'] as item}

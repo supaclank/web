@@ -9,6 +9,7 @@
   import { onMount } from 'svelte';
   import { analyticsEvents, trackEvent } from '$lib/analytics.js';
   import { safeReturnTo } from '$lib/navigation.js';
+  import { CLOUD_MONTHLY_PLAN } from '$lib/pricing.js';
 
   let phase = $state('loading');
   let confirmMsg = $state(null);
@@ -304,7 +305,7 @@
             onclick={subscribe}
             disabled={busy}
             class="mt-3 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-muted disabled:opacity-50"
-            >Subscribe for $4/mo</button
+            >{CLOUD_MONTHLY_PLAN.checkoutLabel}</button
           >
         {:else}
           <p class="text-sm font-medium text-danger">Your trial has ended</p>
@@ -313,7 +314,7 @@
             onclick={subscribe}
             disabled={busy}
             class="mt-3 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-muted disabled:opacity-50"
-            >Subscribe for $4/mo</button
+            >{CLOUD_MONTHLY_PLAN.checkoutLabel}</button
           >
         {/if}
         <!-- Consent point for the paid contract. Shown only when a Subscribe
