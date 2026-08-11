@@ -5,13 +5,14 @@
   import GetApp from '$lib/GetApp.svelte';
   import QrPlay from '$lib/QrPlay.svelte';
   import { analyticsEvents, trackEvent } from '$lib/analytics.js';
+  import { CLOUD_MONTHLY_PLAN } from '$lib/pricing.js';
 
   // "Start fresh or bring your own" tile — a working Describe / Import repo toggle.
   let buildMode = $state('describe');
 
   // Frontend banner terminal block — one button copies both commands
   // (no leading $, newline-joined) so they paste straight into a shell.
-  const BANNER_CMDS = ['brew install supaclank/clank', 'clank preview'];
+  const BANNER_CMDS = ['brew install supaclank/tap/clank', 'clank preview'];
   let bannerCmdsCopied = $state(false);
   let bannerCmdsCopiedTimeout;
   onDestroy(() => clearTimeout(bannerCmdsCopiedTimeout));
@@ -322,6 +323,9 @@
       <p class="mt-2 text-sm text-muted">
         Same experience, hosted. You don't have to run <code class="rounded bg-surface px-1 py-0.5 text-[13px] text-ink">clank preview</code> yourself,
         we run it for you. Build from your phone, or install our GitHub Bot for preview links on any pull request.
+        <a href="/pricing" class="font-medium text-ink underline decoration-line underline-offset-2">
+          {CLOUD_MONTHLY_PLAN.price}/{CLOUD_MONTHLY_PLAN.interval} after a 7-day free trial.
+        </a>
       </p>
     </div>
   </div>
@@ -747,7 +751,7 @@
       Use your creativity. Build it from your pocket.
     </h2>
     <p class="max-w-md text-paper/70">
-      Free and open-source. Build on your phone. Self-host clank yourself, or let supaclank run the
+      Open-source. Build on your phone. Self-host clank yourself, or let supaclank run the
       cloud.
     </p>
     <GetApp qr variant="ondark" />
