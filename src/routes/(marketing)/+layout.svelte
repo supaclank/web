@@ -1,7 +1,20 @@
 <script>
   // Shared chrome for public marketing pages. Auth routes stay outside this
   // group so sign-in and consent do not inherit marketing navigation.
+  import { onMount } from 'svelte';
+
   let { children } = $props();
+
+  // Pages prerender with the signed-out buttons; swap to the account link
+  // only once a session is found so signed-out visitors never see a flicker.
+  let signedIn = $state(false);
+
+  onMount(async () => {
+    const { createSupabase } = await import('$lib/supabase');
+    const supabase = createSupabase();
+    const { data } = await supabase.auth.getSession();
+    signedIn = Boolean(data.session);
+  });
 </script>
 
 <div class="flex min-h-screen flex-col">
@@ -33,16 +46,24 @@
           class="hidden rounded-md px-3 py-2 whitespace-nowrap text-muted transition-colors hover:text-ink sm:block"
           rel="noreferrer">GitHub</a
         >
-        <a
-          href="/signup"
-          class="rounded-md px-3 py-2 whitespace-nowrap text-muted transition-colors hover:text-ink"
-          >Sign in</a
-        >
-        <a
-          href="/signup"
-          class="rounded-lg bg-brand px-4 py-2 font-medium whitespace-nowrap text-white shadow-sm transition-colors hover:bg-brand-muted"
-          >Get started</a
-        >
+        {#if signedIn}
+          <a
+            href="/welcome"
+            class="rounded-lg bg-brand px-4 py-2 font-medium whitespace-nowrap text-white shadow-sm transition-colors hover:bg-brand-muted"
+            >Account</a
+          >
+        {:else}
+          <a
+            href="/signup"
+            class="rounded-md px-3 py-2 whitespace-nowrap text-muted transition-colors hover:text-ink"
+            >Sign in</a
+          >
+          <a
+            href="/signup"
+            class="rounded-lg bg-brand px-4 py-2 font-medium whitespace-nowrap text-white shadow-sm transition-colors hover:bg-brand-muted"
+            >Get started</a
+          >
+        {/if}
       </nav>
     </div>
   </header>
@@ -61,7 +82,11 @@
       </div>
       <nav class="flex flex-wrap items-center justify-center gap-5">
         <a href="/pricing" class="transition-colors hover:text-ink">Pricing</a>
-        <a href="/signup" class="transition-colors hover:text-ink">Sign in</a>
+        {#if signedIn}
+          <a href="/welcome" class="transition-colors hover:text-ink">Account</a>
+        {:else}
+          <a href="/signup" class="transition-colors hover:text-ink">Sign in</a>
+        {/if}
         <a href="https://github.com/Acksell/clank" rel="noreferrer" class="transition-colors hover:text-ink"
           >Open source</a
         >
