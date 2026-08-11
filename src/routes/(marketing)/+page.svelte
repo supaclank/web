@@ -12,7 +12,7 @@
 
   // Frontend banner terminal block — one button copies both commands
   // (no leading $, newline-joined) so they paste straight into a shell.
-  const BANNER_CMDS = ['brew install supaclank/clank', 'clank preview'];
+  const BANNER_CMDS = ['brew install supaclank/tap/clank', 'clank preview'];
   let bannerCmdsCopied = $state(false);
   let bannerCmdsCopiedTimeout;
   onDestroy(() => clearTimeout(bannerCmdsCopiedTimeout));
@@ -751,7 +751,7 @@
       Use your creativity. Build it from your pocket.
     </h2>
     <p class="max-w-md text-paper/70">
-      Free and open-source. Build on your phone. Self-host clank yourself, or let supaclank run the
+      Open-source. Build on your phone. Self-host clank yourself, or let supaclank run the
       cloud.
     </p>
     <GetApp qr variant="ondark" />
