@@ -17,9 +17,7 @@
   let copyResetTimer;
   let isSupaclankPreview = $state(false);
   let repoSlug = $state(DEFAULT_REPO_SLUG);
-  let repoInput = $state();
 
-  let firstOverlayStepNumber = $derived(isSupaclankPreview ? 1 : 2);
   let tutorialUrl = $derived(`${CLANK_APP_BASE_URL}/${repoSlug.trim() || DEFAULT_REPO_SLUG}`);
 
   onMount(() => {
@@ -28,8 +26,24 @@
 
   onDestroy(() => clearTimeout(copyResetTimer));
 
-  function focusRepoInput() {
-    repoInput?.focus();
+  function extractRepoSlug(value) {
+    const trimmed = value.trim().replace(/^https?:\/\//i, '').replace(/^(www\.)?github\.com\//i, '');
+    const match = trimmed.match(/^([^/\s?#]+)\/([^/\s?#]+)/);
+    if (!match) return trimmed;
+    return `${match[1]}/${match[2].replace(/\.git$/i, '')}`;
+  }
+
+  function normalizeRepoSlug(event) {
+    const normalized = extractRepoSlug(event.target.value);
+    if (normalized !== event.target.value) {
+      repoSlug = normalized;
+    }
+  }
+
+  function openTutorial(event) {
+    if (event.key === 'Enter') {
+      window.open(tutorialUrl, '_blank', 'noopener,noreferrer');
+    }
   }
 
   async function copyCommands() {
@@ -51,10 +65,42 @@
 </svelte:head>
 
 <div class="demo-page" id="top">
+  {#if !isSupaclankPreview}
+    <section class="launch">
+      <p class="eyebrow">Web preview demo</p>
+      <h1 class="launch-title">Edit any frontend, live.</h1>
+      <p class="launch-lead">Enter a GitHub repo to preview it in Clank.<br />For example, this website.</p>
+
+      <div class="repo-launch">
+        <div class="repo-field">
+          <svg class="repo-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+            <path
+              fill="currentColor"
+              d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"
+            />
+          </svg>
+          <span class="repo-prefix">github.com/</span>
+          <input
+            type="text"
+            bind:value={repoSlug}
+            placeholder={DEFAULT_REPO_SLUG}
+            spellcheck="false"
+            autocomplete="off"
+            aria-label="GitHub repository"
+            onkeydown={openTutorial}
+            oninput={normalizeRepoSlug}
+          />
+        </div>
+        <a class="repo-open" href={tutorialUrl} target="_blank" rel="noreferrer">
+          Open in Clank <span class="arrow">→</span>
+        </a>
+      </div>
+    </section>
+  {/if}
+
   <section class="hero">
     <div class="intro">
-      <p class="eyebrow">Clank preview tutorial</p>
-      <h1>Learn the overlay by changing this page.</h1>
+      <h2 class="intro-title">Learn the overlay by changing this page.</h2>
       <p class="permission">This is a sandbox. Change anything. Break everything.</p>
 
       <div class="local-setup">
@@ -81,43 +127,11 @@
         <h2>Change anything.</h2>
       </div>
 
-      {#if !isSupaclankPreview}
-        <div class="repo-line">
-          <span>github.com/</span>
-          <input
-            type="text"
-            bind:value={repoSlug}
-            bind:this={repoInput}
-            placeholder={DEFAULT_REPO_SLUG}
-            spellcheck="false"
-            autocomplete="off"
-            aria-label="GitHub repository"
-            style="width: {Math.max(repoSlug.length, 4) + 1}ch"
-          />
-          <button
-            type="button"
-            class="repo-line-edit"
-            aria-label="Edit repository"
-            onclick={focusRepoInput}
-          >
-            <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
-              <path
-                fill="currentColor"
-                d="M11.29.7a1 1 0 0 1 1.41 0l2.6 2.6a1 1 0 0 1 0 1.41L5.66 14.36l-4.3.99a.75.75 0 0 1-.9-.9l.99-4.3L11.29.7Zm-1.06 2.47L2.8 10.6l-.58 2.52 2.52-.58 7.43-7.43-2.94-2.94Z"
-              />
-            </svg>
-          </button>
-        </div>
-
-        <a class="open-tutorial" href={tutorialUrl} target="_blank" rel="noreferrer">
-          <span class="instruction-label"><b>1.</b> Open this website in Clank</span>
-          <span class="arrow">→</span>
-        </a>
-      {/if}
+      <p class="repo-sub">{isSupaclankPreview ? 'To get started' : 'Once open in Clank'}</p>
 
       <ol class="try-steps">
         {#each OVERLAY_STEPS as step, index}
-          <li><b>{index + firstOverlayStepNumber}.</b><span>{step}</span></li>
+          <li><b>{index + 1}.</b><span>{step}</span></li>
         {/each}
       </ol>
     </div>
@@ -159,13 +173,38 @@
     --line-subtle: rgba(0, 0, 0, 0.06);
   }
 
+  .launch {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: clamp(48px, 9vh, 104px) 0 clamp(36px, 6vh, 64px);
+    text-align: center;
+  }
+
+  .launch-title {
+    max-width: 100%;
+    margin-bottom: 14px;
+    font-size: clamp(38px, 5vw, 54px);
+    font-weight: 600;
+    line-height: 1.03;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+
+  .launch-lead {
+    max-width: 480px;
+    margin: 0 auto 26px;
+    color: var(--muted);
+    font-size: 18px;
+    line-height: 1.5;
+  }
+
   .hero {
     display: grid;
     grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
     align-items: center;
     gap: clamp(48px, 6vw, 72px);
-    min-height: calc(100vh - 128px);
-    padding: clamp(56px, 8vh, 88px) 0;
+    padding: clamp(32px, 6vh, 64px) 0 clamp(48px, 8vh, 80px);
+    border-top: 1px solid var(--line-subtle);
   }
 
   .eyebrow {
@@ -184,13 +223,13 @@
     margin-top: 0;
   }
 
-  h1 {
-    max-width: 540px;
-    margin-bottom: 20px;
-    font-size: clamp(40px, 5vw, 48px);
+  .intro-title {
+    max-width: 460px;
+    margin-bottom: 16px;
+    font-size: clamp(27px, 3.4vw, 33px);
     font-weight: 600;
-    line-height: 1.05;
-    letter-spacing: -0.035em;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
     text-wrap: balance;
   }
 
@@ -343,58 +382,96 @@
     letter-spacing: -0.03em;
   }
 
-  .repo-line {
+  .repo-launch {
     display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
+    gap: 10px;
+    width: min(100%, 560px);
+    margin: 0 auto;
+    text-align: left;
   }
 
-  .repo-line span {
+  .repo-field {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    align-items: center;
+    gap: 8px;
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 16px;
+    background: var(--elevated);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    transition: border-color 150ms ease;
+  }
+
+  .repo-field:focus-within {
+    border-color: var(--pink);
+  }
+
+  .repo-icon {
+    flex: 0 0 auto;
     color: var(--muted);
   }
 
-  .repo-line input {
+  .repo-prefix {
+    flex: 0 0 auto;
+    margin-right: -4px;
+    color: var(--muted);
+  }
+
+  .repo-field input {
+    flex: 1;
+    min-width: 0;
     border: 0;
-    border-bottom: 1.5px dashed rgba(250, 85, 115, 0.45);
     padding: 0;
     color: var(--pink);
     background: transparent;
     font: inherit;
     font-weight: 700;
     caret-color: var(--pink);
-    transition:
-      width 100ms ease,
-      border-color 150ms ease;
-  }
-
-  .repo-line input:hover {
-    border-bottom-color: var(--pink);
-  }
-
-  .repo-line input:focus {
-    border-bottom-style: solid;
-    border-bottom-color: var(--pink);
     outline: none;
   }
 
-  .repo-line-edit {
-    display: flex;
+  .repo-open {
+    display: inline-flex;
+    flex: 0 0 auto;
     align-items: center;
-    margin-left: 6px;
-    border: 0;
-    padding: 2px;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 12px;
+    padding: 14px 20px;
+    color: white;
+    background: var(--pink);
+    font-size: 16px;
+    font-weight: 650;
+    white-space: nowrap;
+    text-decoration: none;
+    transition:
+      background 150ms ease,
+      transform 150ms ease;
+  }
+
+  .repo-open:hover {
+    background: var(--pink-dark);
+    transform: translateY(-1px);
+  }
+
+  .repo-open .arrow {
+    font-size: 1.05em;
+    line-height: 1;
+  }
+
+  .repo-sub {
+    margin: 0 0 2px;
     color: var(--muted);
-    background: transparent;
-    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 650;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
   }
 
-  .repo-line-edit:hover {
-    color: var(--pink);
-  }
-
-  .open-tutorial,
   .try-steps li {
     display: flex;
     align-items: baseline;
@@ -408,37 +485,10 @@
     letter-spacing: -0.025em;
   }
 
-  .open-tutorial {
-    justify-content: space-between;
-    text-decoration: none;
-    transition:
-      color 150ms ease,
-      transform 150ms ease;
-  }
-
-  .open-tutorial:hover {
-    color: var(--pink);
-    transform: translateX(2px);
-  }
-
-  .instruction-label {
-    display: flex;
-    flex: 1;
-    align-items: baseline;
-    gap: 10px;
-  }
-
-  .instruction-label b,
   .try-steps li > b {
     flex: 0 0 25px;
     font-size: 0.72em;
     letter-spacing: 0;
-  }
-
-  .open-tutorial .arrow {
-    color: var(--pink);
-    font-size: 1em;
-    line-height: 1;
   }
 
   .try-steps {
@@ -523,13 +573,24 @@
     }
 
     .hero {
-      min-height: 0;
       gap: 40px;
-      padding: 48px 0 56px;
+      padding: 40px 0 56px;
     }
 
-    h1 {
-      font-size: clamp(38px, 12vw, 48px);
+    .launch {
+      padding: 56px 0 40px;
+    }
+
+    .launch-title {
+      font-size: clamp(34px, 11vw, 48px);
+    }
+
+    .repo-launch {
+      flex-direction: column;
+    }
+
+    .repo-open {
+      justify-content: center;
     }
 
     .permission {
