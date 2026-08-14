@@ -337,7 +337,7 @@
   <div class="seclabel"><span class="num">04</span> on the roadmap <span class="rule"></span></div>
   <h2>On the roadmap</h2>
   <p class="lead roadlead">
-    These are coming soon. Want something else? Post your anonymous feature requests below!
+    These are coming soon. Want something else? Post your feature requests below!
   </p>
   <RoadmapSessions />
 </section>
