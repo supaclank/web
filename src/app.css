@@ -132,17 +132,10 @@
 }
 
 /* Selection in full brand pink with knocked-out text (the pink band
-   inverts this locally). Declared on :root as well so Chromium's highlight
-   inheritance carries white-on-pink into spans with their own text color
-   when a selection sweeps across them. */
-::selection,
-:root::selection {
+   inverts this locally to white-on-pink's opposite). */
+::selection {
   background: var(--color-brand);
   color: #fff;
-  /* Chromium can drop ::selection's `color` for spans with their own text
-     color (they'd paint pink-on-pink); text-fill-color overrides the glyph
-     paint directly and always wins. */
-  -webkit-text-fill-color: #fff;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────

@@ -429,14 +429,6 @@
   .pk {
     color: var(--color-brand);
   }
-  /* Chromium's highlight-inheritance quirk: a selection sweeping in from a
-     sibling can keep painting this span's own pink instead of the global
-     ::selection color. An element-level rule pins it white. */
-  .pk::selection {
-    background: var(--color-brand);
-    color: #fff;
-    -webkit-text-fill-color: #fff;
-  }
   .sub {
     font: 400 17px/1.62 var(--font-sans);
     color: var(--color-muted);
@@ -955,7 +947,6 @@
   .frontends :global(::selection) {
     background: #fff;
     color: var(--color-ink);
-    -webkit-text-fill-color: var(--color-ink);
   }
   .front-head {
     max-width: 1180px;
