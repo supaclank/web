@@ -66,6 +66,7 @@
           class="-mr-1.5 inline-flex items-center justify-center rounded-md p-2 text-muted transition-colors hover:text-ink sm:hidden"
           aria-label="Toggle menu"
           aria-expanded={mobileMenuOpen}
+          aria-controls="marketing-mobile-nav"
           onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
         >
           {#if mobileMenuOpen}
@@ -92,7 +93,11 @@
     </div>
 
     {#if mobileMenuOpen}
-      <nav class="flex flex-col gap-1 border-t border-line-subtle px-5 py-3 text-sm sm:hidden">
+      <nav
+        id="marketing-mobile-nav"
+        aria-label="Mobile"
+        class="flex flex-col gap-1 border-t border-line-subtle px-5 py-3 text-sm sm:hidden"
+      >
         <a
           href="/pricing"
           class="rounded-md px-3 py-2 text-muted transition-colors hover:text-ink"

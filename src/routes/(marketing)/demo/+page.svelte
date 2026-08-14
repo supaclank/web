@@ -91,7 +91,7 @@
             oninput={normalizeRepoSlug}
           />
         </div>
-        <a class="repo-open" href={tutorialUrl} target="_blank" rel="noreferrer">
+        <a class="repo-open" href={tutorialUrl} target="_blank" rel="noopener noreferrer">
           Open in Clank <span class="arrow">→</span>
         </a>
       </div>
@@ -100,7 +100,9 @@
 
   <section class="hero">
     <div class="intro">
-      <h2 class="intro-title">Learn the overlay by changing this page.</h2>
+      <svelte:element this={isSupaclankPreview ? 'h1' : 'h2'} class="intro-title"
+        >Learn the overlay by changing this page.</svelte:element
+      >
       <p class="permission">This is a sandbox. Change anything. Break everything.</p>
 
       <div class="local-setup">
