@@ -1,22 +1,13 @@
 <script>
-  // The hero stage: the phone showcase flanked by mushrooms/flowers/tufts,
-  // with a few pollen motes drifting up.
+  // The hero stage: the phone showcase with a few pollen motes drifting up.
   import { onMount } from 'svelte';
-  import { PINK, mulberry, sprite, SPRITES } from './pixel.js';
+  import { PINK, mulberry } from './pixel.js';
 
   let { children } = $props();
 
   let pollenEl;
-  let shroomA, shroomB, flowerA, tuftA, tuftB;
 
   onMount(() => {
-    const put = (el, name, s) => el.appendChild(sprite(SPRITES[name].m, SPRITES[name].p, s));
-    put(shroomA, 'amanita', 4);
-    put(shroomB, 'pinkshroom', 3);
-    put(flowerA, 'daisy', 3);
-    put(tuftA, 'tuft', 4);
-    put(tuftB, 'tuft', 4);
-
     const R = mulberry(556);
     const COLORS = ['#e2c96f', '#e2c96f', '#efe3ba', '#efe3ba', '#cadfb0', PINK];
     for (let j = 0; j < 6; j++) {
@@ -42,12 +33,6 @@
     <div class="phone-slot">
       {@render children()}
     </div>
-
-    <span class="stage-spr a" bind:this={shroomA} aria-hidden="true"></span>
-    <span class="stage-spr b" bind:this={shroomB} aria-hidden="true"></span>
-    <span class="stage-spr c sway" bind:this={flowerA} aria-hidden="true"></span>
-    <span class="stage-spr d" bind:this={tuftA} aria-hidden="true"></span>
-    <span class="stage-spr e" bind:this={tuftB} aria-hidden="true"></span>
   </div>
 </div>
 
@@ -63,10 +48,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-  }
-  .stage-spr :global(canvas) {
-    display: block;
-    image-rendering: pixelated;
   }
   .stage-pollen {
     position: absolute;
@@ -92,43 +73,6 @@
     /* clears the phone's blurred contact shadow so it lands on the grass */
     margin-bottom: 40px;
   }
-  .stage-spr {
-    position: absolute;
-    z-index: 3;
-    transform-origin: bottom center;
-  }
-  .stage-spr.a {
-    left: calc(50% - 200px);
-    bottom: -4px;
-  }
-  .stage-spr.b {
-    right: calc(50% - 186px);
-    bottom: -6px;
-  }
-  .stage-spr.c {
-    left: calc(50% - 246px);
-    bottom: -6px;
-  }
-  .stage-spr.d {
-    left: calc(50% - 152px);
-    bottom: -10px;
-  }
-  .stage-spr.e {
-    right: calc(50% - 148px);
-    bottom: -10px;
-  }
-  .sway {
-    animation: sway 5.5s ease-in-out infinite;
-  }
-  @keyframes sway {
-    0%,
-    100% {
-      transform: rotate(0);
-    }
-    50% {
-      transform: rotate(2.5deg);
-    }
-  }
   @media (max-width: 620px) {
     .stage-inner {
       transform: scale(0.82);
@@ -136,7 +80,6 @@
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .sway,
     .stage-pollen :global(i) {
       animation: none !important;
     }
