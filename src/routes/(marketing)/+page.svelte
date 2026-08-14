@@ -1059,7 +1059,10 @@
   .cta {
     position: relative;
     text-align: center;
-    padding-top: 130px;
+    /* Generous gap above (vs. the roadmap prompt box) so the prompt is
+       fully off-screen when you're scrolled to the end of the footer;
+       bottom padding untouched to keep the CTA↔footer relation. */
+    padding-top: 260px;
     padding-bottom: 110px;
   }
   .seclabel.center {
