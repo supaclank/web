@@ -48,11 +48,6 @@
       {@render children()}
     </div>
 
-    <div class="plinth" aria-hidden="true">
-      <div class="pstep s1"></div>
-      <div class="pstep s2"></div>
-      <div class="pstep s3"></div>
-    </div>
     <span class="stage-spr a" bind:this={shroomA} aria-hidden="true"></span>
     <span class="stage-spr b" bind:this={shroomB} aria-hidden="true"></span>
     <span class="stage-spr c sway" bind:this={flowerA} aria-hidden="true"></span>
@@ -107,53 +102,8 @@
   .phone-slot {
     position: relative;
     z-index: 3;
-    /* clears the phone's blurred contact shadow so it lands on the plinth */
-    margin-bottom: 26px;
-  }
-  .plinth {
-    position: relative;
-    z-index: 2;
-    margin-top: -30px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .pstep {
-    position: relative;
-    border: 1px solid rgba(26, 23, 20, 0.3);
-    border-bottom: none;
-  }
-  /* pixel teeth on each step's top edge */
-  .pstep::before {
-    content: '';
-    position: absolute;
-    top: -6px;
-    left: 5px;
-    right: 5px;
-    height: 6px;
-    background: repeating-linear-gradient(90deg, var(--tooth, #c9c1ab) 0 6px, transparent 6px 12px);
-  }
-  .pstep.s1 {
-    width: 190px;
-    height: 16px;
-    background: #e5decb;
-    --tooth: #d6cfb9;
-  }
-  .pstep.s2 {
-    width: 246px;
-    height: 20px;
-    background: #d6cfba;
-    --tooth: #c6bda6;
-  }
-  .pstep.s3 {
-    width: 306px;
-    height: 26px;
-    background: #c6bda6;
-    --tooth: #b4aa91;
-    border-bottom: 1px solid rgba(26, 23, 20, 0.3);
-    background-image:
-      repeating-linear-gradient(90deg, rgba(26, 23, 20, 0.07) 0 2px, transparent 2px 26px),
-      repeating-linear-gradient(0deg, rgba(26, 23, 20, 0.05) 0 2px, transparent 2px 12px);
+    /* clears the phone's blurred contact shadow so it lands on the grass */
+    margin-bottom: 40px;
   }
   .stage-spr {
     position: absolute;
