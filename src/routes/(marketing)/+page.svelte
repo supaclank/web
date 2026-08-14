@@ -4,61 +4,12 @@
   // design-decision bands, six product-mock feature cards, the pink frontend
   // band with the framework conveyor, stacked Local/Cloud, the roadmap as
   // agent sessions, and the final CTA before the page digs into the soil.
-  import { onMount, getContext } from 'svelte';
   import PhoneShowcase from '$lib/PhoneShowcase.svelte';
   import MeadowStage from '$lib/meadow/MeadowStage.svelte';
   import Terminal from '$lib/meadow/Terminal.svelte';
   import FrameworkBelt from '$lib/meadow/FrameworkBelt.svelte';
   import RoadmapSessions from '$lib/meadow/RoadmapSessions.svelte';
-  import FooterMeadow from '$lib/meadow/FooterMeadow.svelte';
   import { CLOUD_MONTHLY_PLAN } from '$lib/pricing.js';
-
-  // The layout skips its footer on this route; we render it inside the
-  // pinned finale so the crest peeks during the CTA scroll-lock. Session
-  // state comes from the layout via context.
-  const getSignedIn = getContext('supaclank:signedIn');
-  let signedIn = $derived(getSignedIn ? getSignedIn() : false);
-
-  // Finale pin: while the CTA holds, the footer rises from "crest peek"
-  // (PEEK px visible) to fully risen across the pin's scroll span, after an
-  // initial flat dwell.
-  const PEEK = 110;
-  const DWELL_FRAC = 0.35;
-  let pinEl, footerWrapEl;
-
-  onMount(() => {
-    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
-    let raf = 0;
-    let footerH = 0;
-    const measure = () => (footerH = footerWrapEl.offsetHeight);
-    const apply = () => {
-      raf = 0;
-      const rect = pinEl.getBoundingClientRect();
-      const vh = window.innerHeight;
-      const span = rect.height - vh;
-      const s = Math.min(Math.max(-rect.top, 0), Math.max(span, 1));
-      let p = span > 0 ? s / span : 1;
-      p = p < DWELL_FRAC ? 0 : (p - DWELL_FRAC) / (1 - DWELL_FRAC);
-      const y = Math.round(Math.max(footerH - PEEK, 0) * (1 - p));
-      footerWrapEl.style.transform = `translate3d(0,${y}px,0)`;
-    };
-    const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(apply);
-    };
-    const onResize = () => {
-      measure();
-      onScroll();
-    };
-    measure();
-    apply();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onResize);
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onResize);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  });
 
   const PLAY_URL = 'https://play.google.com/store/apps/details?id=com.supaclank.clank';
   const GITHUB_URL = 'https://github.com/Acksell/clank';
@@ -391,14 +342,8 @@
   <RoadmapSessions />
 </section>
 
-<!-- ======= 06 · finale: pinned CTA + rising footer ======= -->
-<!-- The pane locks with the CTA centered and the footer's grass crest
-     peeking at the bottom (soil hidden). Scrolling through the dwell holds
-     that frame — the world keeps drifting — then the footer rises through
-     the pane. Only the determined reach the soil. -->
-<div class="cta-pin" bind:this={pinEl}>
-  <div class="finale-pane">
-    <section class="cta">
+<!-- ======= 06 · final CTA ======= -->
+<section class="sec cta">
   <div class="seclabel center"><span class="yourmove"><b>05</b> — YOUR MOVE</span></div>
   <h2 class="ctahead">Use your creativity.<span class="pk">Build it from your pocket.</span></h2>
   <p class="lead ctalead">
@@ -412,12 +357,7 @@
     <a class="btn-raised btn-raised-ghost" href={GITHUB_URL} rel="noreferrer">View on GitHub</a>
     <a class="textlink" href="/demo">try the web demo →</a>
   </div>
-    </section>
-    <div class="finale-footer" bind:this={footerWrapEl}>
-      <FooterMeadow {signedIn} />
-    </div>
-  </div>
-</div>
+</section>
 
 <style>
   /* ---------- shared section chrome ---------- */
@@ -1116,68 +1056,14 @@
   }
 
   /* ---------- final CTA ---------- */
-  .cta-pin {
-    /* One viewport for the locked frame + the scroll span you must push
-       through (flat dwell, then the footer rises). Raise --cta-dwell to
-       demand more insistence. */
-    --cta-dwell: 340vh;
-    height: calc(100vh + var(--cta-dwell));
-    height: calc(100svh + var(--cta-dwell));
-    position: relative;
-    margin-top: 120px;
-  }
-  .finale-pane {
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    height: 100svh;
-    overflow: hidden;
-  }
   .cta {
-    height: 100%;
-    max-width: 1180px;
-    margin: 0 auto;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    position: relative;
     text-align: center;
-    /* clear the sticky 60px header, and center within the green above the
-       peeking crest (110px) */
-    padding: 60px 32px 110px;
-  }
-  .finale-footer {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    will-change: transform;
-    /* Pre-JS / no-JS resting state: only the crest peek shows. The scroll
-       handler animates this toward 0 through the pin. */
-    transform: translate3d(0, calc(100% - 110px), 0);
-  }
-  /* Inside the pane the footer needs no flow gap. */
-  .finale-footer :global(footer) {
-    margin-top: 0;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .cta-pin {
-      height: auto;
-      margin-top: 120px;
-    }
-    .finale-pane {
-      position: static;
-      height: auto;
-      overflow: visible;
-    }
-    .cta {
-      height: auto;
-      padding: 130px 32px 110px;
-    }
-    .finale-footer {
-      position: static;
-      transform: none;
-    }
+    /* Generous gap above (vs. the roadmap prompt box) so the prompt is
+       fully off-screen when you're scrolled to the end of the footer;
+       bottom padding untouched to keep the CTA↔footer relation. */
+    padding-top: 260px;
+    padding-bottom: 110px;
   }
   .seclabel.center {
     justify-content: center;
