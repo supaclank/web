@@ -1120,7 +1120,7 @@
     /* One viewport for the locked frame + the scroll span you must push
        through (flat dwell, then the footer rises). Raise --cta-dwell to
        demand more insistence. */
-    --cta-dwell: 140vh;
+    --cta-dwell: 340vh;
     height: calc(100vh + var(--cta-dwell));
     height: calc(100svh + var(--cta-dwell));
     position: relative;
