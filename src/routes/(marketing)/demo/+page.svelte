@@ -39,7 +39,10 @@
 
   function extractRepoSlug(value) {
     const trimmed = value.trim();
-    const stripped = trimmed.replace(/^https?:\/\//i, '').replace(/^(www\.)?github\.com\//i, '');
+    const withoutScheme = trimmed.replace(/^https?:\/\//i, '');
+    const isGithubUrl = /^(www\.)?github\.com\//i.test(withoutScheme);
+    if (withoutScheme !== trimmed && !isGithubUrl) return trimmed;
+    const stripped = withoutScheme.replace(/^(www\.)?github\.com\//i, '');
     const match = stripped.match(/^([^/\s?#]+)\/([^/\s?#]+)/);
     if (!match) return trimmed;
     return `${match[1]}/${match[2].replace(/\.git$/i, '')}`;
