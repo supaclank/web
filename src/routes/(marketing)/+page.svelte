@@ -1050,6 +1050,9 @@
   }
   .roadlead {
     margin-bottom: 36px;
+    /* wide enough that the sentence stays on one line (the shared .lead
+       58ch cap orphaned "below!") */
+    max-width: 80ch;
   }
 
   /* ---------- final CTA ---------- */
