@@ -336,7 +336,9 @@
 <section class="sec roadmap" id="roadmap">
   <div class="seclabel"><span class="num">04</span> on the roadmap <span class="rule"></span></div>
   <h2>On the roadmap</h2>
-  <p class="lead roadlead">The next sessions in the queue. Tell the agent what to build after that.</p>
+  <p class="lead roadlead">
+    These are coming soon. Want something else first? Queue it below — we read everything.
+  </p>
   <RoadmapSessions />
 </section>
 
