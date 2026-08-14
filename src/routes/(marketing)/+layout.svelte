@@ -24,7 +24,7 @@
   >
     <div class="mx-auto flex h-16 w-full max-w-5xl items-center justify-between px-5">
       <div class="flex items-center gap-8">
-        <a href="/" class="flex items-center gap-2.5">
+        <a href="/" class="flex items-center gap-2.5" onclick={() => (mobileMenuOpen = false)}>
           <img src="/mascot.png" alt="" width="32" height="32" class="rounded-lg" />
           <span class="text-[15px] font-semibold tracking-tight">supaclank</span>
           <span

@@ -45,16 +45,15 @@
   }
 
   function normalizeRepoSlug(event) {
-    const normalized = extractRepoSlug(event.target.value);
-    if (normalized !== event.target.value) {
+    const normalized = extractRepoSlug(event.currentTarget.value);
+    if (normalized !== event.currentTarget.value) {
       repoSlug = normalized;
     }
   }
 
   function openTutorial(event) {
-    if (event.key === 'Enter') {
-      window.open(tutorialUrl, '_blank', 'noopener,noreferrer');
-    }
+    if (event.key !== 'Enter' || event.repeat) return;
+    window.open(tutorialUrl, '_blank', 'noopener,noreferrer');
   }
 
   async function copyCommands() {
