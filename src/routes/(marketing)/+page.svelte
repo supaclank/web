@@ -343,7 +343,11 @@
 </section>
 
 <!-- ======= 06 · final CTA ======= -->
-<section class="sec cta">
+<!-- The pin: the CTA sticks for a full viewport while you scroll through the
+     dwell distance — you rest on the CTA over green (the fixed world keeps
+     drifting), and only determined scrolling reaches the soil footer. -->
+<div class="cta-pin">
+  <section class="sec cta">
   <div class="seclabel center"><span class="yourmove"><b>05</b> — YOUR MOVE</span></div>
   <h2 class="ctahead">Use your creativity.<span class="pk">Build it from your pocket.</span></h2>
   <p class="lead ctalead">
@@ -357,7 +361,8 @@
     <a class="btn-raised btn-raised-ghost" href={GITHUB_URL} rel="noreferrer">View on GitHub</a>
     <a class="textlink" href="/demo">try the web demo →</a>
   </div>
-</section>
+  </section>
+</div>
 
 <style>
   /* ---------- shared section chrome ---------- */
@@ -1056,14 +1061,29 @@
   }
 
   /* ---------- final CTA ---------- */
-  .cta {
+  .cta-pin {
+    /* One viewport for the sticky CTA + the dwell distance you must scroll
+       through before the soil footer arrives. Raise --cta-dwell to demand
+       more insistence. */
+    --cta-dwell: 120vh;
+    height: calc(100vh + var(--cta-dwell));
+    height: calc(100svh + var(--cta-dwell));
     position: relative;
+    margin-top: 120px;
+  }
+  .cta {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100svh;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     text-align: center;
-    /* Generous gap above (vs. the roadmap prompt box) so the prompt is
-       fully off-screen when you're scrolled to the end of the footer;
-       bottom padding untouched to keep the CTA↔footer relation. */
-    padding-top: 260px;
-    padding-bottom: 110px;
+    /* clear the sticky 60px header so "centered" is centered in what you see */
+    padding-top: calc(96px + 60px);
+    padding-bottom: 96px;
   }
   .seclabel.center {
     justify-content: center;
