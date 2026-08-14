@@ -41,7 +41,8 @@
     const trimmed = value.trim();
     const withoutScheme = trimmed.replace(/^https?:\/\//i, '');
     const isGithubUrl = /^(www\.)?github\.com\//i.test(withoutScheme);
-    if (withoutScheme !== trimmed && !isGithubUrl) return trimmed;
+    const looksLikeUrl = withoutScheme !== trimmed || /^[^/\s?#]+\.[^/\s?#]+\//.test(withoutScheme);
+    if (looksLikeUrl && !isGithubUrl) return trimmed;
     const stripped = withoutScheme.replace(/^(www\.)?github\.com\//i, '');
     const match = stripped.match(/^([^/\s?#]+)\/([^/\s?#]+)/);
     if (!match) return trimmed;
