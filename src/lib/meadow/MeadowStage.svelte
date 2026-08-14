@@ -1,19 +1,15 @@
 <script>
-  // The hero stage: a stone pixel plinth planted in a grass mound, flanked by
-  // mushrooms/flowers/tufts, with a few pollen motes drifting up. The phone
-  // showcase renders into the slot above the plinth.
+  // The hero stage: the phone showcase flanked by mushrooms/flowers/tufts,
+  // with a few pollen motes drifting up.
   import { onMount } from 'svelte';
-  import { PINK, mulberry, sprite, SPRITES, terrain } from './pixel.js';
+  import { PINK, mulberry, sprite, SPRITES } from './pixel.js';
 
   let { children } = $props();
 
-  let groundEl, pollenEl;
+  let pollenEl;
   let shroomA, shroomB, flowerA, tuftA, tuftB;
 
   onMount(() => {
-    const mound = terrain({ px: 12, h: 44, minH: 1, maxH: 3, detail: 0.55, seed: 77, w: 384, base: '#7fb069', edge: '#93c47d' });
-    groundEl.appendChild(mound.canvas);
-
     const put = (el, name, s) => el.appendChild(sprite(SPRITES[name].m, SPRITES[name].p, s));
     put(shroomA, 'amanita', 4);
     put(shroomB, 'pinkshroom', 3);
@@ -41,7 +37,6 @@
 
 <div class="stage">
   <div class="stage-inner">
-    <div class="stage-ground" bind:this={groundEl} aria-hidden="true"></div>
     <div class="stage-pollen" bind:this={pollenEl} aria-hidden="true"></div>
 
     <div class="phone-slot">
@@ -69,14 +64,6 @@
     flex-direction: column;
     align-items: center;
   }
-  .stage-ground {
-    position: absolute;
-    bottom: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 0;
-  }
-  .stage-ground :global(canvas),
   .stage-spr :global(canvas) {
     display: block;
     image-rendering: pixelated;
