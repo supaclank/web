@@ -2,12 +2,15 @@
   import { onMount } from 'svelte';
   import QrPlay from '$lib/QrPlay.svelte';
   import PlayBadge from '$lib/PlayBadge.svelte';
+  import PixelSprite from '$lib/meadow/PixelSprite.svelte';
 
   // Each loop starts from a blank slate and builds ONE app live: summon the
   // floating box → speak a prompt (the waveform) → the agent works → the app
   // hot-refreshes in place → a done banner. Then we spin to the next blank
   // slate. The only spin is that transition. Every prompt is spoken.
+  // Sporedex leads: it's the meadow-world signature app.
   const demos = [
+    { app: 'sporedex', prompt: 'a field guide app for wild mushrooms', reply: 'Done — your field guide is live.', edit: 'make the header pink', editReply: 'Header is pink now, live.' },
     { app: 'recipes', prompt: 'a recipe app with photos and weekly meal planning', reply: 'Done, your recipe app is live.', edit: 'make the cover photo blue', editReply: 'Cover photo is blue now, live.' },
     { app: 'fitness', prompt: 'a workout tracker with charts and streaks', reply: 'Built your workout tracker.', edit: 'make the progress ring orange', editReply: 'Progress ring is orange now, live.' },
     { app: 'habits', prompt: 'a habit tracker with reminders and a calendar view', reply: 'Added your habit tracker.', edit: 'make the habit dots blue', editReply: 'Habit dots are blue now, live.' }
@@ -304,7 +307,9 @@
             {:else}
               {#key activeApp + '-' + edited}
                 <div class="app-screen h-full w-full">
-                  {#if activeApp === 'recipes'}
+                  {#if activeApp === 'sporedex'}
+                    {@render sporedexApp()}
+                  {:else if activeApp === 'recipes'}
                     {@render recipesApp()}
                   {:else if activeApp === 'fitness'}
                     {@render fitnessApp()}
@@ -472,6 +477,58 @@
     {#each [0, 1, 2, 3] as t}
       <div class="h-4 w-4 rounded-[5px] {t === 0 ? '' : dark ? 'bg-white/15' : 'bg-zinc-200'}" style={t === 0 ? `background:${accent}` : ''}></div>
     {/each}
+  </div>
+{/snippet}
+
+{#snippet sporedexApp()}
+  <!-- Sporedex — the mushroom field guide, born in the meadow. The edit
+       flips the green header (and accents) to brand pink, live. -->
+  <div class="flex h-full w-full flex-col bg-white">
+    <div class="pb-3 transition-colors duration-300 {edited ? 'bg-brand' : 'bg-meadow-mid'}">
+      {@render statusbar(true)}
+      <div class="flex items-center justify-between px-4 pt-2">
+        <h3 class="text-[16px] font-bold tracking-tight text-white">Sporedex</h3>
+        <span class="flex h-6 w-6 items-center justify-center rounded-md bg-white/20">
+          <PixelSprite name="pinkshroom" scale={2} />
+        </span>
+      </div>
+    </div>
+    <div class="mx-3.5 mt-2.5 flex items-center gap-1.5 rounded-full bg-[#f1ede3] px-3 py-2 text-[9px] text-[#a39a86]">
+      <svg class="h-2.5 w-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
+      Search mushrooms
+    </div>
+    <div
+      class="mx-3.5 mt-2.5 flex items-center gap-3 rounded-xl border p-2.5 transition-colors duration-300 {edited
+        ? 'border-brand/30 bg-[#fdeef1]'
+        : 'border-meadow-mid/30 bg-[#eef3e6]'}"
+    >
+      <PixelSprite name="amanita" scale={4} />
+      <div>
+        <p class="font-mono text-[7px] font-bold tracking-[0.14em] uppercase transition-colors duration-300 {edited ? 'text-brand' : 'text-meadow-mid'}">
+          Find of the day
+        </p>
+        <p class="mt-0.5 text-[12.5px] font-bold text-[#26221c]">Fly Agaric</p>
+        <p class="text-[8px] text-[#a09884]">Amanita muscaria · meadow edge</p>
+        <p class="mt-0.5 text-[8px] tracking-widest text-gold">★★★★</p>
+      </div>
+    </div>
+    <div class="mx-3.5 mt-1.5 min-h-0 flex-1">
+      {#each [{ spr: 'chanterelle', n: 'Chanterelle', r: 'Cantharellus · uncommon', st: '★★★' }, { spr: 'pinkshroom', n: 'Pink Waxcap', r: 'Porpolomopsis · rare', st: '★★★★' }, { spr: 'porcini', n: 'Porcini', r: 'Boletus edulis · common', st: '★★' }] as row (row.n)}
+        <div class="flex items-center gap-2 border-b border-[#f2eee3] px-0.5 py-1.5 last:border-b-0">
+          <span class="flex w-6 shrink-0 justify-center"><PixelSprite name={row.spr} scale={3} /></span>
+          <div>
+            <p class="text-[10.5px] font-semibold text-[#33302a]">{row.n}</p>
+            <p class="text-[7.5px] text-[#a89f8b]">{row.r}</p>
+          </div>
+          <span class="ml-auto text-[7.5px] tracking-widest text-gold">{row.st}</span>
+        </div>
+      {/each}
+    </div>
+    <div class="flex shrink-0 items-center justify-around border-t border-[#eee9dd] bg-white px-2 pt-3 pb-4">
+      {#each [0, 1, 2, 3] as t (t)}
+        <span class="h-[15px] w-[15px] rounded-[5px] transition-colors duration-300 {t === 0 ? (edited ? 'bg-brand' : 'bg-meadow-mid') : 'bg-[#dcd6c7]'}"></span>
+      {/each}
+    </div>
   </div>
 {/snippet}
 
