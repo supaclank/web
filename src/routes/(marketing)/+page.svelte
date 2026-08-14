@@ -404,9 +404,9 @@
     margin: 0 auto;
     padding: 80px 32px 24px;
     /* Height is measured under the sticky 60px header (in flow, unlike the
-       mockup's fixed nav). 86vh sits the end-aligned copy + phone a notch
+       mockup's fixed nav). 90vh sits the end-aligned copy + phone a notch
        higher than the mockup's 94vh — founder preference. */
-    min-height: calc(86vh - 60px);
+    min-height: calc(90vh - 60px);
     display: grid;
     grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr);
     gap: 40px;
@@ -442,10 +442,10 @@
 
   /* ---------- design decisions ---------- */
   .decisions {
-    /* The hero fills 86vh (+ header + its 24px bottom pad); 14vh + 40px of
+    /* The hero fills 90vh (+ header + its 24px bottom pad); 10vh + 40px of
        breathing room keeps this section just under the fold on first render —
        you scroll to meet it. */
-    padding-top: calc(14vh + 40px);
+    padding-top: calc(10vh + 40px);
     padding-bottom: 64px;
   }
   .bands {
