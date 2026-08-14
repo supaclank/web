@@ -48,7 +48,7 @@
         { f: 0.58, n: 'tuft', s: 3 },
         { f: 0.74, n: 'pinkshroom', s: 3 },
         { f: 0.83, n: 'pinkflower', s: 3 },
-        { f: 0.92, n: 'lantern', s: 4 } // the one whimsical structure
+        { f: 0.94, n: 'lantern', s: 4 } // the one whimsical structure
       ];
       for (const sp of specs) {
         const col = Math.max(0, Math.min(cols - 1, Math.floor(sp.f * cols)));
