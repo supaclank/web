@@ -38,8 +38,9 @@
   onDestroy(() => clearTimeout(copyResetTimer));
 
   function extractRepoSlug(value) {
-    const trimmed = value.trim().replace(/^https?:\/\//i, '').replace(/^(www\.)?github\.com\//i, '');
-    const match = trimmed.match(/^([^/\s?#]+)\/([^/\s?#]+)/);
+    const trimmed = value.trim();
+    const stripped = trimmed.replace(/^https?:\/\//i, '').replace(/^(www\.)?github\.com\//i, '');
+    const match = stripped.match(/^([^/\s?#]+)\/([^/\s?#]+)/);
     if (!match) return trimmed;
     return `${match[1]}/${match[2].replace(/\.git$/i, '')}`;
   }
@@ -53,7 +54,7 @@
 
   function openTutorial(event) {
     if (event.key !== 'Enter' || event.repeat) return;
-    window.open(tutorialUrl, '_blank', 'noopener,noreferrer');
+    window.open(isMobile ? PLAY_STORE_URL : tutorialUrl, '_blank', 'noopener,noreferrer');
   }
 
   async function copyCommands() {
@@ -102,7 +103,7 @@
           />
         </div>
         {#if isMobile}
-          <a class="repo-open" href={PLAY_STORE_URL} rel="noopener noreferrer">
+          <a class="repo-open" href={PLAY_STORE_URL} target="_blank" rel="noopener noreferrer">
             Preview in the app <span class="arrow">→</span>
           </a>
         {:else}
