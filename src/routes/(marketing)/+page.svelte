@@ -442,7 +442,10 @@
 
   /* ---------- design decisions ---------- */
   .decisions {
-    padding-top: 72px;
+    /* The hero fills 86vh (+ header + its 24px bottom pad); 14vh + 40px of
+       breathing room keeps this section just under the fold on first render —
+       you scroll to meet it. */
+    padding-top: calc(14vh + 40px);
     padding-bottom: 64px;
   }
   .bands {
