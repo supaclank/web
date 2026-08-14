@@ -403,10 +403,10 @@
     max-width: 1180px;
     margin: 0 auto;
     padding: 80px 32px 24px;
-    /* The mockup's 94vh hero was measured under a position:fixed nav; our
-       header is sticky (in flow, 60px), so subtract it to keep the hero's
-       bottom edge — and the end-aligned copy + phone — at the same height. */
-    min-height: calc(94vh - 60px);
+    /* Height is measured under the sticky 60px header (in flow, unlike the
+       mockup's fixed nav). 86vh sits the end-aligned copy + phone a notch
+       higher than the mockup's 94vh — founder preference. */
+    min-height: calc(86vh - 60px);
     display: grid;
     grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr);
     gap: 40px;
