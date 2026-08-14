@@ -333,7 +333,9 @@
               style="opacity: {hovering ? 1 : 0}; pointer-events: {hovering ? 'auto' : 'none'}"
             >
               <div class="flex h-full w-full flex-col items-center justify-center gap-3 bg-paper px-4 text-center">
-                <img src="/mascot.png" alt="" class="h-14 w-14 rounded-2xl shadow-sm" />
+                <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-black/5">
+                  <img src="/mascot.png" alt="" class="h-11 w-11" />
+                </div>
                 <div>
                   <p class="text-[13px] font-semibold tracking-tight text-ink">Get Clank</p>
                   <p class="mt-0.5 text-[10px] leading-snug text-muted">Build anything from your phone</p>
