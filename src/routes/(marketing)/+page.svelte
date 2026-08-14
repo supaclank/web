@@ -405,8 +405,9 @@
     padding: 80px 32px 24px;
     /* Height is measured under the sticky 60px header (in flow, unlike the
        mockup's fixed nav). 94vh matches the mockup — the phone sits close
-       to the ground. */
-    min-height: calc(94vh - 60px);
+       to the ground — minus one 14px front-terrain cell to lift the copy
+       and phone a grass-row above it. */
+    min-height: calc(94vh - 60px - 14px);
     display: grid;
     grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr);
     gap: 40px;
