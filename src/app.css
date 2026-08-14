@@ -139,6 +139,10 @@
 :root::selection {
   background: var(--color-brand);
   color: #fff;
+  /* Chromium can drop ::selection's `color` for spans with their own text
+     color (they'd paint pink-on-pink); text-fill-color overrides the glyph
+     paint directly and always wins. */
+  -webkit-text-fill-color: #fff;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────

@@ -435,6 +435,7 @@
   .pk::selection {
     background: var(--color-brand);
     color: #fff;
+    -webkit-text-fill-color: #fff;
   }
   .sub {
     font: 400 17px/1.62 var(--font-sans);
@@ -954,6 +955,7 @@
   .frontends :global(::selection) {
     background: #fff;
     color: var(--color-ink);
+    -webkit-text-fill-color: var(--color-ink);
   }
   .front-head {
     max-width: 1180px;
