@@ -47,7 +47,7 @@
           <a
             href="/welcome"
             class="rounded-md bg-brand px-3.5 py-1.5 text-sm font-medium whitespace-nowrap text-white transition-colors hover:bg-brand-muted"
-            >Account</a
+            onclick={() => (mobileMenuOpen = false)}>Account</a
           >
         {:else}
           <a
@@ -58,7 +58,7 @@
           <a
             href="/signup"
             class="rounded-md bg-brand px-3.5 py-1.5 text-sm font-medium whitespace-nowrap text-white transition-colors hover:bg-brand-muted"
-            >Get started</a
+            onclick={() => (mobileMenuOpen = false)}>Get started</a
           >
         {/if}
         <button
