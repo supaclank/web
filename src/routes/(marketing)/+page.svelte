@@ -429,6 +429,13 @@
   .pk {
     color: var(--color-brand);
   }
+  /* Chromium's highlight-inheritance quirk: a selection sweeping in from a
+     sibling can keep painting this span's own pink instead of the global
+     ::selection color. An element-level rule pins it white. */
+  .pk::selection {
+    background: var(--color-brand);
+    color: #fff;
+  }
   .sub {
     font: 400 17px/1.62 var(--font-sans);
     color: var(--color-muted);
