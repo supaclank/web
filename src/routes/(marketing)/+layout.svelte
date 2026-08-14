@@ -64,7 +64,7 @@
         <button
           type="button"
           class="-mr-1.5 inline-flex items-center justify-center rounded-md p-2 text-muted transition-colors hover:text-ink sm:hidden"
-          aria-label="Toggle menu"
+          aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={mobileMenuOpen}
           aria-controls="marketing-mobile-nav"
           onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
