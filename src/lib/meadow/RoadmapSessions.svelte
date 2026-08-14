@@ -31,7 +31,8 @@
       body: JSON.stringify([`[roadmap] ${text}`, new Date().toISOString()])
     }).catch(() => {});
     trackEvent(analyticsEvents.feedbackSubmitted, { placement: 'roadmap' });
-    queued = [...queued, { title: text, id: Date.now() }];
+    const id = crypto.randomUUID?.() ?? `${Date.now()}-${Math.random()}`;
+    queued = [...queued, { title: text, id }];
     idea = '';
   }
 </script>

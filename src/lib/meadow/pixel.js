@@ -125,8 +125,11 @@ export const TILE_W = 1536;
  */
 export function terrain({ px, h, minH, maxH, detail, seed, base, edge, w = TILE_W, deco }) {
   const cols = Math.round(w / px);
+  // Render full px-wide columns edge to edge — w may not be an exact
+  // multiple of px, and clipping the last column breaks the repeat seam.
+  const tileW = cols * px;
   const c = document.createElement('canvas');
-  c.width = w;
+  c.width = tileW;
   c.height = h;
   const g = c.getContext('2d');
   const R = mulberry(seed);
@@ -151,7 +154,7 @@ export function terrain({ px, h, minH, maxH, detail, seed, base, edge, w = TILE_
     g.fillRect(i * px, h - hh, px, px);
   }
   if (deco) deco(g, heights, px, h, R);
-  return { canvas: c, heights, px, w };
+  return { canvas: c, heights, px, w: tileW };
 }
 
 /** Front-layer decoration: grass blades, tiny flowers, dark speckle. */

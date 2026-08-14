@@ -4,7 +4,7 @@
   // viewport bottom, pollen motes, and a whisper of grain. Decorative only —
   // all aria-hidden, pointer-events none, transform/opacity animation.
   import { onMount } from 'svelte';
-  import { PINK, SPRITES, TILE_W, mulberry, sprite, sunCanvas, terrain, meadowDeco } from './pixel.js';
+  import { PINK, SPRITES, mulberry, sprite, sunCanvas, terrain, meadowDeco } from './pixel.js';
 
   let sunEl, cloud1, cloud2, cloud3, wlFar, wlMid, wlFront, pollenEl;
 
@@ -31,7 +31,7 @@
       for (let k = 0; k < COPIES; k++) {
         const wrap = document.createElement('span');
         wrap.className = grows ? 'wspr grow' : 'wspr';
-        wrap.style.left = `${x + k * TILE_W}px`;
+        wrap.style.left = `${x + k * front.w}px`;
         wrap.style.bottom = `${b}px`;
         if (grows) wrap.style.animationDelay = `${-(k * 7.3)}s`;
         const d = SPRITES[name];
@@ -66,13 +66,13 @@
 
     // Parallax: scroll offset + slow ambient drift per layer.
     const layers = [
-      { el: wlFar, speed: 0.04, drift: 1.6 },
-      { el: wlMid, speed: 0.11, drift: 3.4 },
-      { el: wlFront, speed: 0.26, drift: 7 }
+      { el: wlFar, speed: 0.04, drift: 1.6, w: far.w },
+      { el: wlMid, speed: 0.11, drift: 3.4, w: mid.w },
+      { el: wlFront, speed: 0.26, drift: 7, w: front.w }
     ];
     const setLayers = (sy, t) => {
       for (const L of layers) {
-        const x = -Math.round((sy * L.speed + t * L.drift) % TILE_W);
+        const x = -Math.round((sy * L.speed + t * L.drift) % L.w);
         L.el.style.transform = `translate3d(${x}px,0,0)`;
       }
     };
