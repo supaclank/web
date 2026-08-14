@@ -3,11 +3,17 @@
   // sky + terrain behind everything), the nav, and the soil footer finale.
   // Auth routes stay outside this group so sign-in and consent do not
   // inherit marketing navigation.
-  import { onMount } from 'svelte';
+  import { onMount, setContext } from 'svelte';
+  import { page } from '$app/state';
   import MeadowWorld from '$lib/meadow/MeadowWorld.svelte';
   import FooterMeadow from '$lib/meadow/FooterMeadow.svelte';
 
   let { children } = $props();
+
+  // The landing page renders FooterMeadow itself (inside its pinned CTA
+  // finale, so the crest peeks during the scroll-lock); every other
+  // marketing page gets the plain layout footer.
+  let pageOwnsFooter = $derived(page.url.pathname === '/');
 
   // Pages prerender with the signed-out buttons; swap to the account link
   // only once a session is found so signed-out visitors never see a flicker.
@@ -19,6 +25,10 @@
     const { data } = await supabase.auth.getSession();
     signedIn = Boolean(data.session);
   });
+
+  // Reactive getter so the landing page's own FooterMeadow tracks the same
+  // session state as the nav.
+  setContext('supaclank:signedIn', () => signedIn);
 </script>
 
 <MeadowWorld />
@@ -52,7 +62,9 @@
     {@render children()}
   </main>
 
-  <FooterMeadow {signedIn} />
+  {#if !pageOwnsFooter}
+    <FooterMeadow {signedIn} />
+  {/if}
 </div>
 
 <style>
