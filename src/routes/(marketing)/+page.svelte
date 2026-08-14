@@ -1,67 +1,25 @@
 <script>
-  import { onDestroy } from 'svelte';
+  // The Meadow landing page: a living pixel world (from the shared layout)
+  // with the product story on top — hero + phone on its plinth, the three
+  // design-decision bands, six product-mock feature cards, the pink frontend
+  // band with the framework conveyor, stacked Local/Cloud, the roadmap as
+  // agent sessions, and the final CTA before the page digs into the soil.
   import PhoneShowcase from '$lib/PhoneShowcase.svelte';
-  import LaptopShowcase from '$lib/LaptopShowcase.svelte';
-  import GetApp from '$lib/GetApp.svelte';
-  import QrPlay from '$lib/QrPlay.svelte';
-  import { analyticsEvents, trackEvent } from '$lib/analytics.js';
+  import MeadowStage from '$lib/meadow/MeadowStage.svelte';
+  import Terminal from '$lib/meadow/Terminal.svelte';
+  import FrameworkBelt from '$lib/meadow/FrameworkBelt.svelte';
+  import RoadmapSessions from '$lib/meadow/RoadmapSessions.svelte';
   import { CLOUD_MONTHLY_PLAN } from '$lib/pricing.js';
 
-  // "Start fresh or bring your own" tile — a working Describe / Import repo toggle.
+  const PLAY_URL = 'https://play.google.com/store/apps/details?id=com.supaclank.clank';
+  const GITHUB_URL = 'https://github.com/Acksell/clank';
+
+  // "Start fresh or bring your own" tile — a working Describe / Import toggle.
   let buildMode = $state('describe');
 
-  // Frontend banner terminal block — one button copies both commands
-  // (no leading $, newline-joined) so they paste straight into a shell.
-  const BANNER_CMDS = ['brew install supaclank/tap/clank', 'clank preview'];
-  let bannerCmdsCopied = $state(false);
-  let bannerCmdsCopiedTimeout;
-  onDestroy(() => clearTimeout(bannerCmdsCopiedTimeout));
-  async function copyBannerCmds() {
-    try {
-      await navigator.clipboard.writeText(BANNER_CMDS.join('\n'));
-    } catch {
-      return;
-    }
-    trackEvent(analyticsEvents.installCommandsCopied, { placement: 'homepage' });
-    bannerCmdsCopied = true;
-    clearTimeout(bannerCmdsCopiedTimeout);
-    bannerCmdsCopiedTimeout = setTimeout(() => (bannerCmdsCopied = false), 1500);
-  }
-  // GitHub glyph, reused on the Import tab + the connect row.
+  // GitHub glyph, reused across the page.
   const gh =
     'M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.8 10.9.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.4-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2.9-.3 2-.4 3-.4s2 .1 3 .4c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.9 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6 4.5-1.5 7.8-5.8 7.8-10.9C23.5 5.7 18.3.5 12 .5z';
-  // First-impression feedback is appended to the public Apps Script sheet endpoint.
-  const FEEDBACK_URL =
-    'https://script.google.com/macros/s/AKfycbyl6w8j6GW2syXMFvhw7I-9wNrw2Gu0caonu6bifmyq1ARXaXzQQCmYRBOVe3qJ0Ar_2A/exec';
-  let feedback = $state('');
-  let feedbackSending = $state(false);
-  let feedbackSent = $state(false);
-  let feedbackError = $state(false);
-
-  async function sendFeedback(e) {
-    e.preventDefault();
-    const text = feedback.trim();
-    if (!text || feedbackSending) return;
-    feedbackSending = true;
-    feedbackError = false;
-    try {
-      await fetch(FEEDBACK_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        redirect: 'follow',
-        // no-cors only allows CORS-safelisted headers, so an explicit
-        // Content-Type: application/json is dropped/rewritten anyway.
-        // [impression, ISO timestamp] — array so Apps Script can appendRow().
-        body: JSON.stringify([text, new Date().toISOString()])
-      });
-      trackEvent(analyticsEvents.feedbackSubmitted, { placement: 'homepage' });
-      feedbackSent = true;
-    } catch (_) {
-      feedbackError = true;
-    } finally {
-      feedbackSending = false;
-    }
-  }
 </script>
 
 <svelte:head>
@@ -72,712 +30,1107 @@
   />
 </svelte:head>
 
-
-<!-- Hero -->
-<section class="mx-auto w-full max-w-5xl px-5 pt-16 pb-12 sm:pt-24">
-  <div class="grid items-center gap-12 sm:grid-cols-[1.05fr_0.95fr]">
-    <div>
-      <p class="font-mono text-xs tracking-wide text-brand-muted uppercase">
-        open-source · self-hostable · free
-      </p>
-      <h1 class="mt-4 text-4xl leading-[1.05] font-semibold tracking-tight text-balance sm:text-5xl">
-        Build mobile apps,<br />all from your phone.
-      </h1>
-      <p class="mt-5 max-w-md text-lg text-muted text-pretty">
-        Edit your existing Expo app or start fresh. No more
-        copy-pasting screenshots and error logs. Every change shows up
-        <span class="font-medium text-ink">live, right on your phone</span>.
-      </p>
-      <div class="mt-8">
-        <GetApp qr />
-      </div>
-      <p class="mt-4 text-sm text-dim">
-        Free, open-source &amp; self-hostable.
-        <a
-          href="https://github.com/Acksell/clank"
-          rel="noreferrer"
-          class="font-medium text-ink underline decoration-line underline-offset-2 hover:decoration-ink"
-          >View on GitHub</a
-        >
-      </p>
+<!-- ======= hero ======= -->
+<header class="hero" id="top">
+  <div class="hero-copy">
+    <div class="eyebrow" aria-label="open-source, self-hostable, free">
+      <span class="pill-life">open-source</span>
+      <span class="pill-life">self-hostable</span>
+      <span class="pill-life">free</span>
+    </div>
+    <h1>Build mobile apps,<br />all from <span class="pk">your&nbsp;phone.</span></h1>
+    <p class="sub">
+      Edit your existing Expo app or start fresh. No more copy-pasting screenshots and error logs.
+      Every change shows up <b>live, right on your phone</b>.
+    </p>
+    <div class="ctarow">
+      <a class="btn-raised btn-raised-primary" href={PLAY_URL} rel="noreferrer">
+        <svg width="14" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M1.6.9c-.3.2-.5.5-.5.9v12.4c0 .4.2.7.5.9L8.3 8 1.6.9Zm8.6 5.2L3.5.6 12 5.5l-1.8.6ZM12 10.5 3.5 15.4l6.7-5.5 1.8.6Zm2.5-3.3-2.1-1.2-1.7 2 1.7 2 2.1-1.2c.8-.5.8-1.2 0-1.6Z" /></svg>
+        Get the app
+      </a>
+      <a class="btn-raised btn-raised-ghost" href={GITHUB_URL} rel="noreferrer">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d={gh} /></svg>
+        View on GitHub
+      </a>
+      <a class="textlink" href="/demo">try the web demo →</a>
     </div>
 
+    <Terminal caret placement="homepage" />
+  </div>
+
+  <MeadowStage>
     <PhoneShowcase />
-  </div>
-</section>
+  </MeadowStage>
+</header>
 
-
-<!-- Voice: the showcase is voice-first, so spell out the on-device model. -->
-<section class="mx-auto w-full max-w-5xl px-5 py-4">
-  <div
-    class="flex flex-col items-center gap-5 rounded-2xl border border-line-subtle bg-surface p-6 text-center sm:flex-row sm:gap-7 sm:p-7 sm:text-left"
-  >
-    <!-- Mic + a little waveform, the same motif as the live showcase -->
-    <div class="flex shrink-0 items-center gap-3 rounded-xl bg-elevated px-4 py-3.5">
-      <svg
-        class="h-5 w-5 text-brand"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        aria-hidden="true"
-      >
-        <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z" />
-        <path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4" />
-      </svg>
-      <div class="flex items-center gap-[3px]" aria-hidden="true">
-        {#each [7, 15, 10, 22, 13, 26, 9, 18, 24, 12, 20, 8, 14, 6] as h}
-          <span class="w-[3px] rounded-full bg-brand" style="height: {h}px"></span>
-        {/each}
+<!-- ======= 01 · design decisions ======= -->
+<section class="sec decisions" id="decisions">
+  <div class="seclabel"><span class="num">01</span> design decisions <span class="rule"></span></div>
+  <div class="bands">
+    <article class="band panel-raised">
+      <div class="band-chip" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z" /><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4" /></svg>
+        <span class="wavebars">
+          {#each [7, 15, 10, 22, 13, 26, 9, 18, 24, 12, 20, 8, 14, 6] as h (h)}
+            <i style="height: {h}px"></i>
+          {/each}
+        </span>
       </div>
-    </div>
-    <div>
-      <div class="flex items-center justify-center gap-2 sm:justify-start">
-        <h2 class="text-lg font-semibold tracking-tight">On-device model.</h2>
-        <span
-          class="rounded-full border border-brand/30 bg-brand-dim px-2 py-0.5 text-[10px] font-semibold tracking-wide text-brand-muted uppercase"
-          >100% local</span
-        >
+      <div class="band-copy">
+        <div class="band-title">
+          <h3>On-device voice model.</h3>
+          <span class="pill-life pill-life-up">100% local</span>
+        </div>
+        <p>
+          Clank ships with a state-of-the-art voice model that runs <b>entirely on your phone</b>.
+          No cloud, no API keys, no round-trip latency. Private, offline, and free.
+        </p>
       </div>
-      <p class="mt-1.5 max-w-xl text-sm text-muted">
-        Clank ships with a state-of-the-art voice model that runs
-        <span class="font-medium text-ink">entirely on your phone</span>. No cloud, no API keys, no
-        round-trip latency. Private, offline, and free.
-      </p>
-    </div>
-  </div>
-</section>
+    </article>
 
-
-<!-- Bring your own AI — moved up to pair with the voice band so the two
-     AI differentiators (on-device voice + your own model) read as a set. -->
-<section class="mx-auto w-full max-w-5xl px-5 py-4">
-  <div
-    class="flex flex-col items-center gap-5 rounded-2xl border border-line-subtle bg-surface p-6 text-center sm:flex-row sm:gap-7 sm:p-7 sm:text-left"
-  >
-    <!-- "Your AI + clank" — your subscription, supercharged -->
-    <div class="flex shrink-0 items-center gap-2.5 rounded-xl bg-elevated px-4 py-3.5">
-      <span
-        class="rounded-lg border border-line-subtle bg-paper px-2.5 py-2 text-xs font-medium text-muted"
-        >Your AI</span
-      >
-      <span class="text-sm font-semibold text-dim">+</span>
-      <span class="relative">
-        <img src="/mascot.png" alt="" class="h-9 w-9 rounded-lg" />
-        <svg
-          class="absolute -top-1.5 -right-1.5 h-4 w-4 text-brand"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" />
-        </svg>
-      </span>
-    </div>
-    <div>
-      <div class="flex items-center justify-center gap-2 sm:justify-start">
-        <h2 class="text-lg font-semibold tracking-tight">Bring your own AI.</h2>
-        <span
-          class="rounded-full border border-brand/30 bg-brand-dim px-2 py-0.5 text-[10px] font-semibold tracking-wide text-brand-muted uppercase"
-          >no lock-in</span
-        >
+    <article class="band panel-raised">
+      <div class="band-chip" aria-hidden="true">
+        <span class="tagbox">Your AI</span>
+        <span class="plus">+</span>
+        <span class="sqico">
+          <img src="/mascot.png" alt="" width="36" height="36" />
+          <svg class="spark" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" /></svg>
+        </span>
       </div>
-      <p class="mt-1.5 max-w-xl text-sm text-muted">
-        Connect your existing <span class="font-medium text-ink">Claude</span> or
-        <span class="font-medium text-ink">ChatGPT</span> subscription, access 75+ LLM providers
-        with <span class="font-medium text-ink">OpenCode</span>, or connect any other ACP-compatible
-        harness like <span class="font-medium text-ink">Hermes</span>.
-      </p>
-    </div>
-  </div>
-</section>
-
-
-<!-- Bring your own code — the third "no lock-in" band, pairing with the AI
-     one above: this is a general dev tool over your repo, not a walled
-     platform. Reuses the `gh` glyph already defined for the Import tab.
-     Extra pb so the band clears the pink CTA that follows, matching the
-     inter-card gap above. -->
-<section class="mx-auto w-full max-w-5xl px-5 py-4 pb-8">
-  <div
-    class="flex flex-col items-center gap-5 rounded-2xl border border-line-subtle bg-surface p-6 text-center sm:flex-row sm:gap-7 sm:p-7 sm:text-left"
-  >
-    <!-- "Your repo + clank" — same paired-chip motif as the AI band -->
-    <div class="flex shrink-0 items-center gap-2.5 rounded-xl bg-elevated px-4 py-3.5">
-      <span
-        class="rounded-lg border border-line-subtle bg-paper px-2.5 py-2 text-xs font-medium text-muted"
-        >Your code</span
-      >
-      <span class="text-sm font-semibold text-dim">+</span>
-      <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-ink text-white">
-        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d={gh} /></svg>
-      </span>
-    </div>
-    <div>
-      <div class="flex items-center justify-center gap-2 sm:justify-start">
-        <h2 class="text-lg font-semibold tracking-tight">Bring your own code.</h2>
-        <span
-          class="rounded-full border border-brand/30 bg-brand-dim px-2 py-0.5 text-[10px] font-semibold tracking-wide text-brand-muted uppercase"
-          >no lock-in</span
-        >
+      <div class="band-copy">
+        <div class="band-title">
+          <h3>Bring your own AI.</h3>
+          <span class="pill-life pill-life-up">no lock-in</span>
+        </div>
+        <p>
+          Connect your existing <b>Claude</b> or <b>ChatGPT</b> subscription, access 75+ LLM
+          providers with <b>OpenCode</b>, or connect any other ACP-compatible harness.
+        </p>
       </div>
-      <p class="mt-1.5 max-w-xl text-sm text-muted">
-        Run <code class="rounded bg-surface px-1.5 py-0.5 font-mono text-ink">clank preview</code>
-        locally, or just import your repositories to our cloud sandbox and code without a laptop.
-        Manage pull requests and ship features from anywhere.
-      </p>
-    </div>
-  </div>
-</section>
+    </article>
 
-
-<!-- Frontend support banner — full-bleed (breaks out of the max-w-5xl
-     rhythm every other section follows) so it reads as a distinct,
-     unmissable callout rather than another feature card. -->
-<section class="w-full bg-brand py-14 text-white selection:bg-white selection:text-ink">
-  <div class="mx-auto grid w-full max-w-5xl items-center gap-10 px-5 sm:grid-cols-2">
-    <button
-      type="button"
-      onclick={copyBannerCmds}
-      aria-label="Copy install and preview commands to clipboard"
-      class="group relative mx-auto flex w-full max-w-sm items-start gap-3 rounded-sm border-2 border-dashed border-white/40 bg-black/20 p-4 text-left font-mono text-sm text-white transition-colors hover:border-white/70 hover:bg-black/30"
-    >
-      <span class="absolute -top-1 -left-1 h-2 w-2 rounded-[1px] bg-white"></span>
-      <span class="absolute -top-1 -right-1 h-2 w-2 rounded-[1px] bg-white"></span>
-      <span class="absolute -bottom-1 -left-1 h-2 w-2 rounded-[1px] bg-white"></span>
-      <span class="absolute -right-1 -bottom-1 h-2 w-2 rounded-[1px] bg-white"></span>
-      <div class="flex-1">
-        {#each BANNER_CMDS as cmd}
-          <div><span class="text-white/50">$</span> {cmd}</div>
-        {/each}
+    <article class="band panel-raised">
+      <div class="band-chip" aria-hidden="true">
+        <span class="tagbox">Your code</span>
+        <span class="plus">+</span>
+        <span class="sqico inkbg">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d={gh} /></svg>
+        </span>
       </div>
-      {#if bannerCmdsCopied}
-        <svg class="mt-0.5 h-4 w-4 shrink-0 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
-      {:else}
-        <svg class="mt-0.5 h-4 w-4 shrink-0 text-white/50 group-hover:text-white/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
-      {/if}
-    </button>
-    <div>
-      <h2 class="text-2xl font-semibold tracking-tight text-balance">Psst… it works for frontends too.</h2>
-      <p class="mt-2.5 max-w-md text-white/85">
-        Clank isn't just for mobile. Get the same live preview and one-tap fixes in your browser for
-        <span class="rounded bg-black/20 px-1.5 py-0.5 font-medium text-white">Svelte</span>, <span class="rounded bg-black/20 px-1.5 py-0.5 font-medium text-white">React</span>,
-        <span class="rounded bg-black/20 px-1.5 py-0.5 font-medium text-white">Next.js</span>, <span class="rounded bg-black/20 px-1.5 py-0.5 font-medium text-white">Vue</span>,
-        <span class="rounded bg-black/20 px-1.5 py-0.5 font-medium text-white">Preact</span>, or any app that runs <code class="rounded bg-black/20 px-1 py-0.5 text-[13px] text-white">vite</code>.
-      </p>
-    </div>
-  </div>
-</section>
-
-
-<!-- Laptop showcase — web apps, built in the browser. The window column is
-     a fixed 560px from lg up (the design width of the browser mock); below
-     that it takes the fr share so narrow screens never overflow. -->
-<section class="mx-auto w-full max-w-5xl px-5 py-12">
-  <div class="grid items-center gap-12 sm:grid-cols-[1.05fr_0.95fr] lg:grid-cols-[minmax(0,1fr)_560px]">
-    <div>
-      <p class="font-mono text-xs tracking-wide text-brand-muted uppercase">
-        now for the web
-      </p>
-      <h2 class="mt-4 text-3xl leading-[1.05] font-semibold tracking-tight text-balance sm:text-4xl">
-        Iterate on web apps,<br />in your own browser.
-      </h2>
-      <p class="mt-5 max-w-md text-lg text-muted text-pretty">
-        <code class="rounded bg-surface px-1.5 py-0.5 text-base text-ink">clank preview</code>
-        starts your app, opens the browser, injects the overlay, and connects to your agent of
-        choice.
-      </p>
-      <div class="mt-7">
-        <a
-          href="/demo"
-          class="inline-flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-muted"
-        >
-          Try now
-          <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-        </a>
+      <div class="band-copy">
+        <div class="band-title">
+          <h3>Bring your own code.</h3>
+          <span class="pill-life pill-life-up">no lock-in</span>
+        </div>
+        <p>
+          Run <code>clank preview</code> locally, or import your repositories to our cloud sandbox
+          and code without a laptop.
+        </p>
       </div>
-    </div>
-    <div class="flex justify-center">
-      <LaptopShowcase />
-    </div>
+    </article>
   </div>
 </section>
 
-
-<!-- How it works — Local vs Cloud, same experience either way. -->
-<section class="mx-auto w-full max-w-5xl px-5 py-12">
-  <h2 class="text-2xl font-semibold tracking-tight">How it works</h2>
-  <div class="mt-6 grid gap-8 sm:grid-cols-2">
-    <div class="border-l-2 border-dashed border-brand pl-5">
-      <h3 class="font-mono text-xs tracking-wide text-brand-muted uppercase">Local</h3>
-      <p class="mt-2 text-sm text-muted">
-        Run <code class="rounded bg-surface px-1 py-0.5 text-[13px] text-ink">clank preview</code>, a drop-in
-        replacement for your Expo, Vite, or Next.js dev server. It starts your app, runs <code class="rounded bg-surface px-1 py-0.5 text-[13px] text-ink">clankd</code> alongside
-        it, and connects your agent so edits hot-reload live as you go.
-      </p>
-    </div>
-    <div class="border-l-2 border-dashed border-brand pl-5">
-      <h3 class="font-mono text-xs tracking-wide text-brand-muted uppercase">Cloud</h3>
-      <p class="mt-2 text-sm text-muted">
-        Same experience, hosted. You don't have to run <code class="rounded bg-surface px-1 py-0.5 text-[13px] text-ink">clank preview</code> yourself,
-        we run it for you. Build from your phone, or install our GitHub Bot for preview links on any pull request.
-        <a href="/pricing" class="font-medium text-ink underline decoration-line underline-offset-2">
-          {CLOUD_MONTHLY_PLAN.price}/{CLOUD_MONTHLY_PLAN.interval} after a 7-day free trial.
-        </a>
-      </p>
-    </div>
-  </div>
-</section>
-
-
-<!-- Feature highlights — a centered 2×2 bento. Each tile is a white card
-     holding a small asset-light product mock (ink + coral only — no images,
-     no stock gradients) on an inset surface, with the label beneath it. -->
-<section class="mx-auto w-full max-w-5xl px-5 py-12">
-  <div class="mx-auto mb-8 max-w-3xl text-center">
-    <p class="font-mono text-xs tracking-wide text-brand-muted uppercase">the mobile app</p>
-    <h2 class="mt-3 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">Everything you need to build and ship</h2>
-    <p class="mx-auto mt-2 max-w-md text-muted text-pretty">
-      Start or import a repo, point at anything, fix errors in context, and watch every change go live.
+<!-- ======= 02 · features ======= -->
+<section class="sec" id="capabilities">
+  <div class="sechead">
+    <div class="seclabel"><span class="num">02</span> the mobile app</div>
+    <h2>Everything you need to build and ship</h2>
+    <p class="lead">
+      Start or import a repo, point at anything, fix errors in context, and watch every change go
+      live.
     </p>
   </div>
 
-  <div class="bento mx-auto grid max-w-3xl grid-cols-1 gap-x-5 gap-y-10 sm:grid-cols-2 sm:gap-y-5">
-    <!-- 1 · Start fresh or bring your own — Describe / Import repo toggle -->
-    <div>
-      <div class="flex h-44 flex-col justify-center rounded-xl border border-line-subtle bg-surface p-3">
-        <div class="flex gap-1 rounded-lg bg-paper p-0.5 text-[11px] font-medium" role="group" aria-label="Build mode">
-          <button
-            type="button"
-            onclick={() => (buildMode = 'describe')}
-            aria-pressed={buildMode === 'describe'}
-            class="flex-1 rounded-md px-2 py-1.5 text-center transition-colors {buildMode === 'describe'
-              ? 'bg-brand text-white'
-              : 'text-muted hover:text-ink'}">Describe</button
-          >
-          <button
-            type="button"
-            onclick={() => (buildMode = 'import')}
-            aria-pressed={buildMode === 'import'}
-            class="flex flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-1.5 transition-colors {buildMode ===
-            'import'
-              ? 'bg-brand text-white'
-              : 'text-muted hover:text-ink'}"
-          >
-            <svg class="h-3 w-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d={gh} /></svg>
+  <div class="fgrid">
+    <!-- 1 · start fresh or bring your own -->
+    <div class="fcard panel-raised">
+      <div class="fmock">
+        <div class="seg" role="group" aria-label="Build mode">
+          <button type="button" onclick={() => (buildMode = 'describe')} aria-pressed={buildMode === 'describe'}>Describe</button>
+          <button type="button" onclick={() => (buildMode = 'import')} aria-pressed={buildMode === 'import'}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d={gh} /></svg>
             Import repo
           </button>
         </div>
-
         {#if buildMode === 'describe'}
-          <div class="mt-2.5 flex items-center rounded-lg border border-line-subtle bg-elevated px-2.5 py-2 text-[11px] text-muted">
-            A beautiful app for lawyers, no mistakes<span class="ml-px inline-block h-3 w-px translate-y-px animate-pulse bg-brand"></span>
-          </div>
-          <p class="mt-2 text-[10px] text-dim">Just say what you want, it starts building.</p>
+          <div class="mockinput">A beautiful app for lawyers, no mistakes<span class="mcaret"></span></div>
+          <p class="mockhint">Just say what you want, it starts building.</p>
         {:else}
-          <div class="mt-2.5 flex items-center gap-2 rounded-lg border border-line-subtle bg-elevated px-2.5 py-2">
-            <svg class="h-3.5 w-3.5 shrink-0 text-ink" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d={gh} /></svg>
-            <span class="text-[11px] text-ink">github.com/you/app</span>
-            <span class="ml-auto rounded-md bg-brand px-2 py-0.5 text-[10px] font-medium text-white">Connect</span>
+          <div class="mockinput">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="color:var(--color-ink);flex:none" aria-hidden="true"><path d={gh} /></svg>
+            <span style="color:var(--color-ink)">github.com/you/app</span>
+            <span class="connect">Connect</span>
           </div>
-          <p class="mt-2 text-[10px] text-dim">Bring a repo you already have and keep building.</p>
+          <p class="mockhint">Bring a repo you already have and keep building.</p>
         {/if}
       </div>
-      <h3 class="mt-4 text-base font-semibold">Start fresh or bring your own</h3>
-      <p class="mt-1.5 text-sm text-muted">
-        Spin up a brand-new app, or connect a GitHub repo you already have.
-      </p>
+      <h3>Start fresh or bring your own</h3>
+      <p>Spin up a brand-new app, or connect a GitHub repo you already have.</p>
     </div>
 
-    <!-- 2 · Catch errors, fix in one tap -->
-    <div>
-      <div class="flex h-44 items-center rounded-xl border border-line-subtle bg-surface p-3" aria-hidden="true">
-        <div class="w-full rounded-lg border border-line-subtle bg-elevated p-3 shadow-sm">
-          <div class="flex items-center gap-1.5">
-            <span class="h-2 w-2 rounded-full bg-brand"></span>
-            <span class="text-[11px] font-semibold text-ink">Error detected</span>
-            <span class="ml-auto text-[10px] text-dim">Done</span>
+    <!-- 2 · catch errors -->
+    <div class="fcard panel-raised">
+      <div class="fmock" aria-hidden="true">
+        <div class="mockcard">
+          <div class="mrow">
+            <span class="pinkdot"></span>
+            <span class="mtitle">Error detected</span>
+            <span class="mmeta">Done</span>
           </div>
-          <div class="mt-2 rounded-md border border-danger/20 bg-danger/10 px-2 py-1.5 font-mono text-[9px] leading-tight text-danger">
-            TypeError: undefined is not a function
-          </div>
-          <div class="mt-2.5 flex gap-2">
-            <span class="flex flex-1 items-center justify-center gap-1 rounded-md border border-line-subtle py-1.5 text-[10px] font-medium text-muted">
-              <svg class="h-2.5 w-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
+          <div class="errbox">TypeError: undefined is not a function</div>
+          <div class="mbtnrow">
+            <span class="mbtn">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
               Copy
             </span>
-            <span class="flex-[1.3] rounded-md bg-ink py-1.5 text-center text-[10px] font-medium text-white">Fix it</span>
+            <span class="mbtn solid">Fix it</span>
           </div>
         </div>
       </div>
-      <h3 class="mt-4 text-base font-semibold">Catch errors, fix in one tap</h3>
-      <p class="mt-1.5 text-sm text-muted">
-        The agent sees the crash live, in context. Tap once and it fixes it.
-      </p>
+      <h3>Catch errors, fix in one tap</h3>
+      <p>The agent sees the crash live, in context. Tap once and it fixes it.</p>
     </div>
 
-    <!-- 3 · Point at anything — crop to show the agent -->
-    <div>
-      <div class="relative h-44 overflow-hidden rounded-xl border border-line-subtle bg-surface p-3" aria-hidden="true">
-        <div class="flex h-full flex-col gap-2.5">
-          <div class="h-2 w-2/5 rounded bg-[#d6d3cb]"></div>
-          <div class="h-1.5 w-3/4 rounded bg-[#e1ded6]"></div>
-          <div class="h-8 rounded-md border border-brand/25 bg-brand-dim"></div>
-          <div class="h-1.5 w-1/2 rounded bg-[#e1ded6]"></div>
-          <div class="h-1.5 w-2/3 rounded bg-[#e1ded6]"></div>
+    <!-- 3 · point at anything -->
+    <div class="fcard panel-raised">
+      <div class="fmock" aria-hidden="true">
+        <div class="greek">
+          <i class="g1"></i><i class="g2"></i><i class="g3"></i><i class="g4"></i><i class="g5"></i>
         </div>
-        <div class="absolute top-10 right-8 bottom-9 left-9 rounded-sm border-2 border-dashed border-brand bg-brand/5">
-          <span class="absolute -top-1 -left-1 h-2 w-2 rounded-[1px] bg-brand"></span>
-          <span class="absolute -top-1 -right-1 h-2 w-2 rounded-[1px] bg-brand"></span>
-          <span class="absolute -bottom-1 -left-1 h-2 w-2 rounded-[1px] bg-brand"></span>
-          <span class="absolute -right-1 -bottom-1 h-2 w-2 rounded-[1px] bg-brand"></span>
-        </div>
-        <span class="absolute right-3 bottom-3 rounded-full bg-brand px-2.5 py-1 text-[9px] font-medium text-white">Add to context</span>
+        <div class="cropbox"><i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i></div>
+        <span class="cropchip">Add to context</span>
       </div>
-      <h3 class="mt-4 text-base font-semibold">Point at anything</h3>
-      <p class="mt-1.5 text-sm text-muted">
-        Crop any part of the screen to show the agent exactly what you mean.
-      </p>
+      <h3>Point at anything</h3>
+      <p>Crop any part of the screen to show the agent exactly what you mean.</p>
     </div>
 
-    <!-- 4 · Live on your phone -->
-    <div>
-      <div class="flex h-44 items-center justify-center rounded-xl border border-line-subtle bg-surface p-3" aria-hidden="true">
-        <div class="w-[94px] overflow-hidden rounded-[15px] border-[3px] border-ink bg-white shadow-md">
-          <div class="flex items-center justify-center gap-1 bg-brand py-[3px] text-[7px] font-semibold text-white">
-            <svg class="h-2 w-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7" /><path d="M21 4v5h-5" /></svg>
+    <!-- 4 · live on your phone -->
+    <div class="fcard panel-raised">
+      <div class="fmock" aria-hidden="true">
+        <div class="tinyphone">
+          <div class="tp-reload">
+            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7" /><path d="M21 4v5h-5" /></svg>
             Refreshing…
           </div>
-          <div class="space-y-1.5 p-2.5">
-            <div class="h-1.5 w-3/5 rounded-full bg-zinc-200"></div>
-            <div class="h-9 rounded-md border border-brand/20 bg-brand-dim"></div>
-            <div class="h-1.5 w-full rounded-full bg-zinc-200"></div>
-            <div class="h-1.5 w-2/5 rounded-full bg-zinc-200"></div>
+          <div class="tp-body">
+            <i class="l1"></i><span class="blk"></span><i class="l2"></i><i class="l3"></i>
           </div>
         </div>
       </div>
-      <h3 class="mt-4 text-base font-semibold">Live on your phone</h3>
-      <p class="mt-1.5 text-sm text-muted">
-        Every change hot-reloads on your device as it’s built. Tweak it, retry, ship it.
-      </p>
+      <h3>Live on your phone</h3>
+      <p>Every change hot-reloads on your device as it’s built. Tweak it, retry, ship it.</p>
     </div>
-  </div>
 
-  <!-- Ship: get it out — open a PR, share a read-only preview -->
-  <div class="mx-auto mt-12 mb-5 flex max-w-3xl items-center gap-3">
-    <span class="font-mono text-xs font-medium tracking-wider text-dim uppercase">Ship</span>
-    <span class="h-px flex-1 bg-line-subtle"></span>
-  </div>
-  <div class="bento mx-auto grid max-w-3xl grid-cols-1 gap-x-5 gap-y-10 sm:grid-cols-2 sm:gap-y-5">
-    <!-- 5 · Smooth pull requests — a compact mirror of clank-mobile's
-         CreatePRSheet form (header + branch · title · base · draft · Open PR). -->
-    <div>
-      <div class="flex h-44 items-center rounded-xl border border-line-subtle bg-surface p-3" aria-hidden="true">
-        <div class="w-full rounded-lg border border-line-subtle bg-elevated p-3 shadow-sm">
-          <div class="flex items-center gap-1.5">
-            <svg class="h-3.5 w-3.5 shrink-0 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="6" y1="3" x2="6" y2="15" /><circle cx="18" cy="6" r="3" /><circle cx="6" cy="18" r="3" /><path d="M18 9a9 9 0 0 1-9 9" /></svg>
-            <span class="text-[11px] font-semibold text-ink">Open pull request</span>
-            <span class="ml-auto font-mono text-[9px] text-dim">add-reminders</span>
+    <!-- 5 · smooth pull requests -->
+    <div class="fcard panel-raised">
+      <div class="fmock" aria-hidden="true">
+        <div class="mockcard">
+          <div class="mrow">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15" /><circle cx="18" cy="6" r="3" /><circle cx="6" cy="18" r="3" /><path d="M18 9a9 9 0 0 1-9 9" /></svg>
+            <span class="mtitle">Open pull request</span>
+            <span class="mmeta mono">add-reminders</span>
           </div>
-          <div class="mt-3 flex items-center justify-between">
-            <div class="flex items-center gap-1.5 text-[9px] text-dim">
-              <span>Base</span>
-              <span class="rounded bg-surface px-1.5 py-0.5 font-mono text-ink">main</span>
-            </div>
-            <div class="flex items-center gap-1.5 text-[9px] text-dim">
-              <span>Draft</span>
-              <span class="relative h-4 w-[26px] shrink-0 rounded-full bg-[#d8d5cd]">
-                <span class="absolute top-[2px] left-[2px] h-3 w-3 rounded-full bg-white shadow-sm"></span>
-              </span>
-            </div>
+          <div class="mrow spaced">
+            <span class="mrow tight"><span class="mlabel">Base</span><span class="basechip">main</span></span>
+            <span class="mrow tight"><span class="mlabel">Draft</span><span class="toggle"><i></i></span></span>
           </div>
-          <div class="mt-3 flex gap-2">
-            <span class="flex-1 rounded-md border border-line-subtle py-1.5 text-center text-[10px] font-medium text-muted">Push to remote</span>
-            <span class="flex-[1.3] rounded-md bg-brand py-1.5 text-center text-[10px] font-medium text-white">Open PR</span>
+          <div class="mbtnrow pushdown">
+            <span class="mbtn">Push to remote</span>
+            <span class="mbtn pinksolid">Open PR</span>
           </div>
         </div>
       </div>
-      <h3 class="mt-4 text-base font-semibold">Smooth pull requests</h3>
-      <p class="mt-1.5 text-sm text-muted">
-        Create a PR or contribute to an open one, straight from your phone.
-      </p>
+      <h3>Smooth pull requests</h3>
+      <p>Create a PR or contribute to an open one, straight from your phone.</p>
     </div>
 
-    <!-- 6 · Share a read-only preview — real scannable QR (QrPlay) -->
-    <div>
-      <div class="flex h-44 items-center justify-center gap-3.5 rounded-xl border border-line-subtle bg-surface p-3" aria-hidden="true">
-        <div class="rounded-lg border border-line-subtle bg-white p-1.5 shadow-sm">
-          <div class="h-14 w-14"><QrPlay /></div>
-        </div>
-        <div class="flex flex-col gap-2">
-          <div class="flex items-center gap-2.5 rounded-lg border border-line-subtle bg-elevated px-2.5 py-2">
-            <span class="text-[10px] font-medium text-ink">Public URL</span>
-            <span class="relative ml-auto h-[18px] w-[30px] shrink-0 rounded-full bg-brand">
-              <span class="absolute top-[2px] right-[2px] h-3.5 w-3.5 rounded-full bg-white shadow-sm"></span>
-            </span>
+    <!-- 6 · fix conflicts & CI -->
+    <div class="fcard panel-raised">
+      <div class="fmock" aria-hidden="true">
+        <div class="mockcard">
+          <div class="mrow">
+            <span class="mtitle">2 problems found</span>
+            <span class="mmeta">Done</span>
           </div>
-          <div class="flex items-center gap-1.5">
-            <span class="rounded border border-line-subtle px-1.5 py-0.5 text-[8px] font-medium text-dim">Read-only</span>
-            <span class="rounded border border-line-subtle px-1.5 py-0.5 text-[8px] font-medium text-dim">Time-limited</span>
+          <div class="probrow">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+            <span class="pn">Merge conflict</span><span class="pm">3 files</span>
           </div>
-        </div>
-      </div>
-      <h3 class="mt-4 text-base font-semibold">Share a live preview</h3>
-      <p class="mt-1.5 text-sm text-muted">
-        Flip on a public URL to share a read-only, time-limited preview, by link or QR.
-      </p>
-    </div>
-
-    <!-- 7 · Fix merge conflicts & failing CI — same "fix in one tap" pattern as
-         the error card above, applied to conflicts/CI instead of runtime errors. -->
-    <div>
-      <div class="flex h-44 items-center rounded-xl border border-line-subtle bg-surface p-3" aria-hidden="true">
-        <div class="w-full rounded-lg border border-line-subtle bg-elevated p-3 shadow-sm">
-          <div class="flex items-center gap-1.5">
-            <span class="text-[11px] font-semibold text-ink">2 problems found</span>
-            <span class="ml-auto text-[10px] text-dim">Done</span>
+          <div class="probrow">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>
+            <span class="pn">CI checks failing</span><span class="pm">1/2</span>
           </div>
-          <div class="mt-2.5 space-y-1.5">
-            <div class="flex items-center gap-1.5 rounded-md border border-danger/40 bg-elevated px-2 py-1.5">
-              <svg class="h-3 w-3 shrink-0 text-danger" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
-              <span class="text-[10px] font-medium text-ink">Merge conflict</span>
-              <span class="ml-auto text-[9px] text-dim">3 files</span>
-            </div>
-            <div class="flex items-center gap-1.5 rounded-md border border-danger/40 bg-elevated px-2 py-1.5">
-              <svg class="h-3 w-3 shrink-0 text-danger" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>
-              <span class="text-[10px] font-medium text-ink">CI checks failing</span>
-              <span class="ml-auto text-[9px] text-dim">1/2</span>
-            </div>
-          </div>
-          <div class="mt-2.5 flex gap-2">
-            <span class="flex flex-1 items-center justify-center gap-1 rounded-md border border-line-subtle py-1.5 text-center text-[10px] font-medium text-muted">
-              Open on GitHub
-              <svg class="h-2.5 w-2.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
-            </span>
-            <span class="flex flex-[1.3] items-center justify-center gap-1 rounded-md bg-brand py-1.5 text-center text-[10px] font-medium text-white">
-              <svg class="h-3 w-3 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.287 1.288L3 12l5.8 1.9a2 2 0 0 1 1.288 1.287L12 21l1.9-5.8a2 2 0 0 1 1.287-1.288L21 12l-5.8-1.9a2 2 0 0 1-1.288-1.287Z" /><path d="M20 3v4" /><path d="M22 5h-4" /><path d="M4 17v2" /><path d="M5 18H3" /></svg>
+          <div class="mbtnrow">
+            <span class="mbtn">Open on GitHub</span>
+            <span class="mbtn pinksolid">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.287 1.288L3 12l5.8 1.9a2 2 0 0 1 1.288 1.287L12 21l1.9-5.8a2 2 0 0 1 1.287-1.288L21 12l-5.8-1.9a2 2 0 0 1-1.288-1.287Z" /></svg>
               Fix with agent
             </span>
           </div>
         </div>
       </div>
-      <h3 class="mt-4 text-base font-semibold">Fix conflicts and failing CI</h3>
-      <p class="mt-1.5 text-sm text-muted">
-        Hit a merge conflict or a red check? One tap sends it to the agent to resolve.
-      </p>
-    </div>
-
-    <!-- 8 · Manage your pull requests — mirrors clank-mobile's branch list,
-         leading with the Drafts / Ready for review / Closed tab bar. -->
-    <div>
-      <div class="flex h-44 flex-col justify-center rounded-xl border border-line-subtle bg-surface p-3" aria-hidden="true">
-        <div class="flex items-center gap-3 border-b border-line-subtle text-[10px] font-medium">
-          <span class="border-b-2 border-brand pb-1.5 text-brand">Drafts</span>
-          <span class="pb-1.5 text-dim">Ready for review</span>
-          <span class="pb-1.5 text-dim">Closed</span>
-        </div>
-        <div class="mt-2.5 space-y-1.5">
-          <div class="flex items-center justify-between rounded-lg border border-line-subtle bg-elevated px-2.5 py-2 shadow-sm">
-            <div class="flex min-w-0 items-center gap-1.5">
-              <svg class="h-3 w-3 shrink-0 text-dim" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M3.25 1A2.25 2.25 0 0 1 4 5.372v5.256a2.251 2.251 0 1 1-1.5 0V5.372A2.251 2.251 0 0 1 3.25 1Zm9.5 14a2.25 2.25 0 1 1 0-4.5 2.25 2.25 0 0 1 0 4.5ZM2.5 3.25a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0ZM3.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm9.5 0a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM14 7.5a1.25 1.25 0 1 1-2.5 0 1.25 1.25 0 0 1 2.5 0Zm0-4.25a1.25 1.25 0 1 1-2.5 0 1.25 1.25 0 0 1 2.5 0Z" /></svg>
-              <div class="min-w-0">
-                <div class="truncate text-[10px] font-medium text-ink">feat(webpreview): Web Speech API dictation with first-use engine picker</div>
-                <div class="mt-0.5 flex items-center gap-1 text-[9px] text-dim">
-                  <span class="text-brand">Ready</span>
-                  <span>·</span>
-                  <span>#164</span>
-                  <span>·</span>
-                  <span class="flex items-center gap-0.5 text-warning">
-                    <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-warning"></span>
-                    1/2
-                  </span>
-                </div>
-              </div>
-            </div>
-            <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-brand">
-              <svg class="h-2.5 w-2.5 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
-            </span>
-          </div>
-          <div class="flex items-center justify-between rounded-lg border border-line-subtle bg-elevated px-2.5 py-2 shadow-sm">
-            <div class="flex min-w-0 items-center gap-1.5">
-              <svg class="h-3 w-3 shrink-0 text-dim" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M3.25 1A2.25 2.25 0 0 1 4 5.372v5.256a2.251 2.251 0 1 1-1.5 0V5.372A2.251 2.251 0 0 1 3.25 1Zm9.5 14a2.25 2.25 0 1 1 0-4.5 2.25 2.25 0 0 1 0 4.5ZM2.5 3.25a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0ZM3.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm9.5 0a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM14 7.5a1.25 1.25 0 1 1-2.5 0 1.25 1.25 0 0 1 2.5 0Zm0-4.25a1.25 1.25 0 1 1-2.5 0 1.25 1.25 0 0 1 2.5 0Z" /></svg>
-              <div class="min-w-0">
-                <div class="truncate text-[10px] font-medium text-ink">feat(webpreview): grab screenshot/area from the web preview overlay</div>
-                <div class="mt-0.5 flex items-center gap-1 text-[9px] text-dim">
-                  <span class="text-danger">Conflicts</span>
-                  <span>·</span>
-                  <span>#160</span>
-                  <span>·</span>
-                  <span class="flex items-center gap-0.5 text-success">
-                    <svg class="h-2.5 w-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12" /></svg>
-                    CI
-                  </span>
-                </div>
-              </div>
-            </div>
-            <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-brand">
-              <svg class="h-2.5 w-2.5 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
-            </span>
-          </div>
-        </div>
-      </div>
-      <h3 class="mt-4 text-base font-semibold">Manage your pull requests</h3>
-      <p class="mt-1.5 text-sm text-muted">
-        Browse drafts, ready-for-review, and closed branches, and jump back into any of them.
-      </p>
+      <h3>Fix conflicts and failing CI</h3>
+      <p>Hit a merge conflict or a red check? One tap sends it to the agent to resolve.</p>
     </div>
   </div>
 </section>
 
-
-<!-- Coming soon — roadmap peek. Dashed, lighter treatment so it reads as
-     "not shipped yet" against the solid feature bento above. -->
-<section class="mx-auto w-full max-w-5xl px-5 py-12">
-  <div class="mx-auto max-w-3xl">
-    <div class="mb-8 text-center">
-      <p class="font-mono text-xs tracking-wide text-brand-muted uppercase">on the roadmap</p>
-      <h2 class="mt-2 text-2xl font-semibold tracking-tight text-balance">Coming soon</h2>
-    </div>
-    <div class="grid gap-5 sm:grid-cols-2">
-      <!-- Frame-drop detection & debugging -->
-      <div class="rounded-2xl border border-dashed border-line p-5">
-        <div class="flex items-center justify-between">
-          <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-surface text-brand">
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2" /></svg>
-          </span>
-          <span class="rounded-full border border-brand/30 bg-brand-dim px-2 py-0.5 text-[10px] font-semibold tracking-wide text-brand-muted uppercase">Soon</span>
-        </div>
-        <h3 class="mt-3.5 text-base font-semibold">Frame-drop detection &amp; debugging</h3>
-        <p class="mt-1.5 text-sm text-muted">
-          Catch jank as it happens and trace it back to the cause, profiled live on your device.
-        </p>
-      </div>
-      <!-- Preview links on pull requests -->
-      <div class="rounded-2xl border border-dashed border-line p-5">
-        <div class="flex items-center justify-between">
-          <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-surface text-brand">
-            <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d={gh} /></svg>
-          </span>
-          <span class="rounded-full border border-brand/30 bg-brand-dim px-2 py-0.5 text-[10px] font-semibold tracking-wide text-brand-muted uppercase">Soon</span>
-        </div>
-        <h3 class="mt-3.5 text-base font-semibold">Preview links on every pull request</h3>
-        <p class="mt-1.5 text-sm text-muted">
-          A GitHub bot that posts a live preview link on each PR, so reviewers can open the build in one tap.
-        </p>
-      </div>
-      <!-- iOS support -->
-      <div class="rounded-2xl border border-dashed border-line p-5">
-        <div class="flex items-center justify-between">
-          <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-surface text-brand">
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" /></svg>
-          </span>
-          <span class="rounded-full border border-brand/30 bg-brand-dim px-2 py-0.5 text-[10px] font-semibold tracking-wide text-brand-muted uppercase">Soon</span>
-        </div>
-        <h3 class="mt-3.5 text-base font-semibold">iOS</h3>
-        <p class="mt-1.5 text-sm text-muted">
-          The same instant previews and one-tap installs, on your iPhone.
-        </p>
-      </div>
-      <!-- Feature request — the one card in this grid that's actionable
-           right now, not a "Soon" placeholder. Solid border + hover state
-           so it reads as a link out, not a roadmap teaser. -->
-      <a
-        href="https://github.com/Acksell/clank/issues/new?labels=enhancement&title=Feature+request%3A+"
-        target="_blank"
-        rel="noreferrer"
-        class="group rounded-2xl border border-dashed border-brand p-5 transition-colors hover:border-brand-muted"
-      >
-        <div class="flex items-center justify-between">
-          <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-surface text-brand">
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /><path d="M9 18h6" /><path d="M10 22h4" /></svg>
-          </span>
-          <span
-            class="text-xs font-medium text-brand-muted underline decoration-line underline-offset-2 group-hover:decoration-brand"
-            >Open an issue</span
-          >
-        </div>
-        <h3 class="mt-3.5 text-base font-semibold">Have a feature request?</h3>
-        <p class="mt-1.5 text-sm text-muted">Tell us what to build next, straight on GitHub.</p>
-      </a>
-    </div>
-    <p class="mt-6 text-center text-sm text-dim">…and more on the way.</p>
-  </div>
-</section>
-
-
-<!-- First impressions — fire-and-forget feedback to a Google Sheet via a
-     no-cors Apps Script POST. -->
-<section class="mx-auto w-full max-w-5xl px-5 py-4">
-  <div class="mx-auto max-w-xl rounded-2xl bg-brand p-6 text-center text-white selection:bg-white selection:text-ink sm:p-7">
-    <h2 class="text-lg font-semibold tracking-tight">First impressions?</h2>
-    <p class="mt-1.5 text-sm text-white/85">Send them our way. We read everything!</p>
-    {#if feedbackSent}
-      <p class="mt-4 flex items-center justify-center gap-2 text-sm font-medium text-white">
-        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
-        Thank you for sharing!
-      </p>
-    {:else}
-      <form onsubmit={sendFeedback} class="mt-4 flex flex-col gap-2 sm:flex-row">
-        <input
-          bind:value={feedback}
-          type="text"
-          maxlength="1000"
-          placeholder="What do you think?"
-          aria-label="Your first impressions"
-          class="flex-1 rounded-lg border border-white/30 bg-black/20 px-3.5 py-2.5 text-sm text-white placeholder:text-white/60 focus:border-white focus:outline-none"
-        />
-        <button
-          type="submit"
-          disabled={feedbackSending || !feedback.trim()}
-          class="rounded-lg bg-white px-5 py-2.5 text-sm font-medium whitespace-nowrap text-brand shadow-sm transition-colors hover:bg-white/90 disabled:opacity-60"
-          >{feedbackSending ? 'Sending…' : 'Send'}</button
-        >
-      </form>
-      {#if feedbackError}
-        <p class="mt-2 text-xs text-white/90">Failed to send feedback. Please try again.</p>
-      {/if}
-    {/if}
-  </div>
-</section>
-
-
-<!-- Final call to action -->
-<section class="mx-auto w-full max-w-5xl px-5 py-16">
-  <div class="flex flex-col items-center gap-5 rounded-3xl bg-ink px-6 py-12 text-center text-paper">
-    <img src="/mascot.png" alt="" width="56" height="56" class="rounded-xl" />
-    <h2 class="max-w-lg text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
-      Use your creativity. Build it from your pocket.
-    </h2>
-    <p class="max-w-md text-paper/70">
-      Open-source. Build on your phone. Self-host clank yourself, or let supaclank run the
-      cloud.
+<!-- ======= 03 · frontend band (the pink moment) ======= -->
+<div class="dither" style="--from:var(--color-paper);--to:#fa5573" aria-hidden="true"></div>
+<section class="frontends">
+  <div class="front-head">
+    <h2>Psst… it works for frontends too.</h2>
+    <p>
+      Clank isn’t just for mobile. Get the same live preview and one-tap fixes in your browser for
+      <span class="fchip">Svelte</span>, <span class="fchip">React</span>,
+      <span class="fchip">Next.js</span>, <span class="fchip">Vue</span>,
+      <span class="fchip">Preact</span>, or any app that runs <code>vite</code>.
     </p>
-    <GetApp qr variant="ondark" />
+  </div>
+  <FrameworkBelt />
+</section>
+<div class="dither" style="--from:#fa5573;--to:var(--color-paper)" aria-hidden="true"></div>
+
+<!-- ======= 04 · how it works ======= -->
+<section class="sec" id="how">
+  <div class="seclabel"><span class="num">03</span> how it works <span class="rule"></span></div>
+  <h2>How it works</h2>
+  <div class="howstack">
+    <article class="how panel-raised">
+      <div class="how-side">
+        <span class="mode">LOCAL</span>
+        <span class="pill-life pill-life-up">free forever</span>
+      </div>
+      <div>
+        <p>
+          Run <code>clank preview</code>, a drop-in replacement for your Expo, Vite, or Next.js dev
+          server. It starts your app, runs <code>clankd</code> alongside it, and connects your agent
+          so edits hot-reload live as you go.
+        </p>
+        <div class="how-term"><Terminal placement="how-local" /></div>
+      </div>
+    </article>
+
+    <article class="how panel-raised">
+      <div class="how-side">
+        <span class="mode">CLOUD</span>
+      </div>
+      <div>
+        <p>
+          Same experience, hosted. You don’t have to run <code>clank preview</code> yourself, we run
+          it for you. Build from your phone, or install our GitHub Bot for preview links on any pull
+          request.
+        </p>
+        <p class="pricerow">
+          <a class="pricelink" href="/pricing"
+            >{CLOUD_MONTHLY_PLAN.price}/{CLOUD_MONTHLY_PLAN.interval} after a 7-day free trial.</a
+          >
+        </p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ======= 05 · roadmap as agent sessions ======= -->
+<section class="sec roadmap" id="roadmap">
+  <div class="seclabel"><span class="num">04</span> on the roadmap <span class="rule"></span></div>
+  <h2>On the roadmap</h2>
+  <p class="lead roadlead">The next sessions in the queue. Tell the agent what to build after that.</p>
+  <RoadmapSessions />
+</section>
+
+<!-- ======= 06 · final CTA ======= -->
+<section class="sec cta">
+  <div class="seclabel center"><span class="yourmove"><b>05</b> — YOUR MOVE</span></div>
+  <h2 class="ctahead">Use your creativity.<span class="pk">Build it from your pocket.</span></h2>
+  <p class="lead ctalead">
+    Open-source. Build on your phone. Self-host clank yourself, or let supaclank run the cloud.
+  </p>
+  <div class="ctarow center">
+    <a class="btn-raised btn-raised-primary" href={PLAY_URL} rel="noreferrer">
+      <svg width="14" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M1.6.9c-.3.2-.5.5-.5.9v12.4c0 .4.2.7.5.9L8.3 8 1.6.9Zm8.6 5.2L3.5.6 12 5.5l-1.8.6ZM12 10.5 3.5 15.4l6.7-5.5 1.8.6Zm2.5-3.3-2.1-1.2-1.7 2 1.7 2 2.1-1.2c.8-.5.8-1.2 0-1.6Z" /></svg>
+      Get the app
+    </a>
+    <a class="btn-raised btn-raised-ghost" href={GITHUB_URL} rel="noreferrer">View on GitHub</a>
+    <a class="textlink" href="/demo">try the web demo →</a>
   </div>
 </section>
 
 <style>
-  /* Mobile: the feature cards stack one per row. Show the title above its
-     illustration (more intuitive) by turning each card into a flex column
-     and reordering — title, description, then the illustration drops to the
-     bottom. Desktop (≥640px) keeps the natural illustration-then-title order. */
-  @media (max-width: 639px) {
-    .bento > div {
-      display: flex;
+  /* ---------- shared section chrome ---------- */
+  .sec {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 96px 32px;
+  }
+  h2 {
+    font: 800 clamp(28px, 3.3vw, 40px) / 1.08 var(--font-sans);
+    letter-spacing: -0.025em;
+    margin-bottom: 14px;
+  }
+  .lead {
+    font: 400 16.5px/1.6 var(--font-sans);
+    color: var(--color-muted);
+    max-width: 58ch;
+  }
+  .textlink {
+    font: 500 13px var(--font-mono);
+    color: var(--color-meadow-text);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-line-mid);
+    padding-bottom: 2px;
+  }
+  .textlink:hover {
+    color: var(--color-ink);
+    border-bottom-color: var(--color-meadow-text);
+  }
+  .ctarow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 36px;
+  }
+  .ctarow.center {
+    justify-content: center;
+    margin-bottom: 0;
+  }
+
+  /* ---------- hero ---------- */
+  .hero {
+    position: relative;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 80px 32px 24px;
+    min-height: 94vh;
+    display: grid;
+    grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr);
+    gap: 40px;
+    align-items: end;
+  }
+  .hero-copy {
+    padding-bottom: 56px;
+  }
+  .eyebrow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 26px;
+  }
+  h1 {
+    font: 800 clamp(35px, 4.3vw, 60px) / 1.04 var(--font-sans);
+    letter-spacing: -0.035em;
+    margin-bottom: 22px;
+  }
+  .pk {
+    color: var(--color-brand);
+  }
+  .sub {
+    font: 400 17px/1.62 var(--font-sans);
+    color: var(--color-muted);
+    max-width: 52ch;
+    margin-bottom: 30px;
+  }
+  .sub b {
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+
+  /* ---------- design decisions ---------- */
+  .decisions {
+    padding-top: 72px;
+    padding-bottom: 64px;
+  }
+  .bands {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .band {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    padding: 26px 30px;
+  }
+  .band-chip {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    padding: 14px 18px;
+    border-radius: 2px;
+  }
+  .band-chip .tagbox {
+    font: 500 12px var(--font-sans);
+    color: var(--color-muted);
+    background: var(--color-paper);
+    border: 1px solid var(--color-line);
+    padding: 9px 11px;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .band-chip .plus {
+    font: 600 13px var(--font-sans);
+    color: var(--color-dim);
+  }
+  .band-chip .sqico {
+    position: relative;
+    display: flex;
+    height: 36px;
+    width: 36px;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+  }
+  .band-chip .sqico.inkbg {
+    background: var(--color-ink);
+    color: #fff;
+  }
+  .band-chip img {
+    height: 36px;
+    width: 36px;
+    border-radius: 4px;
+    display: block;
+  }
+  .band-chip .spark {
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    color: var(--color-brand);
+  }
+  .wavebars {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .wavebars i {
+    width: 3px;
+    border-radius: 999px;
+    background: var(--color-brand);
+    display: block;
+  }
+  .band-copy h3 {
+    font: 700 19px var(--font-sans);
+    letter-spacing: -0.015em;
+    display: inline;
+  }
+  .band-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .band-copy p {
+    font: 400 14px/1.6 var(--font-sans);
+    color: var(--color-muted);
+    margin-top: 7px;
+    max-width: 64ch;
+  }
+  .band-copy p b {
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+  .band-copy code {
+    font: 500 12.5px var(--font-mono);
+    color: var(--color-ink);
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    padding: 1px 6px;
+    border-radius: 2px;
+  }
+
+  /* ---------- features ---------- */
+  .sechead {
+    max-width: 700px;
+    margin: 0 auto 44px;
+    text-align: center;
+  }
+  .sechead h2 {
+    text-wrap: balance;
+  }
+  .sechead .lead {
+    margin: 0 auto;
+    text-wrap: pretty;
+  }
+  .sechead .seclabel {
+    justify-content: center;
+  }
+  .fgrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  .fcard {
+    padding: 18px 18px 22px;
+  }
+  .fmock {
+    position: relative;
+    height: 196px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 16px;
+    overflow: hidden;
+  }
+  .fcard h3 {
+    font: 700 16.5px var(--font-sans);
+    letter-spacing: -0.01em;
+    margin-top: 16px;
+  }
+  .fcard > p {
+    font: 400 13.5px/1.55 var(--font-sans);
+    color: var(--color-muted);
+    margin-top: 6px;
+  }
+
+  /* shared mock atoms */
+  .mockcard {
+    background: var(--color-elevated);
+    border: 1px solid var(--color-line-subtle);
+    border-radius: 10px;
+    padding: 12px;
+    box-shadow: 0 1px 2px rgba(26, 23, 20, 0.05);
+  }
+  .mrow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .mrow.spaced {
+    margin-top: 12px;
+    justify-content: space-between;
+  }
+  .mrow.tight {
+    gap: 6px;
+  }
+  .mtitle {
+    font: 700 11px var(--font-sans);
+    color: var(--color-ink);
+  }
+  .mmeta {
+    margin-left: auto;
+    font: 400 10px var(--font-sans);
+    color: var(--color-dim);
+  }
+  .mmeta.mono {
+    font-family: var(--font-mono);
+    font-size: 9px;
+  }
+  .mbtnrow {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .mbtnrow.pushdown {
+    margin-top: 12px;
+  }
+  .mbtn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border: 1px solid var(--color-line-subtle);
+    border-radius: 6px;
+    padding: 6px 0;
+    font: 500 10px var(--font-sans);
+    color: var(--color-muted);
+  }
+  .mbtn.solid {
+    flex: 1.3;
+    background: var(--color-ink);
+    color: #fff;
+    border-color: var(--color-ink);
+  }
+  .mbtn.pinksolid {
+    flex: 1.3;
+    background: var(--color-brand);
+    color: #fff;
+    border-color: var(--color-brand);
+  }
+
+  /* 1 · describe / import toggle */
+  .seg {
+    display: flex;
+    gap: 4px;
+    background: var(--color-paper);
+    border: 1px solid var(--color-line-subtle);
+    border-radius: 8px;
+    padding: 3px;
+  }
+  .seg button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    padding: 7px 4px;
+    font: 500 11px var(--font-sans);
+    color: var(--color-muted);
+    cursor: pointer;
+  }
+  .seg button:hover {
+    color: var(--color-ink);
+  }
+  .seg button[aria-pressed='true'] {
+    background: var(--color-brand);
+    color: #fff;
+  }
+  .mockinput {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--color-elevated);
+    border: 1px solid var(--color-line-subtle);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font: 400 11px var(--font-sans);
+    color: var(--color-muted);
+  }
+  .mcaret {
+    display: inline-block;
+    width: 1px;
+    height: 12px;
+    background: var(--color-brand);
+    animation: mblink 1.1s step-end infinite;
+  }
+  @keyframes mblink {
+    50% {
+      opacity: 0;
+    }
+  }
+  .connect {
+    margin-left: auto;
+    background: var(--color-brand);
+    color: #fff;
+    border-radius: 6px;
+    padding: 2px 8px;
+    font: 500 10px var(--font-sans);
+    white-space: nowrap;
+  }
+  .mockhint {
+    margin-top: 8px;
+    font: 400 10px var(--font-sans);
+    color: var(--color-dim);
+  }
+
+  /* 2 · error card */
+  .errbox {
+    margin-top: 8px;
+    background: rgba(214, 69, 69, 0.1);
+    border: 1px solid rgba(214, 69, 69, 0.22);
+    border-radius: 6px;
+    padding: 6px 8px;
+    font: 400 9px/1.4 var(--font-mono);
+    color: var(--color-danger);
+  }
+  .pinkdot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--color-brand);
+    flex: none;
+  }
+
+  /* 3 · crop overlay */
+  .greek {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 100%;
+    justify-content: center;
+  }
+  .greek i {
+    display: block;
+    border-radius: 4px;
+  }
+  .greek .g1 {
+    height: 8px;
+    width: 40%;
+    background: #d6d3cb;
+  }
+  .greek .g2 {
+    height: 6px;
+    width: 75%;
+    background: #e1ded6;
+  }
+  .greek .g3 {
+    height: 32px;
+    width: 100%;
+    background: var(--color-brand-dim);
+    border: 1px solid rgba(250, 85, 115, 0.25);
+  }
+  .greek .g4 {
+    height: 6px;
+    width: 50%;
+    background: #e1ded6;
+  }
+  .greek .g5 {
+    height: 6px;
+    width: 66%;
+    background: #e1ded6;
+  }
+  .cropbox {
+    position: absolute;
+    top: 40px;
+    right: 34px;
+    bottom: 38px;
+    left: 38px;
+    border: 2px dashed var(--color-brand);
+    border-radius: 2px;
+    background: rgba(250, 85, 115, 0.05);
+  }
+  .cropbox i {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: var(--color-brand);
+  }
+  .cropbox .tl {
+    top: -5px;
+    left: -5px;
+  }
+  .cropbox .tr {
+    top: -5px;
+    right: -5px;
+  }
+  .cropbox .bl {
+    bottom: -5px;
+    left: -5px;
+  }
+  .cropbox .br {
+    bottom: -5px;
+    right: -5px;
+  }
+  .cropchip {
+    position: absolute;
+    right: 12px;
+    bottom: 11px;
+    background: var(--color-brand);
+    color: #fff;
+    border-radius: 999px;
+    padding: 4px 10px;
+    font: 500 9px var(--font-sans);
+  }
+
+  /* 4 · tiny phone */
+  .tinyphone {
+    width: 96px;
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: 15px;
+    border: 3px solid var(--color-ink);
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(26, 23, 20, 0.14);
+  }
+  .tp-reload {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    background: var(--color-brand);
+    color: #fff;
+    padding: 3px 0;
+    font: 600 7px var(--font-sans);
+  }
+  .tp-body {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .tp-body i {
+    display: block;
+    border-radius: 999px;
+    background: #e4e4e7;
+  }
+  .tp-body .l1 {
+    height: 6px;
+    width: 60%;
+  }
+  .tp-body .blk {
+    height: 36px;
+    border-radius: 6px;
+    background: var(--color-brand-dim);
+    border: 1px solid rgba(250, 85, 115, 0.2);
+  }
+  .tp-body .l2 {
+    height: 6px;
+    width: 100%;
+  }
+  .tp-body .l3 {
+    height: 6px;
+    width: 40%;
+  }
+
+  /* 5 · PR sheet */
+  .basechip {
+    background: var(--color-surface);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font: 500 9px var(--font-mono);
+    color: var(--color-ink);
+  }
+  .mlabel {
+    font: 400 9px var(--font-sans);
+    color: var(--color-dim);
+  }
+  .toggle {
+    position: relative;
+    height: 16px;
+    width: 26px;
+    flex: none;
+    border-radius: 999px;
+    background: #d8d5cd;
+  }
+  .toggle i {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    height: 12px;
+    width: 12px;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+  }
+
+  /* 6 · problems */
+  .probrow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid rgba(214, 69, 69, 0.4);
+    background: var(--color-elevated);
+    border-radius: 6px;
+    padding: 6px 8px;
+    margin-top: 6px;
+  }
+  .probrow svg {
+    flex: none;
+    color: var(--color-danger);
+  }
+  .probrow .pn {
+    font: 500 10px var(--font-sans);
+    color: var(--color-ink);
+  }
+  .probrow .pm {
+    margin-left: auto;
+    font: 400 9px var(--font-sans);
+    color: var(--color-dim);
+  }
+
+  /* ---------- pink frontend band ---------- */
+  .frontends {
+    background: var(--color-brand);
+    color: #fff;
+    padding: 30px 0 54px;
+  }
+  .frontends :global(::selection) {
+    background: #fff;
+    color: var(--color-ink);
+  }
+  .front-head {
+    max-width: 1180px;
+    margin: 0 auto 36px;
+    padding: 0 32px;
+  }
+  .front-head h2 {
+    color: #fff;
+    margin-bottom: 10px;
+  }
+  .front-head p {
+    font: 400 15.5px/1.6 var(--font-sans);
+    color: rgba(255, 255, 255, 0.88);
+    max-width: 62ch;
+  }
+  .fchip {
+    background: rgba(0, 0, 0, 0.18);
+    border-radius: 4px;
+    padding: 1px 7px;
+    font: 500 14px var(--font-sans);
+    color: #fff;
+    white-space: nowrap;
+  }
+  .front-head code {
+    font: 500 14px var(--font-mono);
+    background: rgba(0, 0, 0, 0.18);
+    border-radius: 4px;
+    padding: 1px 6px;
+    color: #fff;
+  }
+
+  /* ---------- how it works ---------- */
+  .howstack {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 38px;
+  }
+  .how {
+    display: grid;
+    grid-template-columns: 170px minmax(0, 1fr);
+    gap: 30px;
+    padding: 30px;
+  }
+  .how-side {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .mode {
+    font: 700 13px var(--font-mono);
+    letter-spacing: 0.22em;
+    color: var(--color-ink);
+  }
+  .mode::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: var(--color-brand);
+    margin-right: 10px;
+  }
+  .how p {
+    font: 400 14.5px/1.65 var(--font-sans);
+    color: var(--color-muted);
+    max-width: 70ch;
+  }
+  .how p code {
+    font: 500 12.5px var(--font-mono);
+    color: var(--color-ink);
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    padding: 1px 6px;
+    border-radius: 2px;
+  }
+  .how-term {
+    margin-top: 22px;
+  }
+  .pricerow {
+    margin-top: 14px;
+  }
+  .pricelink {
+    font: 600 14.5px var(--font-sans);
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-color: var(--color-line-mid);
+    text-underline-offset: 3px;
+  }
+  .pricelink:hover {
+    text-decoration-color: var(--color-brand);
+    color: var(--color-brand);
+  }
+
+  /* ---------- roadmap ---------- */
+  .roadmap {
+    padding-top: 24px;
+  }
+  .roadlead {
+    margin-bottom: 36px;
+  }
+
+  /* ---------- final CTA ---------- */
+  .cta {
+    position: relative;
+    text-align: center;
+    padding-top: 130px;
+    padding-bottom: 110px;
+  }
+  .seclabel.center {
+    justify-content: center;
+  }
+  .yourmove {
+    font-family: var(--font-pixel);
+    font-size: 12px;
+    color: var(--color-muted);
+    letter-spacing: 0.14em;
+  }
+  .yourmove b {
+    color: var(--color-brand);
+    font-weight: 400;
+  }
+  .ctahead {
+    font-size: clamp(34px, 4.8vw, 58px);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-bottom: 16px;
+  }
+  .ctahead .pk {
+    display: block;
+  }
+  .ctalead {
+    margin: 0 auto 34px;
+  }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 1020px) {
+    .hero {
+      grid-template-columns: 1fr;
+      min-height: 0;
+      padding-top: 60px;
+      align-items: start;
+    }
+    .hero-copy {
+      padding-bottom: 0;
+    }
+    .fgrid {
+      grid-template-columns: 1fr;
+      max-width: 560px;
+    }
+    .how {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .band {
       flex-direction: column;
+      align-items: flex-start;
+      gap: 18px;
     }
-    .bento > div > div {
-      order: 3;
-      margin-top: 1rem;
+  }
+  @media (max-width: 620px) {
+    .sec {
+      padding: 72px 18px;
     }
-    .bento > div > h3 {
-      order: 1;
-      margin-top: 0;
+    .hero {
+      padding: 44px 18px 12px;
     }
-    .bento > div > p {
-      order: 2;
+    .decisions {
+      padding-top: 56px;
+    }
+    .eyebrow {
+      gap: 8px;
+    }
+    .band {
+      padding: 20px 18px;
+    }
+    .how {
+      padding: 22px 18px;
+    }
+    .front-head {
+      padding: 0 18px;
+    }
+    .fmock {
+      height: auto;
+      min-height: 180px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mcaret {
+      animation: none;
     }
   }
 </style>
