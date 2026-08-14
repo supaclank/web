@@ -7,7 +7,9 @@
     CLANK_APP_BASE_URL,
     DEFAULT_REPO_SLUG,
     KEYBINDS,
+    MOBILE_OVERLAY_STEPS,
     OVERLAY_STEPS,
+    PLAY_STORE_URL,
     START_COMMANDS
   } from '$lib/demo/tutorial.js';
 
@@ -16,12 +18,21 @@
   let commandsCopied = $state(false);
   let copyResetTimer;
   let isSupaclankPreview = $state(false);
+  let isMobile = $state(false);
+  let isIos = $state(false);
   let repoSlug = $state(DEFAULT_REPO_SLUG);
 
   let tutorialUrl = $derived(`${CLANK_APP_BASE_URL}/${repoSlug.trim() || DEFAULT_REPO_SLUG}`);
+  let overlaySteps = $derived(
+    !isMobile ? OVERLAY_STEPS : isSupaclankPreview ? MOBILE_OVERLAY_STEPS.slice(1) : MOBILE_OVERLAY_STEPS
+  );
 
   onMount(() => {
     isSupaclankPreview = isSupaclankPreviewHostname(window.location.hostname);
+    isMobile = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+    isIos =
+      /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   });
 
   onDestroy(() => clearTimeout(copyResetTimer));
@@ -91,11 +102,28 @@
             oninput={normalizeRepoSlug}
           />
         </div>
-        <a class="repo-open" href={tutorialUrl} target="_blank" rel="noopener noreferrer">
-          Open in Clank <span class="arrow">→</span>
-        </a>
+        {#if isMobile}
+          <a class="repo-open" href={PLAY_STORE_URL} rel="noopener noreferrer">
+            Preview in the app <span class="arrow">→</span>
+          </a>
+        {:else}
+          <a class="repo-open" href={tutorialUrl} target="_blank" rel="noopener noreferrer">
+            Open in Clank <span class="arrow">→</span>
+          </a>
+        {/if}
       </div>
+
+      {#if isMobile}
+        <p class="mobile-note">
+          The web demo needs the Clank mobile app, or a keyboard. Download the app!
+          {#if isIos}Android for now, or open this page on your laptop.{/if}
+        </p>
+      {/if}
     </section>
+
+    {#if isMobile}
+      {@render mobileAppSection(false)}
+    {/if}
   {/if}
 
   <section class="hero">
@@ -105,23 +133,25 @@
       >
       <p class="permission">This is a sandbox. Change anything. Break everything.</p>
 
-      <div class="local-setup">
-        <p><span>Optional</span> Run Clank in your own local repo</p>
-        <div class="commands">
-          <button type="button" class:copied={commandsCopied} onclick={copyCommands}>
-            {commandsCopied ? 'Copied' : 'Copy all'}
-          </button>
-          {#each START_COMMANDS as command}
-            <div><span>$</span><code>{command}</code></div>
+      {#if !isMobile}
+        <div class="local-setup">
+          <p><span>Optional</span> Run Clank in your own local repo</p>
+          <div class="commands">
+            <button type="button" class:copied={commandsCopied} onclick={copyCommands}>
+              {commandsCopied ? 'Copied' : 'Copy all'}
+            </button>
+            {#each START_COMMANDS as command}
+              <div><span>$</span><code>{command}</code></div>
+            {/each}
+          </div>
+        </div>
+
+        <div class="keybinds" aria-label="Overlay keyboard shortcuts">
+          {#each KEYBINDS as keybind}
+            <div><kbd>{keybind.keys}</kbd><span>{keybind.action}</span></div>
           {/each}
         </div>
-      </div>
-
-      <div class="keybinds" aria-label="Overlay keyboard shortcuts">
-        {#each KEYBINDS as keybind}
-          <div><kbd>{keybind.keys}</kbd><span>{keybind.action}</span></div>
-        {/each}
-      </div>
+      {/if}
     </div>
 
     <div class="playground">
@@ -129,36 +159,52 @@
         <h2>Change anything.</h2>
       </div>
 
-      <p class="repo-sub">{isSupaclankPreview ? 'To get started' : 'Once open in Clank'}</p>
+      <p class="repo-sub">
+        {isSupaclankPreview ? 'To get started' : isMobile ? 'In the Clank app' : 'Once open in Clank'}
+      </p>
 
       <ol class="try-steps">
-        {#each OVERLAY_STEPS as step, index}
+        {#each overlaySteps as step, index}
           <li><b>{index + 1}.</b><span>{step}</span></li>
         {/each}
       </ol>
     </div>
   </section>
 
-  <section class="mobile">
+  {#if !isMobile}
+    {@render mobileAppSection(true)}
+  {/if}
+</div>
+
+{#snippet mobileAppSection(showQr)}
+  <section class="mobile" class:promoted={!showQr}>
     <img class="mobile-mascot" src="/mascot.png" alt="" width="68" height="68" />
     <div>
-      <p class="eyebrow">Edit web &amp; mobile apps from your phone</p>
-      <h2>This page works in the Clank mobile app too.</h2>
+      <p class="eyebrow">
+        {showQr ? 'Edit web & mobile apps from your phone' : "You're on a phone"}
+      </p>
+      <h2>
+        {showQr
+          ? 'This page works in the Clank mobile app too.'
+          : 'This demo runs in the Clank mobile app.'}
+      </h2>
       <PlayBadge />
     </div>
-    <div class="qr">
-      <a
-        class="qr-link"
-        href="https://play.google.com/store/apps/details?id=com.supaclank.clank"
-        rel="noreferrer"
-        aria-label="Get Clank on Google Play"
-      >
-        <QrPlay />
-      </a>
-      <span>Scan to install</span>
-    </div>
+    {#if showQr}
+      <div class="qr">
+        <a
+          class="qr-link"
+          href={PLAY_STORE_URL}
+          rel="noreferrer"
+          aria-label="Get Clank on Google Play"
+        >
+          <QrPlay />
+        </a>
+        <span>Scan to install</span>
+      </div>
+    {/if}
   </section>
-</div>
+{/snippet}
 
 <style>
   .demo-page {
@@ -197,6 +243,14 @@
     margin: 0 auto 26px;
     color: var(--muted);
     font-size: 18px;
+    line-height: 1.5;
+  }
+
+  .mobile-note {
+    max-width: 420px;
+    margin: 16px auto 0;
+    color: var(--muted);
+    font-size: 14px;
     line-height: 1.5;
   }
 
@@ -511,6 +565,11 @@
     padding: 32px;
     color: white;
     background: var(--pink);
+  }
+
+  .mobile.promoted {
+    grid-template-columns: auto 1fr;
+    margin: 0 0 8px;
   }
 
   .mobile-mascot {

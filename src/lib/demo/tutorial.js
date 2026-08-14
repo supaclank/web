@@ -1,5 +1,7 @@
 export const CLANK_APP_BASE_URL = 'https://supaclank.com';
 
+export const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.supaclank.clank';
+
 export const DEFAULT_REPO_SLUG = 'supaclank/web';
 
 export const START_COMMANDS = [
@@ -21,4 +23,11 @@ export const OVERLAY_STEPS = [
   'Hold ⌘ and click to select',
   'Tap Caps Lock to talk',
   'Hold ⇧ Shift to move the overlay'
+];
+
+export const MOBILE_OVERLAY_STEPS = [
+  'Open this page in the Clank app',
+  'Shake your phone to open the overlay',
+  'Tap an element to select it',
+  'Tell Clank what to change'
 ];
