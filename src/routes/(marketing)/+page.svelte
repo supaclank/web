@@ -746,7 +746,7 @@
 <!-- Final call to action -->
 <section class="mx-auto w-full max-w-5xl px-5 py-16">
   <div class="flex flex-col items-center gap-5 rounded-3xl bg-ink px-6 py-12 text-center text-paper">
-    <img src="/mascot-dark.png" alt="" width="96" height="96" class="rounded-xl" />
+    <img src="/mascot.png" alt="" width="96" height="96" class="rounded-xl" />
     <h2 class="max-w-lg text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
       Use your creativity. Build it from your pocket.
     </h2>
