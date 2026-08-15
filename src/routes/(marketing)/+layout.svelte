@@ -29,7 +29,7 @@
     <div class="mx-auto flex h-[60px] w-full max-w-[1180px] items-center gap-7 px-5 sm:px-7">
       <a href="/" class="flex items-center gap-2.5" aria-label="Supaclank home" onclick={() => (mobileMenuOpen = false)}>
         <img src="/mascot.png" alt="" width="26" height="26" class="rounded" />
-        <b class="font-pixel text-[13px] font-bold tracking-[0.05em] text-ink">SUPA<span class="text-brand">CLANK</span></b>
+        <b class="text-[17px] font-semibold tracking-tight text-ink">supaclank</b>
       </a>
       <nav class="ml-2 hidden items-center gap-6 min-[880px]:flex" aria-label="Main">
         <a href="/#capabilities" class="navlink">Capabilities</a>

@@ -129,7 +129,7 @@
       <div class="soil-brand">
         <div class="brandrow">
           <img src="/mascot.png" alt="" width="30" height="30" />
-          <b>SUPA<span>CLANK</span></b>
+          <b>supaclank</b>
         </div>
         <small>Build mobile apps entirely from your phone. Open-source, self-hostable, free.</small>
       </div>
@@ -233,13 +233,9 @@
     border-radius: 4px;
   }
   .soil-brand b {
-    font-family: var(--font-pixel);
-    font-size: 12px;
-    letter-spacing: 0.05em;
+    font: 600 16px var(--font-sans);
+    letter-spacing: -0.01em;
     color: var(--color-soil-paper);
-  }
-  .soil-brand b span {
-    color: var(--color-brand);
   }
   .soil-brand small {
     font: 400 12px/1.6 var(--font-sans);
