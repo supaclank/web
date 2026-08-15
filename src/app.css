@@ -364,3 +364,10 @@
 .shadow-spin {
   animation: shadow-spin 1s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* The mascot artwork is a scene carrying its own sky and grass, so it reads as an
+   app icon rather than a cut-out sprite. Round every instance consistently
+   instead of repeating a radius class at each of its call sites. */
+img[src$="mascot.png"] {
+  border-radius: 22%;
+}
