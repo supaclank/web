@@ -128,7 +128,7 @@
     <div class="soil-in">
       <div class="soil-brand">
         <div class="brandrow">
-          <img src="/mascot-dark.png" alt="" width="30" height="30" />
+          <img src="/mascot.png" alt="" width="30" height="30" />
           <b>SUPA<span>CLANK</span></b>
         </div>
         <small>Build mobile apps entirely from your phone. Open-source, self-hostable, free.</small>
