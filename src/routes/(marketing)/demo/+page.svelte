@@ -576,8 +576,12 @@
     margin: 0 0 8px;
   }
 
+  /* The mascot is a transparent sprite and this band is brand pink, so it needs
+     a light plate behind it or it disappears into the background. */
   .mobile-mascot {
     border-radius: 14px;
+    background: var(--color-paper);
+    padding: 6px;
   }
 
   .mobile .eyebrow {
