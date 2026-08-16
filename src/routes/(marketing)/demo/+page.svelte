@@ -85,6 +85,10 @@
       <p class="eyebrow">Web preview demo</p>
       <h1 class="launch-title">Edit any frontend, live.</h1>
       <p class="launch-lead">Enter a GitHub repo to preview it in Clank.<br />For example, this website.</p>
+      <p class="launch-native-note">
+        Building a native mobile app?
+        <a href={PLAY_STORE_URL} target="_blank" rel="noopener noreferrer">Download the Clank mobile app</a>.
+      </p>
 
       <div class="repo-launch">
         <div class="repo-field">
@@ -264,6 +268,24 @@
     color: var(--muted);
     font-size: 18px;
     line-height: 1.5;
+  }
+
+  .launch-native-note {
+    margin: -14px auto 26px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .launch-native-note a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-color: var(--line);
+  }
+
+  .launch-native-note a:hover {
+    text-decoration-color: var(--ink);
   }
 
   .mobile-note {
