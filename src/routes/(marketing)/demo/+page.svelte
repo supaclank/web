@@ -182,7 +182,7 @@
 
 {#snippet mobileAppSection(showQr)}
   <section class="mobile" class:promoted={!showQr}>
-    <img class="mobile-mascot" src="/mascot.png" alt="" width="68" height="68" />
+    <img class="mobile-mascot" src="/mascot.png" alt="" width="88" height="88" />
     <div>
       <p class="eyebrow">
         {showQr ? 'Edit web & mobile apps from your phone' : "You're on a phone"}
@@ -212,6 +212,7 @@
 
 <style>
   .demo-page {
+    position: relative;
     width: min(calc(100% - 40px), 1024px);
     margin: 0 auto;
     --pink: #fa5573;
@@ -223,6 +224,21 @@
     --muted: #6b6862;
     --line: rgba(0, 0, 0, 0.1);
     --line-subtle: rgba(0, 0, 0, 0.06);
+  }
+
+  /* Workspace canvas — a faint full-bleed grid behind the whole demo so the
+     content reads like it's laid out on a design board. Fixed + z-index:-1
+     keeps it behind every card while the warm paper shows through the gaps. */
+  .demo-page::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(0, 0, 0, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.045) 1px, transparent 1px);
+    background-size: 28px 28px;
   }
 
   .launch {
@@ -577,7 +593,9 @@
   }
 
   .mobile-mascot {
+    padding: 1px;
     border-radius: 14px;
+    background: #fff;
   }
 
   .mobile .eyebrow {

@@ -160,12 +160,9 @@
     <!-- "Your AI + clank" — your subscription, supercharged -->
     <div class="flex shrink-0 items-center gap-2.5 rounded-xl bg-elevated px-4 py-3.5">
       <span
-        class="rounded-lg border border-line-subtle bg-paper px-2.5 py-2 text-xs font-medium text-muted"
-        >Your AI</span
+        class="relative rounded-lg border border-line-subtle bg-paper px-2.5 py-2 text-xs font-medium text-muted"
       >
-      <span class="text-sm font-semibold text-dim">+</span>
-      <span class="relative">
-        <img src="/mascot.png" alt="" class="h-9 w-9 rounded-lg" />
+        Your AI
         <svg
           class="absolute -top-1.5 -right-1.5 h-4 w-4 text-brand"
           viewBox="0 0 24 24"
@@ -174,6 +171,10 @@
         >
           <path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" />
         </svg>
+      </span>
+      <span class="text-sm font-semibold text-dim">+</span>
+      <span class="relative">
+        <img src="/mascot.png" alt="" class="h-9 w-9 rounded-lg" />
       </span>
     </div>
     <div>
@@ -235,9 +236,16 @@
 
 <!-- Frontend support banner — full-bleed (breaks out of the max-w-5xl
      rhythm every other section follows) so it reads as a distinct,
-     unmissable callout rather than another feature card. -->
+     unmissable callout rather than another feature card. The v1 foundry's
+     pixel dither lets the pink materialize from and dissolve back into the
+     warm paper instead of meeting it at a straight edge. -->
+<div
+  class="pixel-dither"
+  style="--pixel-dither-from: var(--color-paper); --pixel-dither-to: var(--color-brand);"
+  aria-hidden="true"
+></div>
 <section class="w-full bg-brand py-14 text-white selection:bg-white selection:text-ink">
-  <div class="mx-auto grid w-full max-w-5xl items-center gap-10 px-5 sm:grid-cols-2">
+  <div class="mx-auto grid w-full max-w-6xl items-center gap-10 px-5 sm:grid-cols-[22rem_1fr]">
     <button
       type="button"
       onclick={copyBannerCmds}
@@ -260,7 +268,7 @@
       {/if}
     </button>
     <div>
-      <h2 class="text-2xl font-semibold tracking-tight text-balance">Psst… it works for frontends too.</h2>
+      <h2 class="text-2xl font-semibold tracking-tight text-balance sm:text-4xl">Psst… it works for frontends too.</h2>
       <p class="mt-2.5 max-w-md text-white/85">
         Clank isn't just for mobile. Get the same live preview and one-tap fixes in your browser for
         <span class="rounded bg-black/20 px-1.5 py-0.5 font-medium text-white">Svelte</span>, <span class="rounded bg-black/20 px-1.5 py-0.5 font-medium text-white">React</span>,
@@ -270,6 +278,11 @@
     </div>
   </div>
 </section>
+<div
+  class="pixel-dither"
+  style="--pixel-dither-from: var(--color-brand); --pixel-dither-to: var(--color-paper);"
+  aria-hidden="true"
+></div>
 
 
 <!-- Laptop showcase — web apps, built in the browser. The window column is
@@ -746,7 +759,7 @@
 <!-- Final call to action -->
 <section class="mx-auto w-full max-w-5xl px-5 py-16">
   <div class="flex flex-col items-center gap-5 rounded-3xl bg-ink px-6 py-12 text-center text-paper">
-    <img src="/mascot.png" alt="" width="56" height="56" class="rounded-xl" />
+    <img src="/mascot.png" alt="" width="88" height="88" class="rounded-2xl" />
     <h2 class="max-w-lg text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
       Use your creativity. Build it from your pocket.
     </h2>

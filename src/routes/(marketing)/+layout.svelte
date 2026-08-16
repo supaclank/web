@@ -32,7 +32,7 @@
             >beta</span
           >
         </a>
-        <nav class="hidden items-center gap-6 text-sm sm:flex" aria-label="Main">
+        <nav class="hidden items-center gap-6 text-sm sm:flex">
           <a href="/pricing" class="text-muted transition-colors hover:text-ink">Pricing</a>
           <a href="/demo" class="text-muted transition-colors hover:text-ink">Demo</a>
           <a
