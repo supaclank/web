@@ -217,6 +217,7 @@
 <style>
   .demo-page {
     position: relative;
+    z-index: 0;
     width: min(calc(100% - 40px), 1024px);
     margin: 0 auto;
     --pink: #fa5573;
