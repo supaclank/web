@@ -182,7 +182,7 @@
 
 {#snippet mobileAppSection(showQr)}
   <section class="mobile" class:promoted={!showQr}>
-    <img class="mobile-mascot" src="/mascot.png" alt="" width={showQr ? 128 : 96} height={showQr ? 128 : 96} />
+    <img class="mobile-mascot" src="/mascot.png" alt="" width="68" height="68" />
     <div>
       <p class="eyebrow">
         {showQr ? 'Edit web & mobile apps from your phone' : "You're on a phone"}
