@@ -18,7 +18,6 @@
 
       <div
         class="pointer-events-none absolute top-full left-1/2 z-20 mt-3 hidden -translate-x-1/2 -translate-y-1 opacity-0 transition duration-150 ease-out group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100 lg:block"
-        role="tooltip"
         aria-hidden="true"
       >
         <!-- little pointer up toward the badge -->
