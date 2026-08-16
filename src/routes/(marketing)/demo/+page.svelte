@@ -303,7 +303,6 @@
     align-items: center;
     gap: clamp(48px, 6vw, 72px);
     padding: clamp(32px, 6vh, 64px) 0 clamp(48px, 8vh, 80px);
-    border-top: 1px solid var(--line-subtle);
   }
 
   .eyebrow {
