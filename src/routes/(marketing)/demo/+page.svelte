@@ -85,6 +85,10 @@
       <p class="eyebrow">Web preview demo</p>
       <h1 class="launch-title">Edit any frontend, live.</h1>
       <p class="launch-lead">Enter a GitHub repo to preview it in Clank.<br />For example, this website.</p>
+      <p class="launch-native-note">
+        Building a native mobile app?
+        <a href={PLAY_STORE_URL} target="_blank" rel="noopener noreferrer">Download the Clank mobile app</a>.
+      </p>
 
       <div class="repo-launch">
         <div class="repo-field">
@@ -182,7 +186,7 @@
 
 {#snippet mobileAppSection(showQr)}
   <section class="mobile" class:promoted={!showQr}>
-    <img class="mobile-mascot" src="/mascot.png" alt="" width={showQr ? 128 : 96} height={showQr ? 128 : 96} />
+    <img class="mobile-mascot" src="/mascot.png" alt="" width="88" height="88" />
     <div>
       <p class="eyebrow">
         {showQr ? 'Edit web & mobile apps from your phone' : "You're on a phone"}
@@ -212,6 +216,8 @@
 
 <style>
   .demo-page {
+    position: relative;
+    z-index: 0;
     width: min(calc(100% - 40px), 1024px);
     margin: 0 auto;
     --pink: #fa5573;
@@ -223,6 +229,21 @@
     --muted: #6b6862;
     --line: rgba(0, 0, 0, 0.1);
     --line-subtle: rgba(0, 0, 0, 0.06);
+  }
+
+  /* Workspace canvas — a faint full-bleed grid behind the whole demo so the
+     content reads like it's laid out on a design board. Fixed + z-index:-1
+     keeps it behind every card while the warm paper shows through the gaps. */
+  .demo-page::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(0, 0, 0, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.045) 1px, transparent 1px);
+    background-size: 28px 28px;
   }
 
   .launch {
@@ -248,6 +269,24 @@
     color: var(--muted);
     font-size: 18px;
     line-height: 1.5;
+  }
+
+  .launch-native-note {
+    margin: -14px auto 26px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .launch-native-note a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-color: var(--line);
+  }
+
+  .launch-native-note a:hover {
+    text-decoration-color: var(--ink);
   }
 
   .mobile-note {
@@ -577,7 +616,9 @@
   }
 
   .mobile-mascot {
+    padding: 1px;
     border-radius: 14px;
+    background: #fff;
   }
 
   .mobile .eyebrow {

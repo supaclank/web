@@ -10,7 +10,7 @@
 @font-face {
   font-family: 'Inter';
   font-style: normal;
-  font-weight: 100 900;
+  font-weight: 400 700;
   font-display: swap;
   src: url('/fonts/inter-latin-var.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
@@ -18,7 +18,7 @@
 @font-face {
   font-family: 'Inter';
   font-style: normal;
-  font-weight: 100 900;
+  font-weight: 400 700;
   font-display: swap;
   src: url('/fonts/inter-latin-ext-var.woff2') format('woff2');
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
@@ -40,26 +40,6 @@
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
-/* Silkscreen — tiny pixel display face for brand accents only (wordmark,
-   section numerals, the "your move" label). Never body text. Self-hosted
-   like the rest; ~3.5KB per weight so no preload needed. */
-@font-face {
-  font-family: 'Silkscreen';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('/fonts/silkscreen-latin.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-@font-face {
-  font-family: 'Silkscreen';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url('/fonts/silkscreen-700-latin.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-
 /* Arial size-adjusted to Inter's metrics (values from next/font's generated
    fallback). This is what makes `swap` safe: the pre-swap render occupies
    near-identical space to the Inter render, so the swap repaints glyphs
@@ -67,7 +47,7 @@
 @font-face {
   font-family: 'Inter Fallback';
   font-style: normal;
-  font-weight: 100 900;
+  font-weight: 400 700;
   src: local('Arial');
   ascent-override: 90.2%;
   descent-override: 22.48%;
@@ -101,25 +81,8 @@
   --color-danger: #d6504f;
   --color-info: #3e8fb0;
 
-  /* "Meadow" world palette — the living pixel world + its structural accents.
-     Greens are natural (never terminal-green); soil is the underground footer. */
-  --color-brand-deep: #c22e4c;
-  --color-meadow: #7fb069;
-  --color-meadow-light: #93c47d;
-  --color-meadow-mid: #4a7c59;
-  --color-meadow-far: #3a5f3f;
-  --color-meadow-text: #3f7d4f;
-  --color-meadow-dim: rgba(127, 176, 105, 0.18);
-  --color-gold: #e0a33c;
-  --color-soil: #241a12;
-  --color-soil-ink: #d8cfc0;
-  --color-soil-paper: #f0e9dc;
-  --color-line-mid: rgba(26, 23, 20, 0.26);
-  --color-line-strong: rgba(26, 23, 20, 0.55);
-
   --font-sans: 'Inter', 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-  --font-pixel: 'Silkscreen', 'JetBrains Mono', ui-monospace, monospace;
 }
 
 /* Tailwind v4's preflight no longer gives buttons a pointer cursor;
@@ -131,171 +94,43 @@
   }
 }
 
-/* Selection in full brand pink with knocked-out text (the pink band
-   inverts this locally to white-on-pink's opposite). */
+/* Smooth the warm paper canvas + selection in full brand pink. */
 ::selection {
   background: var(--color-brand);
-  color: #fff;
+  color: var(--color-ink);
 }
 
-/* ─────────────────────────────────────────────────────────────────────────
-   Meadow component classes — shared across the marketing pages.
-   Layered buttons, pills, the canonical terminal, dithered band edges,
-   and section labels. Sharp corners by design (radius ≤ 2px).
-   ───────────────────────────────────────────────────────────────────────── */
-@layer components {
-  /* Layered offset-shadow buttons: hover lifts, press sinks. */
-  .btn-raised {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    padding: 13px 22px;
-    font: 600 14px var(--font-sans);
-    letter-spacing: 0.01em;
-    text-decoration: none;
-    cursor: pointer;
-    white-space: nowrap;
-    border-radius: 2px;
-    transition:
-      transform 0.1s ease,
-      box-shadow 0.1s ease,
-      background 0.12s ease,
-      border-color 0.12s ease;
-  }
-  .btn-raised > svg {
-    display: block;
-    flex: none;
-  }
-  .btn-raised-primary {
-    background: var(--color-brand);
-    color: #fff;
-    border: 1px solid var(--color-brand-deep);
-    box-shadow: 4px 4px 0 0 var(--color-brand-deep);
-  }
-  .btn-raised-primary:hover {
-    background: #ff6d87;
-    transform: translate(-1px, -1px);
-    box-shadow: 6px 6px 0 0 var(--color-brand-deep);
-  }
-  .btn-raised-primary:active {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 0 var(--color-brand-deep);
-  }
-  .btn-raised-ghost {
-    background: var(--color-elevated);
-    color: var(--color-ink);
-    border: 1px solid var(--color-line-strong);
-    box-shadow: 4px 4px 0 0 rgba(26, 23, 20, 0.16);
-  }
-  .btn-raised-ghost:hover {
-    transform: translate(-1px, -1px);
-    box-shadow: 6px 6px 0 0 rgba(26, 23, 20, 0.16);
-    border-color: var(--color-ink);
-  }
-  .btn-raised-ghost:active {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 0 rgba(26, 23, 20, 0.16);
-  }
-  .btn-raised-sm {
-    padding: 8px 15px;
-    font-size: 13px;
-    box-shadow: 3px 3px 0 0 var(--color-brand-deep);
-  }
-  .btn-raised-sm:hover {
-    box-shadow: 5px 5px 0 0 var(--color-brand-deep);
-  }
-  .btn-raised-sm:active {
-    box-shadow: 1px 1px 0 0 var(--color-brand-deep);
+/* Pixel-foundry dither transition. The crisp 4x8 mask is lifted from the
+   original v1 mockup: sparse pixels at the top build toward a solid final
+   row, so swapping --pixel-dither-from/to makes a band either materialize
+   from or dissolve back into the surrounding canvas. */
+.pixel-dither {
+  position: relative;
+  height: 96px;
+  background: var(--pixel-dither-from, var(--color-paper));
+}
+
+.pixel-dither::before {
+  position: absolute;
+  inset: 0;
+  content: '';
+  background: var(--pixel-dither-to, var(--color-paper));
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%204%208'%20shape-rendering='crispEdges'%3E%3Crect%20x='1'%20y='0'%20width='1'%20height='1'/%3E%3Crect%20x='3'%20y='1'%20width='1'%20height='1'/%3E%3Crect%20x='0'%20y='2'%20width='1'%20height='1'/%3E%3Crect%20x='2'%20y='2'%20width='1'%20height='1'/%3E%3Crect%20x='1'%20y='3'%20width='1'%20height='1'/%3E%3Crect%20x='3'%20y='3'%20width='1'%20height='1'/%3E%3Crect%20x='0'%20y='4'%20width='1'%20height='1'/%3E%3Crect%20x='2'%20y='4'%20width='1'%20height='1'/%3E%3Crect%20x='3'%20y='4'%20width='1'%20height='1'/%3E%3Crect%20x='0'%20y='5'%20width='1'%20height='1'/%3E%3Crect%20x='1'%20y='5'%20width='1'%20height='1'/%3E%3Crect%20x='3'%20y='5'%20width='1'%20height='1'/%3E%3Crect%20x='0'%20y='6'%20width='1'%20height='1'/%3E%3Crect%20x='1'%20y='6'%20width='1'%20height='1'/%3E%3Crect%20x='2'%20y='6'%20width='1'%20height='1'/%3E%3Crect%20x='0'%20y='7'%20width='4'%20height='1'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%204%208'%20shape-rendering='crispEdges'%3E%3Crect%20x='1'%20y='0'%20width='1'%20height='1'/%3E%3Crect%20x='3'%20y='1'%20width='1'%20height='1'/%3E%3Crect%20x='0'%20y='2'%20width='1'%20height='1'/%3E%3Crect%20x='2'%20y='2'%20width='1'%20height='1'/%3E%3Crect%20x='1'%20y='3'%20width='1'%20height='1'/%3E%3Crect%20x='3'%20y='3'%20width='1'%20height='1'/%3E%3Crect%20x='0'%20y='4'%20width='1'%20height='1'/%3E%3Crect%20x='2'%20y='4'%20width='1'%20height='1'/%3E%3Crect%20x='3'%20y='4'%20width='1'%20height='1'/%3E%3Crect%20x='0'%20y='5'%20width='1'%20height='1'/%3E%3Crect%20x='1'%20y='5'%20width='1'%20height='1'/%3E%3Crect%20x='3'%20y='5'%20width='1'%20height='1'/%3E%3Crect%20x='0'%20y='6'%20width='1'%20height='1'/%3E%3Crect%20x='1'%20y='6'%20width='1'%20height='1'/%3E%3Crect%20x='2'%20y='6'%20width='1'%20height='1'/%3E%3Crect%20x='0'%20y='7'%20width='4'%20height='1'/%3E%3C/svg%3E");
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+  -webkit-mask-size: 48px 96px;
+  mask-size: 48px 96px;
+}
+
+@media (max-width: 640px) {
+  .pixel-dither {
+    height: 64px;
   }
 
-  /* Green life pills. */
-  .pill-life {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    font: 500 11px var(--font-mono);
-    letter-spacing: 0.1em;
-    color: var(--color-meadow-text);
-    background: var(--color-meadow-dim);
-    border: 1px solid rgba(63, 125, 79, 0.4);
-    padding: 4px 10px;
-    border-radius: 2px;
-    white-space: nowrap;
-  }
-  .pill-life::before {
-    content: '';
-    width: 5px;
-    height: 5px;
-    background: var(--color-meadow-text);
-    flex: none;
-  }
-  .pill-life-up {
-    text-transform: uppercase;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-  }
-
-  /* Mono/pixel section label: `01 — the mobile app ────▪` */
-  .seclabel {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    font: 500 11.5px var(--font-mono);
-    letter-spacing: 0.16em;
-    color: var(--color-meadow-text);
-    text-transform: lowercase;
-    margin-bottom: 20px;
-  }
-  .seclabel .num {
-    font-family: var(--font-pixel);
-    font-size: 11px;
-    color: var(--color-brand);
-    letter-spacing: 0.08em;
-  }
-  .seclabel .rule {
-    flex: 1;
-    height: 1px;
-    background: var(--color-line);
-    position: relative;
-    min-width: 40px;
-  }
-  .seclabel .rule::after {
-    content: '';
-    position: absolute;
-    right: 0;
-    top: -3px;
-    width: 7px;
-    height: 7px;
-    background: var(--color-brand);
-  }
-
-  /* Pixel-dithered band edge: `--from` dissolves into `--to` through
-     chunky square teeth (a 4×8 Bayer-ish mask tile scaled to 36px px). */
-  .dither {
-    height: 72px;
-    background: var(--from, var(--color-paper));
-    position: relative;
-  }
-  .dither::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--to, var(--color-paper));
-    -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%204%208'%20shape-rendering='crispEdges'%3E%3Crect%20x='1'%20y='0'%20width='1'%20height='1'/%3E%3Crect%20x='3'%20y='1'%20width='1'%20height='1'/%3E%3Crect%20x='0'%20y='2'%20width='1'%20height='1'/%3E%3Crect%20x='2'%20y='2'%20width='1'%20height='1'/%3E%3Crect%20x='1'%20y='3'%20width='1'%20height='1'/%3E%3Crect%20x='3'%20y='3'%20width='1'%20height='1'/%3E%3Crect%20x='0'%20y='4'%20width='1'%20height='1'/%3E%3Crect%20x='2'%20y='4'%20width='1'%20height='1'/%3E%3Crect%20x='3'%20y='4'%20width='1'%20height='1'/%3E%3Crect%20x='0'%20y='5'%20width='1'%20height='1'/%3E%3Crect%20x='1'%20y='5'%20width='1'%20height='1'/%3E%3Crect%20x='3'%20y='5'%20width='1'%20height='1'/%3E%3Crect%20x='0'%20y='6'%20width='1'%20height='1'/%3E%3Crect%20x='1'%20y='6'%20width='1'%20height='1'/%3E%3Crect%20x='2'%20y='6'%20width='1'%20height='1'/%3E%3Crect%20x='0'%20y='7'%20width='4'%20height='1'/%3E%3C/svg%3E");
-    mask-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%204%208'%20shape-rendering='crispEdges'%3E%3Crect%20x='1'%20y='0'%20width='1'%20height='1'/%3E%3Crect%20x='3'%20y='1'%20width='1'%20height='1'/%3E%3Crect%20x='0'%20y='2'%20width='1'%20height='1'/%3E%3Crect%20x='2'%20y='2'%20width='1'%20height='1'/%3E%3Crect%20x='1'%20y='3'%20width='1'%20height='1'/%3E%3Crect%20x='3'%20y='3'%20width='1'%20height='1'/%3E%3Crect%20x='0'%20y='4'%20width='1'%20height='1'/%3E%3Crect%20x='2'%20y='4'%20width='1'%20height='1'/%3E%3Crect%20x='3'%20y='4'%20width='1'%20height='1'/%3E%3Crect%20x='0'%20y='5'%20width='1'%20height='1'/%3E%3Crect%20x='1'%20y='5'%20width='1'%20height='1'/%3E%3Crect%20x='3'%20y='5'%20width='1'%20height='1'/%3E%3Crect%20x='0'%20y='6'%20width='1'%20height='1'/%3E%3Crect%20x='1'%20y='6'%20width='1'%20height='1'/%3E%3Crect%20x='2'%20y='6'%20width='1'%20height='1'/%3E%3Crect%20x='0'%20y='7'%20width='4'%20height='1'/%3E%3C/svg%3E");
-    -webkit-mask-size: 36px 72px;
-    mask-size: 36px 72px;
-    -webkit-mask-repeat: repeat;
-    mask-repeat: repeat;
-  }
-
-  /* Elevated meadow panel: sharp corner card with a block shadow. */
-  .panel-raised {
-    background: var(--color-elevated);
-    border: 1.5px solid var(--color-line-mid);
-    border-radius: 2px;
-    box-shadow: 5px 5px 0 0 rgba(26, 23, 20, 0.07);
+  .pixel-dither::before {
+    -webkit-mask-size: 32px 64px;
+    mask-size: 32px 64px;
   }
 }
 
