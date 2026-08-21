@@ -331,11 +331,11 @@
 </svelte:head>
 
 {#if phase === PAGE_LOADING}
-  <main class="center-state"><img src="/mascot.png" alt="" width="48" height="48" /><p>Opening your workshop…</p></main>
+  <main class="flex min-h-screen flex-col items-center justify-center bg-paper p-6 text-center"><img src="/mascot.png" alt="" width="48" height="48" class="rounded-xl" /><p class="mt-4 text-sm text-muted">Opening your workspace…</p></main>
 {:else if phase === PAGE_SIGNED_OUT}
-  <main class="center-state"><img src="/mascot.png" alt="" width="48" height="48" /><h1>You’re signed out</h1><p>Sign in to return to your workshop.</p><a href="/signup">Sign in</a></main>
+  <main class="flex min-h-screen flex-col items-center justify-center bg-paper p-6 text-center"><img src="/mascot.png" alt="" width="48" height="48" class="rounded-xl" /><h1 class="mt-4 text-xl font-semibold">You’re signed out</h1><p class="mt-2 text-sm text-muted">Sign in to return to your workspace.</p><a href="/signup" class="mt-5 rounded-lg bg-brand px-5 py-2.5 font-medium text-white">Sign in</a></main>
 {:else}
-  <div class="dashboard-shell">
+  <div class="min-h-screen bg-paper text-ink">
     <Sidebar
       {email}
       {planLabel}
@@ -349,17 +349,20 @@
       onsignout={signOut}
     />
 
-    <div class="workspace">
-      <header class="mobile-header"><a href="/welcome"><img src="/mascot.png" alt="" width="30" height="30" /><span>supaclank</span></a><span>Personal</span></header>
+    <div class="min-h-screen md:ml-64">
+      <header class="flex h-16 items-center justify-between border-b border-line-subtle bg-elevated px-5 md:hidden"><a href="/welcome" class="flex items-center gap-2.5 font-semibold tracking-tight"><img src="/mascot.png" alt="" width="32" height="32" class="rounded-lg" /><span>supaclank</span></a><span class="text-sm text-muted">Personal</span></header>
 
-      <main id="dashboard" class="dashboard-main">
-        <div class="workspace-heading"><span>Personal workspace</span><div><i></i>Your cloud workspace sleeps until you create or reopen something.</div></div>
+      <main id="dashboard" class="mx-auto w-full max-w-5xl px-5 py-8 sm:px-8 sm:py-10">
+        <div class="mb-10 flex flex-col gap-2 border-b border-line-subtle pb-5 sm:flex-row sm:items-center sm:justify-between">
+          <span class="text-sm font-medium">Personal workspace</span>
+          <span class="flex items-center gap-2 text-sm text-muted"><i class="h-2 w-2 rounded-full bg-success"></i>Your cloud workspace starts when you need it.</span>
+        </div>
 
-        <div class="notices">
-          {#if confirmMsg}<div class="notice success"><div><b>{confirmMsg.title}</b><span>{confirmMsg.body}</span></div></div>{/if}
-          {#if confirming && !active}<div class="notice"><div><b>Confirming your subscription…</b><span>This updates by itself in a moment.</span></div></div>{/if}
-          {#if needsPay}<div class="notice billing"><div><b>Your workspace is paused</b><span>Everything is still here. Renew when you’re ready to wake it up again.</span></div><button type="button" onclick={subscribe} disabled={busy}>Renew access</button></div>{/if}
-          {#if status?.allowed && returnTo !== '/welcome'}<div class="notice return"><div><b>Your preview is ready</b><span>Pick up exactly where you left off.</span></div><a href={returnTo} onclick={clearCheckoutReturnTo}>Continue →</a></div>{/if}
+        <div class="mx-auto mb-6 max-w-4xl space-y-3">
+          {#if confirmMsg}<div class="flex flex-col gap-2 rounded-xl border border-success/30 bg-success/10 p-4 text-sm sm:flex-row"><strong>{confirmMsg.title}</strong><span class="text-muted">{confirmMsg.body}</span></div>{/if}
+          {#if confirming && !active}<div class="flex flex-col gap-2 rounded-xl border border-line bg-elevated p-4 text-sm sm:flex-row"><strong>Confirming your subscription…</strong><span class="text-muted">This updates by itself in a moment.</span></div>{/if}
+          {#if needsPay}<div class="flex flex-col items-start justify-between gap-3 rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm sm:flex-row sm:items-center"><div><strong class="block">Your workspace is paused</strong><span class="mt-1 block text-muted">Everything is still here. Renew when you’re ready to wake it up again.</span></div><button type="button" class="shrink-0 rounded-lg bg-brand px-4 py-2.5 font-medium text-white disabled:opacity-50" onclick={subscribe} disabled={busy}>Renew access</button></div>{/if}
+          {#if status?.allowed && returnTo !== '/welcome'}<div class="flex flex-col items-start justify-between gap-3 rounded-xl border border-info/30 bg-info/10 p-4 text-sm sm:flex-row sm:items-center"><div><strong class="block">Your preview is ready</strong><span class="mt-1 block text-muted">Pick up exactly where you left off.</span></div><a href={returnTo} class="shrink-0 rounded-lg bg-brand px-4 py-2.5 font-medium text-white" onclick={clearCheckoutReturnTo}>Continue →</a></div>{/if}
         </div>
 
         <PromptComposer
@@ -373,8 +376,8 @@
         />
 
         {#if createPhase === CREATE_PREVIEW && createdProject}
-          <section class="new-project" aria-labelledby="new-project-heading">
-            <header><p>FIRST VERSION BUILT</p><h2 id="new-project-heading">{createdProject.display_name}</h2><span>Now starting its private Expo Web preview.</span></header>
+          <section class="mx-auto mt-10 max-w-3xl scroll-mt-6" aria-labelledby="new-project-heading">
+            <header class="mb-4"><p class="font-mono text-xs text-success">FIRST VERSION BUILT</p><h2 id="new-project-heading" class="mt-2 text-2xl font-semibold tracking-tight">{createdProject.display_name}</h2><span class="mt-1 block text-sm text-muted">Now starting its private Expo Web preview.</span></header>
             <WorktreePreview
               {gateway}
               launch={createdProject}
@@ -391,39 +394,3 @@
     </div>
   </div>
 {/if}
-
-<style>
-  :global(body) { background: #faf8f4; }
-  .dashboard-shell { min-height: 100vh; color: var(--color-ink); background-image: linear-gradient(rgba(0,0,0,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.025) 1px, transparent 1px); background-size: 28px 28px; }
-  .workspace { min-height: 100vh; margin-left: 214px; }
-  .dashboard-main { width: min(calc(100% - 44px), 960px); margin: 0 auto; padding: 24px 0 0; }
-  .workspace-heading { display: flex; min-height: 36px; align-items: center; justify-content: space-between; gap: 18px; border-bottom: 1px solid var(--color-line-subtle); padding: 0 2px 12px; }
-  .workspace-heading > span { font-size: 11px; font-weight: 650; }
-  .workspace-heading > div { display: flex; align-items: center; gap: 7px; color: var(--color-dim); font-size: 9px; }
-  .workspace-heading i { width: 6px; height: 6px; border-radius: 50%; background: var(--color-success); box-shadow: 0 0 0 3px rgba(47,163,122,.1); }
-  .notices { max-width: 860px; margin: 13px auto 0; }
-  .notice { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 8px; border: 1px solid var(--color-line); border-radius: 10px; padding: 10px 12px; background: rgba(255,255,255,.88); font-size: 9px; }
-  .notice > div { display: flex; gap: 6px; }
-  .notice b { font-weight: 650; }.notice span { color: var(--color-muted); }
-  .notice.success { border-color: rgba(47,163,122,.24); background: #f1faf6; }
-  .notice button, .notice a { flex: none; border: 0; border-radius: 7px; padding: 7px 9px; background: var(--color-brand); color: #fff; font-size: 8px; font-weight: 600; text-decoration: none; }
-  .new-project { max-width: 760px; margin: 0 auto 54px; scroll-margin-top: 20px; }
-  .new-project > header { margin-bottom: 13px; text-align: center; }
-  .new-project > header p { margin: 0 0 5px; color: var(--color-success); font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 650; letter-spacing: .1em; }
-  .new-project h2 { margin: 0; font-size: 24px; letter-spacing: -.035em; }
-  .new-project > header span { display: block; margin-top: 5px; color: var(--color-muted); font-size: 11px; }
-  .mobile-header { display: none; }
-  .center-state { display: flex; min-height: 100vh; flex-direction: column; align-items: center; justify-content: center; padding: 24px; text-align: center; }
-  .center-state img { border-radius: 14px; }.center-state h1 { margin: 15px 0 3px; font-size: 20px; }.center-state p { margin: 11px 0; color: var(--color-muted); font-size: 11px; }.center-state a { border-radius: 8px; padding: 9px 15px; background: var(--color-brand); color: #fff; font-size: 10px; font-weight: 600; text-decoration: none; }
-  @media (max-width: 760px) {
-    .workspace { margin-left: 0; }
-    .mobile-header { display: flex; height: 57px; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--color-line-subtle); padding: 0 15px; background: rgba(255,255,255,.72); backdrop-filter: blur(14px); }
-    .mobile-header a { display: flex; align-items: center; gap: 8px; color: var(--color-ink); font-size: 12px; font-weight: 650; text-decoration: none; }.mobile-header img { border-radius: 8px; }
-    .mobile-header > span { color: var(--color-muted); font-family: 'JetBrains Mono', monospace; font-size: 8px; text-transform: uppercase; }
-    .dashboard-main { width: min(calc(100% - 28px), 960px); padding-top: 15px; }
-    .workspace-heading { display: none; }
-  }
-  @media (max-width: 520px) {
-    .notice { align-items: flex-start; flex-direction: column; }.notice > div { flex-direction: column; gap: 2px; }
-  }
-</style>
