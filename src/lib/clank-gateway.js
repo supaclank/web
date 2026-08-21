@@ -72,6 +72,14 @@ export class ClankGateway {
     return this.request('/v1/github/repositories/launch', { method: 'POST', body: locator, signal });
   }
 
+  templates() {
+    return this.request('/v1/templates');
+  }
+
+  createProject(request) {
+    return this.request('/v1/projects/create', { method: 'POST', body: request });
+  }
+
   githubConnectStart() {
     return this.request('/v1/github/connect/start', { method: 'POST' });
   }

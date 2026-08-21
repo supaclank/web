@@ -35,6 +35,27 @@ test('repository launch sends only the validated GitHub locator', async () => {
   assert.deepEqual(JSON.parse(captured.init.body), locator);
 });
 
+test('greenfield project creation uses the host template catalog', async () => {
+  const requests = [];
+  const gateway = new ClankGateway('https://api.supaclank.com', 'jwt-value', async (url, init) => {
+    requests.push({ url, init });
+    if (url.endsWith('/v1/templates')) {
+      return Response.json([{ display_name: 'Expo app', clone_url: 'https://templates.example/expo.git' }]);
+    }
+    return Response.json({ worktree_id: '01EXPO', display_name: 'Habit garden' }, { status: 201 });
+  });
+
+  const templates = await gateway.templates();
+  const request = { clone_url: templates[0].clone_url, name: 'Habit garden' };
+  const project = await gateway.createProject(request);
+
+  assert.equal(requests[0].url, 'https://api.supaclank.com/v1/templates');
+  assert.equal(requests[0].init.method, 'GET');
+  assert.equal(requests[1].url, 'https://api.supaclank.com/v1/projects/create');
+  assert.deepEqual(JSON.parse(requests[1].init.body), request);
+  assert.equal(project.worktree_id, '01EXPO');
+});
+
 test('gateway errors preserve machine code and setup details', async () => {
   const gateway = new ClankGateway('https://api.supaclank.com', 'jwt-value', async () =>
     Response.json(

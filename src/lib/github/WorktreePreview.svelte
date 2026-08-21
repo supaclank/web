@@ -9,7 +9,7 @@
     PREVIEW_SETUP_REQUIRED
   } from '$lib/pull-request-preview.js';
 
-  let { gateway, launch, title, detail = '', displayName = title } = $props();
+  let { gateway, launch, title, detail = '', displayName = title, initialProvider = null } = $props();
 
   let phase = $state('selecting-provider');
   let providers = $state([]);
@@ -24,7 +24,8 @@
   let controller = new AbortController();
 
   onMount(() => {
-    void choosePreviewProvider();
+    if (initialProvider) void usePreviewProvider(initialProvider);
+    else void choosePreviewProvider();
   });
 
   onDestroy(() => {

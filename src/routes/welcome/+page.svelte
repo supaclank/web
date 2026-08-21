@@ -1,12 +1,16 @@
 <script>
-  import { onMount } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
+  import WorktreePreview from '$lib/github/WorktreePreview.svelte';
   import PreviewShelf from '$lib/workshop/PreviewShelf.svelte';
+  import PromptComposer from '$lib/workshop/PromptComposer.svelte';
   import Sidebar from '$lib/workshop/Sidebar.svelte';
   import { analyticsEvents, trackEvent } from '$lib/analytics.js';
   import { safeReturnTo, repositoryPath } from '$lib/navigation.js';
-  import { PLAY_STORE_URL } from '$lib/demo/tutorial.js';
   import { ClankGateway } from '$lib/clank-gateway.js';
+  import { FREE_AI_CHOICE } from '$lib/free-ai.js';
+  import { defaultPresetFor, pollUntil } from '$lib/pull-request-preview.js';
   import { githubRepositoryFrom } from '$lib/workshop.js';
+  import { expoTemplateFrom, mobileAgentPrompt, projectNameFromPrompt } from '$lib/workshop-create.js';
 
   const PAGE_LOADING = 'loading';
   const PAGE_SIGNED_OUT = 'signedout';
@@ -15,14 +19,24 @@
   const PREVIEWS_READY = 'ready';
   const WORKSHOP_FIXTURE_QUERY = 'workshop_fixture';
   const WORKSHOP_FIXTURE_POPULATED = 'populated';
+  const CREATE_IDLE = 'idle';
+  const CREATE_WAKING = 'waking';
+  const CREATE_SCAFFOLDING = 'scaffolding';
+  const CREATE_STARTING_AGENT = 'starting-agent';
+  const CREATE_BUILDING = 'building';
+  const CREATE_PREVIEW = 'preview';
+  const CREATE_ERROR = 'error';
 
   let phase = $state(PAGE_LOADING);
   let previewPhase = $state(PREVIEWS_LOADING);
   let previews = $state([]);
   let previewError = $state('');
   let openingToken = $state('');
-  let repoInput = $state('');
-  let repoError = $state('');
+  let createPhase = $state(CREATE_IDLE);
+  let createDetail = $state('');
+  let createError = $state('');
+  let createdProject = $state(null);
+  let createdSession = $state(null);
   let confirmMsg = $state(null);
   let status = $state(null);
   let email = $state('');
@@ -30,10 +44,14 @@
   let confirming = $state(false);
   let error = $state('');
   let supabase;
-  let gateway;
+  let gateway = $state(null);
   let gatewayURL = '';
   let token = '';
   let returnTo = $state('/welcome');
+  let isDevelopmentFixture = false;
+  const createController = new AbortController();
+
+  onDestroy(() => createController.abort());
 
   const confirmMessages = {
     signup: { title: 'Email confirmed', body: 'Your workshop is ready.' },
@@ -81,6 +99,7 @@
     const fixture = new URLSearchParams(location.search).get(WORKSHOP_FIXTURE_QUERY);
     if (!fixture) return false;
 
+    isDevelopmentFixture = true;
     email = 'maker@example.com';
     status = { status: 'trialing', allowed: true, days_left: 13 };
     previews = fixture === WORKSHOP_FIXTURE_POPULATED
@@ -115,14 +134,71 @@
     previewPhase = PREVIEWS_READY;
   }
 
-  function openRepository(event) {
-    event.preventDefault();
-    repoError = '';
+  function openRepository(repository) {
+    createError = '';
     try {
-      const { owner, repo } = githubRepositoryFrom(repoInput);
+      const { owner, repo } = githubRepositoryFrom(repository);
       location.href = repositoryPath(owner, repo);
     } catch (cause) {
-      repoError = cause?.message || String(cause);
+      createError = cause?.message || String(cause);
+    }
+  }
+
+  async function createMobileApp(prompt) {
+    createError = '';
+    createdProject = null;
+    createdSession = null;
+
+    if (isDevelopmentFixture) {
+      createPhase = CREATE_BUILDING;
+      createDetail = 'Development fixture: the real flow wakes the host, scaffolds Expo, and starts the agent.';
+      return;
+    }
+
+    try {
+      const name = projectNameFromPrompt(prompt);
+      createPhase = CREATE_WAKING;
+      createDetail = 'Waking your private workspace and loading its templates…';
+      const template = expoTemplateFrom(await gateway.templates());
+
+      createPhase = CREATE_SCAFFOLDING;
+      createDetail = 'Creating a clean Expo project and its first branch…';
+      createdProject = await gateway.createProject({ clone_url: template.clone_url, name });
+
+      createPhase = CREATE_STARTING_AGENT;
+      createDetail = 'Starting the coding agent inside your new project…';
+      const presets = await gateway.presets(FREE_AI_CHOICE.backend);
+      const preset = defaultPresetFor(presets, FREE_AI_CHOICE.backend);
+      createdSession = await gateway.createSession({
+        backend: FREE_AI_CHOICE.backend,
+        hostname: 'local',
+        git_ref: {
+          worktree_id: createdProject.worktree_id,
+          display_name: createdProject.display_name
+        },
+        prompt: mobileAgentPrompt(prompt),
+        config: preset.config
+      });
+
+      createPhase = CREATE_BUILDING;
+      createDetail = 'Writing screens, interactions, and the first working app…';
+      const finished = await pollUntil(
+        () => gateway.session(createdSession.id),
+        (session) => ['idle', 'error', 'dead'].includes(session.status),
+        {
+          timeoutMs: 10 * 60_000,
+          signal: createController.signal,
+          onValue: (session) => {
+            if (session.status === 'busy') createDetail = 'Clank is coding your first version. You can stay on this page.';
+          }
+        }
+      );
+      if (finished.status !== 'idle') throw new Error(`The build agent ended with ${finished.status}.`);
+      createPhase = CREATE_PREVIEW;
+    } catch (cause) {
+      if (cause?.name === 'AbortError') return;
+      createError = cause?.message || String(cause);
+      createPhase = CREATE_ERROR;
     }
   }
 
@@ -246,7 +322,7 @@
   let trialing = $derived(status?.status === 'trialing');
   let needsPay = $derived(status && !status.allowed);
   let planLabel = $derived(active ? 'Pro' : trialing && !needsPay ? `${status.days_left}d left` : needsPay ? 'Trial ended' : 'Account');
-  let userName = $derived(email.split('@')[0] || 'maker');
+  let createBusy = $derived([CREATE_WAKING, CREATE_SCAFFOLDING, CREATE_STARTING_AGENT, CREATE_BUILDING].includes(createPhase));
 </script>
 
 <svelte:head>
@@ -274,67 +350,80 @@
     />
 
     <div class="workspace">
-      <header class="mobile-header"><a href="/welcome"><img src="/mascot.png" alt="" width="30" height="30" /><span>supaclank</span></a><span>{planLabel}</span></header>
+      <header class="mobile-header"><a href="/welcome"><img src="/mascot.png" alt="" width="30" height="30" /><span>supaclank</span></a><span>Personal</span></header>
 
       <main id="dashboard" class="dashboard-main">
-        <header class="page-heading">
-          <div><p>Personal workspace</p><h1>Workshop</h1><span>Welcome back, {userName}. Pick up where you left off or start something new.</span></div>
-          <div class="heading-actions"><a href="#web-builder" class="primary">＋ New web preview</a><a href={PLAY_STORE_URL} target="_blank" rel="noreferrer">Open mobile app ↗</a></div>
-        </header>
+        <div class="workspace-heading"><span>Personal workspace</span><div><i></i>Your cloud workspace sleeps until you create or reopen something.</div></div>
 
-        {#if confirmMsg}<div class="notice success"><div><b>{confirmMsg.title}</b><span>{confirmMsg.body}</span></div></div>{/if}
-        {#if confirming && !active}<div class="notice"><div><b>Confirming your subscription…</b><span>This updates by itself in a moment.</span></div></div>{/if}
-        {#if needsPay}<div class="notice billing"><div><b>Your workshop is paused</b><span>Everything is still here. Renew when you’re ready to wake it up again.</span></div><button type="button" onclick={subscribe} disabled={busy}>Renew access</button></div>{/if}
-        {#if status?.allowed && returnTo !== '/welcome'}<div class="notice return"><div><b>Your preview is ready</b><span>Pick up exactly where you left off.</span></div><a href={returnTo} onclick={clearCheckoutReturnTo}>Continue →</a></div>{/if}
+        <div class="notices">
+          {#if confirmMsg}<div class="notice success"><div><b>{confirmMsg.title}</b><span>{confirmMsg.body}</span></div></div>{/if}
+          {#if confirming && !active}<div class="notice"><div><b>Confirming your subscription…</b><span>This updates by itself in a moment.</span></div></div>{/if}
+          {#if needsPay}<div class="notice billing"><div><b>Your workspace is paused</b><span>Everything is still here. Renew when you’re ready to wake it up again.</span></div><button type="button" onclick={subscribe} disabled={busy}>Renew access</button></div>{/if}
+          {#if status?.allowed && returnTo !== '/welcome'}<div class="notice return"><div><b>Your preview is ready</b><span>Pick up exactly where you left off.</span></div><a href={returnTo} onclick={clearCheckoutReturnTo}>Continue →</a></div>{/if}
+        </div>
 
-        <section class="overview" aria-label="Workspace overview">
-          <article><div class="metric-icon previews">▣</div><div><span>Live previews</span><b>{previews.length}</b><small>Available without waking your machine</small></div></article>
-          <article><div class="metric-icon machine">⌁</div><div><span>Cloud workshop</span><b>On demand</b><small>Wakes automatically when you open work</small></div></article>
-          <article><div class="metric-icon plan">✦</div><div><span>Current plan</span><b>{active ? 'Pro' : trialing ? 'Free trial' : 'Account'}</b><small>{planLabel}</small></div></article>
-        </section>
+        <PromptComposer
+          busy={createBusy}
+          phase={createPhase}
+          detail={createDetail}
+          error={createError}
+          {needsPay}
+          onmobilecreate={createMobileApp}
+          onrepositoryopen={openRepository}
+        />
+
+        {#if createPhase === CREATE_PREVIEW && createdProject}
+          <section class="new-project" aria-labelledby="new-project-heading">
+            <header><p>FIRST VERSION BUILT</p><h2 id="new-project-heading">{createdProject.display_name}</h2><span>Now starting its private Expo Web preview.</span></header>
+            <WorktreePreview
+              {gateway}
+              launch={createdProject}
+              title={createdProject.display_name}
+              detail="Expo app · main"
+              displayName={createdProject.display_name}
+              initialProvider={FREE_AI_CHOICE}
+            />
+          </section>
+        {/if}
 
         <PreviewShelf phase={previewPhase} {previews} error={previewError} {openingToken} onopen={openPreview} />
-
-        <section id="create" class="create-section" aria-labelledby="create-heading">
-          <header><div><p>Create</p><h2 id="create-heading">Start something new</h2></div><span>Choose the workflow, not the platform.</span></header>
-
-          <div class="create-grid">
-            <article id="web-builder" class="create-card web-card">
-              <div class="create-card-heading"><span class="builder-icon web">⌘</span><div><p>WEB WORKSPACE</p><h3>Open a GitHub project</h3></div><span class="environment browser">Runs in browser</span></div>
-              <p class="description">For websites and browser apps. We create a private branch, start its dev server, and open the live editing overlay here.</p>
-              <form class="repo-form" onsubmit={openRepository}>
-                <label for="repo">Repository</label>
-                <div><span>github.com/</span><input id="repo" bind:value={repoInput} placeholder="owner/repository" autocomplete="off" spellcheck="false" /><button type="submit">Open project <i>→</i></button></div>
-                {#if repoError}<small role="alert">{repoError}</small>{/if}
-              </form>
-              <footer><span>Private worktree</span><span>Web preview</span><span>Point-and-edit overlay</span></footer>
-            </article>
-
-            <article class="create-card mobile-card">
-              <div class="create-card-heading"><span class="builder-icon mobile">▯</span><div><p>MOBILE BUILDER</p><h3>Start a new native app</h3></div><span class="environment native">Native app required</span></div>
-              <p class="description">For Android and iOS apps. Start from the Expo template, describe the first version, then edit it directly from your phone.</p>
-              <div class="template-row"><div class="template-preview"><span></span><i></i></div><div><span>AVAILABLE TEMPLATE</span><b>Expo 56 starter</b><small>Blank native app · Agent-ready</small></div><em>Ready</em></div>
-              <a class="mobile-action" href={PLAY_STORE_URL} target="_blank" rel="noreferrer"><span><small>CONTINUE IN CLANK</small>Open the Android app</span><i>↗</i></a>
-              <footer><span>New app from scratch</span><a href="/demo">Not ready? Try the demo →</a></footer>
-            </article>
-          </div>
-        </section>
       </main>
     </div>
   </div>
 {/if}
 
 <style>
-  :global(body) { background: #f5f3ee; }
-  .dashboard-shell { min-height: 100vh; color: var(--color-ink); }.workspace { min-height: 100vh; margin-left: 244px; }.dashboard-main { width: min(calc(100% - 54px), 1180px); margin: 0 auto; padding: 38px 0 72px; }
-  .page-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 27px; }.page-heading p, .create-section > header p { margin: 0 0 6px; color: var(--color-brand-muted); font-family: 'JetBrains Mono', monospace; font-size: 8px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }.page-heading h1 { margin: 0; font-size: 29px; font-weight: 630; letter-spacing: -.04em; }.page-heading > div:first-child > span { display: block; margin-top: 7px; color: var(--color-muted); font-size: 11px; }.heading-actions { display: flex; gap: 8px; }.heading-actions a { border: 1px solid var(--color-line); border-radius: 8px; padding: 9px 11px; background: #fff; color: var(--color-ink); font-size: 9px; font-weight: 600; text-decoration: none; }.heading-actions a.primary { border-color: var(--color-brand); background: var(--color-brand); color: #fff; }
-  .overview { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin-bottom: 14px; }.overview article { display: flex; min-height: 86px; align-items: center; gap: 12px; border: 1px solid var(--color-line); border-radius: 12px; padding: 14px; background: #fff; }.metric-icon { display: grid; width: 37px; height: 37px; flex: none; place-items: center; border-radius: 9px; font-size: 15px; }.metric-icon.previews { background: #ffe8ed; color: var(--color-brand-muted); }.metric-icon.machine { background: #eaf6f1; color: #24785d; }.metric-icon.plan { background: #eeeae4; color: #514b45; }.overview article > div:last-child { min-width: 0; }.overview span, .overview b, .overview small { display: block; }.overview span { color: var(--color-dim); font-size: 8px; }.overview b { margin-top: 2px; font-size: 13px; font-weight: 620; }.overview small { overflow: hidden; margin-top: 4px; color: var(--color-muted); font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
-  .create-section { margin-top: 28px; scroll-margin-top: 20px; }.create-section > header { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 13px; }.create-section h2 { margin: 0; font-size: 18px; font-weight: 620; letter-spacing: -.025em; }.create-section > header > span { color: var(--color-dim); font-size: 9px; }.create-grid { display: grid; grid-template-columns: minmax(0,1.12fr) minmax(330px,.88fr); gap: 13px; }.create-card { scroll-margin-top: 20px; overflow: hidden; border: 1px solid var(--color-line); border-radius: 14px; background: #fff; }.create-card-heading { display: flex; align-items: center; gap: 10px; padding: 16px 17px 11px; }.builder-icon { display: grid; width: 34px; height: 34px; flex: none; place-items: center; border-radius: 8px; font-size: 13px; }.builder-icon.web { background: #ffe5ea; color: var(--color-brand-muted); }.builder-icon.mobile { background: #302b27; color: #fff; }.create-card-heading > div { min-width: 0; flex: 1; }.create-card-heading p { margin: 0 0 3px; color: var(--color-dim); font-family: 'JetBrains Mono', monospace; font-size: 7px; font-weight: 600; letter-spacing: .08em; }.create-card-heading h3 { margin: 0; font-size: 13px; font-weight: 620; }.environment { flex: none; border-radius: 99px; padding: 5px 7px; font-family: 'JetBrains Mono', monospace; font-size: 7px; font-weight: 600; text-transform: uppercase; }.environment.browser { background: #eaf6f1; color: #24785d; }.environment.native { background: #fff0f3; color: #c63955; }.description { min-height: 54px; margin: 0; padding: 0 17px 12px; color: var(--color-muted); font-size: 9px; line-height: 1.55; }
-  .repo-form { padding: 0 17px 15px; }.repo-form label { display: block; margin-bottom: 6px; color: var(--color-dim); font-size: 8px; font-weight: 600; }.repo-form > div { display: flex; min-height: 42px; align-items: center; overflow: hidden; border: 1px solid var(--color-line); border-radius: 8px; background: #faf9f6; }.repo-form > div > span { padding-left: 11px; color: var(--color-dim); font-family: 'JetBrains Mono', monospace; font-size: 9px; }.repo-form input { min-width: 70px; flex: 1; border: 0; padding: 11px 3px; outline: none; background: transparent; color: var(--color-ink); font-family: 'JetBrains Mono', monospace; font-size: 9px; }.repo-form button { align-self: stretch; border: 0; padding: 0 13px; background: var(--color-brand); color: #fff; font-size: 9px; font-weight: 620; }.repo-form button i { margin-left: 4px; font-style: normal; }.repo-form > small { display: block; margin-top: 6px; color: var(--color-danger); font-size: 8px; }.create-card footer { display: flex; min-height: 39px; align-items: center; gap: 14px; border-top: 1px solid var(--color-line-subtle); padding: 0 17px; color: var(--color-dim); font-size: 7px; text-transform: uppercase; }.create-card footer span::before { content: '✓'; margin-right: 4px; color: var(--color-success); }
-  .mobile-card { background: #fcfbf8; }.template-row { display: flex; align-items: center; gap: 10px; margin: 0 17px 12px; border: 1px solid var(--color-line); border-radius: 9px; padding: 9px; background: #fff; }.template-preview { position: relative; width: 33px; height: 33px; flex: none; border-radius: 7px; background: #fff0f3; }.template-preview span { position: absolute; top: 8px; left: 8px; width: 16px; height: 5px; border-radius: 2px; background: var(--color-brand); }.template-preview i { position: absolute; bottom: 7px; left: 8px; width: 11px; height: 8px; border-radius: 2px; background: #fff; }.template-row > div:nth-child(2) { min-width: 0; flex: 1; }.template-row span, .template-row b, .template-row small { display: block; }.template-row span { color: var(--color-brand-muted); font-family: 'JetBrains Mono', monospace; font-size: 6px; letter-spacing: .08em; }.template-row b { margin-top: 2px; font-size: 10px; }.template-row small { margin-top: 2px; color: var(--color-dim); font-size: 7px; }.template-row em { border-radius: 99px; padding: 4px 6px; background: #eaf6f1; color: #24785d; font-style: normal; font-size: 7px; }.mobile-action { display: flex; min-height: 42px; align-items: center; justify-content: space-between; margin: 0 17px 15px; border-radius: 8px; padding: 0 12px; background: #302b27; color: #fff; text-decoration: none; }.mobile-action span { font-size: 9px; font-weight: 620; }.mobile-action small { display: block; margin-bottom: 1px; color: #aaa39a; font-family: 'JetBrains Mono', monospace; font-size: 6px; letter-spacing: .07em; }.mobile-action i { color: var(--color-brand); font-style: normal; }.mobile-card footer { justify-content: space-between; }.mobile-card footer a { color: var(--color-muted); text-decoration: none; text-transform: none; }
-  .notice { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 13px; border: 1px solid var(--color-line); border-radius: 10px; padding: 10px 12px; background: #fff; font-size: 9px; }.notice > div { display: flex; gap: 6px; }.notice b { font-weight: 620; }.notice span { color: var(--color-muted); }.notice.success { border-color: rgba(47,163,122,.24); background: #f1faf6; }.notice button, .notice a { flex: none; border: 0; border-radius: 7px; padding: 7px 9px; background: var(--color-brand); color: #fff; font-size: 8px; font-weight: 600; text-decoration: none; }
-  .mobile-header { display: none; }.center-state { display: flex; min-height: 100vh; flex-direction: column; align-items: center; justify-content: center; padding: 24px; text-align: center; }.center-state img { border-radius: 14px; }.center-state h1 { margin: 15px 0 3px; font-size: 20px; }.center-state p { margin: 11px 0; color: var(--color-muted); font-size: 11px; }.center-state a { border-radius: 8px; padding: 9px 15px; background: var(--color-brand); color: #fff; font-size: 10px; font-weight: 600; text-decoration: none; }
-  @media (max-width: 980px) { .dashboard-main { width: min(calc(100% - 36px),1180px); }.create-grid { grid-template-columns: 1fr; }.description { min-height: 0; }.overview article { align-items: flex-start; }.overview small { white-space: normal; } }
-  @media (max-width: 760px) { .workspace { margin-left: 0; }.mobile-header { display: flex; height: 57px; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--color-line-subtle); padding: 0 15px; background: rgba(255,255,255,.65); }.mobile-header a { display: flex; align-items: center; gap: 8px; color: var(--color-ink); font-size: 12px; font-weight: 650; text-decoration: none; }.mobile-header img { border-radius: 8px; }.mobile-header > span { border: 1px solid var(--color-line); border-radius: 99px; padding: 4px 6px; background: #fff; color: var(--color-muted); font-family: 'JetBrains Mono', monospace; font-size: 7px; text-transform: uppercase; }.dashboard-main { width: min(calc(100% - 28px),1180px); padding: 27px 0 92px; }.page-heading { align-items: flex-start; flex-direction: column; margin-bottom: 20px; }.heading-actions { width: 100%; }.heading-actions a { flex: 1; text-align: center; }.overview { grid-template-columns: 1fr; gap: 8px; }.overview article { min-height: 68px; align-items: center; }.create-section > header { align-items: flex-start; flex-direction: column; gap: 5px; } }
-  @media (max-width: 500px) { .page-heading h1 { font-size: 26px; }.page-heading > div:first-child > span { line-height: 1.45; }.heading-actions a:last-child { display: none; }.create-card-heading { align-items: flex-start; flex-wrap: wrap; }.create-card-heading > div { min-width: 150px; }.environment { margin-left: 44px; }.repo-form > div { flex-wrap: wrap; }.repo-form > div > span { flex: none; }.repo-form input { min-width: 120px; }.repo-form button { width: 100%; min-height: 38px; }.create-card footer { flex-wrap: wrap; gap: 6px 12px; padding-block: 10px; }.notice { align-items: flex-start; flex-direction: column; }.notice > div { flex-direction: column; gap: 2px; } }
+  :global(body) { background: #faf8f4; }
+  .dashboard-shell { min-height: 100vh; color: var(--color-ink); background-image: linear-gradient(rgba(0,0,0,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.025) 1px, transparent 1px); background-size: 28px 28px; }
+  .workspace { min-height: 100vh; margin-left: 214px; }
+  .dashboard-main { width: min(calc(100% - 44px), 960px); margin: 0 auto; padding: 24px 0 0; }
+  .workspace-heading { display: flex; min-height: 36px; align-items: center; justify-content: space-between; gap: 18px; border-bottom: 1px solid var(--color-line-subtle); padding: 0 2px 12px; }
+  .workspace-heading > span { font-size: 11px; font-weight: 650; }
+  .workspace-heading > div { display: flex; align-items: center; gap: 7px; color: var(--color-dim); font-size: 9px; }
+  .workspace-heading i { width: 6px; height: 6px; border-radius: 50%; background: var(--color-success); box-shadow: 0 0 0 3px rgba(47,163,122,.1); }
+  .notices { max-width: 860px; margin: 13px auto 0; }
+  .notice { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 8px; border: 1px solid var(--color-line); border-radius: 10px; padding: 10px 12px; background: rgba(255,255,255,.88); font-size: 9px; }
+  .notice > div { display: flex; gap: 6px; }
+  .notice b { font-weight: 650; }.notice span { color: var(--color-muted); }
+  .notice.success { border-color: rgba(47,163,122,.24); background: #f1faf6; }
+  .notice button, .notice a { flex: none; border: 0; border-radius: 7px; padding: 7px 9px; background: var(--color-brand); color: #fff; font-size: 8px; font-weight: 600; text-decoration: none; }
+  .new-project { max-width: 760px; margin: 0 auto 54px; scroll-margin-top: 20px; }
+  .new-project > header { margin-bottom: 13px; text-align: center; }
+  .new-project > header p { margin: 0 0 5px; color: var(--color-success); font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 650; letter-spacing: .1em; }
+  .new-project h2 { margin: 0; font-size: 24px; letter-spacing: -.035em; }
+  .new-project > header span { display: block; margin-top: 5px; color: var(--color-muted); font-size: 11px; }
+  .mobile-header { display: none; }
+  .center-state { display: flex; min-height: 100vh; flex-direction: column; align-items: center; justify-content: center; padding: 24px; text-align: center; }
+  .center-state img { border-radius: 14px; }.center-state h1 { margin: 15px 0 3px; font-size: 20px; }.center-state p { margin: 11px 0; color: var(--color-muted); font-size: 11px; }.center-state a { border-radius: 8px; padding: 9px 15px; background: var(--color-brand); color: #fff; font-size: 10px; font-weight: 600; text-decoration: none; }
+  @media (max-width: 760px) {
+    .workspace { margin-left: 0; }
+    .mobile-header { display: flex; height: 57px; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--color-line-subtle); padding: 0 15px; background: rgba(255,255,255,.72); backdrop-filter: blur(14px); }
+    .mobile-header a { display: flex; align-items: center; gap: 8px; color: var(--color-ink); font-size: 12px; font-weight: 650; text-decoration: none; }.mobile-header img { border-radius: 8px; }
+    .mobile-header > span { color: var(--color-muted); font-family: 'JetBrains Mono', monospace; font-size: 8px; text-transform: uppercase; }
+    .dashboard-main { width: min(calc(100% - 28px), 960px); padding-top: 15px; }
+    .workspace-heading { display: none; }
+  }
+  @media (max-width: 520px) {
+    .notice { align-items: flex-start; flex-direction: column; }.notice > div { flex-direction: column; gap: 2px; }
+  }
 </style>
