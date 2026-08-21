@@ -67,3 +67,30 @@ test('signed preview carries the editing backend without reusing a setup session
     backend: 'claude-code'
   });
 });
+
+test('dashboard lists previews without waking the user host', async () => {
+  let captured;
+  const gateway = new ClankGateway('https://api.supaclank.com', 'jwt-value', async (url, init) => {
+    captured = { url, init };
+    return Response.json([{ token: 'preview-token' }]);
+  });
+
+  const previews = await gateway.previews();
+
+  assert.equal(captured.url, 'https://api.supaclank.com/v1/preview/tokens');
+  assert.equal(captured.init.method, 'GET');
+  assert.deepEqual(previews, [{ token: 'preview-token' }]);
+});
+
+test('dashboard signs a short-lived browser preview without an editing backend', async () => {
+  let captured;
+  const gateway = new ClankGateway('https://api.supaclank.com', 'jwt-value', async (url, init) => {
+    captured = { url, init };
+    return Response.json({ signed_url: 'https://preview.example/?sig=value' });
+  });
+
+  await gateway.signPreviewForBrowser('preview/token');
+
+  assert.equal(captured.url, 'https://api.supaclank.com/v1/preview/tokens/preview%2Ftoken/sign');
+  assert.deepEqual(JSON.parse(captured.init.body), { ttl: '15m' });
+});

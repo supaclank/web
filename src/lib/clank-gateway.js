@@ -9,6 +9,7 @@ export class GatewayError extends Error {
 }
 
 const SIGNED_PREVIEW_TTL = '24h';
+const BROWSER_PREVIEW_TTL = '15m';
 
 export class ClankGateway {
   constructor(baseURL, accessToken, fetcher = fetch) {
@@ -101,6 +102,17 @@ export class ClankGateway {
     return this.request(`/v1/preview/tokens/${encodeURIComponent(token)}/sign`, {
       method: 'POST',
       body: { ttl: SIGNED_PREVIEW_TTL, backend }
+    });
+  }
+
+  previews() {
+    return this.request('/v1/preview/tokens');
+  }
+
+  signPreviewForBrowser(token) {
+    return this.request(`/v1/preview/tokens/${encodeURIComponent(token)}/sign`, {
+      method: 'POST',
+      body: { ttl: BROWSER_PREVIEW_TTL }
     });
   }
 
