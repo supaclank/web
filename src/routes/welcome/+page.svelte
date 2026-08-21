@@ -349,11 +349,11 @@
       onsignout={signOut}
     />
 
-    <div class="min-h-screen md:ml-64">
+    <div class="workshop-canvas min-h-screen md:ml-64">
       <header class="flex h-16 items-center justify-between border-b border-line-subtle bg-elevated px-5 md:hidden"><a href="/welcome" class="flex items-center gap-2.5 font-semibold tracking-tight"><img src="/mascot.png" alt="" width="32" height="32" class="rounded-lg" /><span>supaclank</span></a><span class="text-sm text-muted">Personal</span></header>
 
       <main id="dashboard" class="mx-auto w-full max-w-5xl px-5 py-8 sm:px-8 sm:py-10">
-        <div class="mb-10 flex flex-col gap-2 border-b border-line-subtle pb-5 sm:flex-row sm:items-center sm:justify-between">
+        <div class="mb-6 flex flex-col gap-2 border-b border-line-subtle pb-5 sm:mb-10 sm:flex-row sm:items-center sm:justify-between">
           <span class="text-sm font-medium">Personal workspace</span>
           <span class="flex items-center gap-2 text-sm text-muted"><i class="h-2 w-2 rounded-full bg-success"></i>Your cloud workspace starts when you need it.</span>
         </div>
@@ -394,3 +394,13 @@
     </div>
   </div>
 {/if}
+
+<style>
+  .workshop-canvas {
+    background-color: var(--color-paper);
+    background-image:
+      linear-gradient(rgba(0, 0, 0, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.045) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+</style>

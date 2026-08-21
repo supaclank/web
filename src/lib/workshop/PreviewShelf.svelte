@@ -4,7 +4,7 @@
   let { phase, previews, error = '', openingToken = '', onopen } = $props();
 </script>
 
-<section id="previews" class="mx-auto mt-12 max-w-4xl scroll-mt-6 pb-28 md:pb-16" aria-labelledby="preview-heading">
+<section id="previews" class="mx-auto max-w-4xl scroll-mt-6 pb-28 md:pb-16" aria-labelledby="preview-heading">
   <header class="mb-4 flex items-end justify-between gap-4">
     <div><h2 id="preview-heading" class="text-xl font-semibold tracking-tight">Recent work</h2><p class="mt-1 text-sm text-muted">Reopen a private preview without starting over.</p></div>
     {#if previews.length}<span class="text-sm text-muted">{previews.length} {previews.length === 1 ? 'preview' : 'previews'}</span>{/if}
