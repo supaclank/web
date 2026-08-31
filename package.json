@@ -31,7 +31,6 @@
     "vite": "^7"
   },
   "dependencies": {
-    "@plausible-analytics/tracker": "^0.4.5",
     "@supabase/supabase-js": "^2"
   }
 }

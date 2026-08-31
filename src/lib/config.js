@@ -5,13 +5,13 @@ import {
   PUBLIC_SUPABASE_URL,
   PUBLIC_SUPABASE_ANON_KEY,
   PUBLIC_GATEWAY_URL,
-  PUBLIC_PLAUSIBLE_DOMAIN
+  PUBLIC_UMAMI_TRACKED_DOMAIN,
+  PUBLIC_UMAMI_WEBSITE_ID
 } from '$env/static/public';
 
 export const SUPABASE_URL = PUBLIC_SUPABASE_URL;
 export const SUPABASE_ANON_KEY = PUBLIC_SUPABASE_ANON_KEY;
 export const GATEWAY_URL = PUBLIC_GATEWAY_URL;
-// Plausible site domain (e.g. "supaclank.com"). Empty disables analytics
-// entirely — no script tag, no events. Prod and dev CI both set it; local/
-// ad-hoc builds leave it "".
-export const PLAUSIBLE_DOMAIN = PUBLIC_PLAUSIBLE_DOMAIN;
+// Both values are required, so local and ad-hoc builds emit no analytics.
+export const UMAMI_TRACKED_DOMAIN = PUBLIC_UMAMI_TRACKED_DOMAIN;
+export const UMAMI_WEBSITE_ID = PUBLIC_UMAMI_WEBSITE_ID;

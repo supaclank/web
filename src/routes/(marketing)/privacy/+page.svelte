@@ -2,7 +2,7 @@
   // Keep this live policy aligned with retention, subprocessors, analytics,
   // sandbox access, and account-deletion behavior as the product changes.
   const EFFECTIVE_DATE = '2 August 2026';
-  const LAST_UPDATED = '2 August 2026';
+  const LAST_UPDATED = '31 August 2026';
 </script>
 
 <svelte:head>
@@ -98,10 +98,14 @@
       <li>
         <strong>Website analytics.</strong> How our websites are used in aggregate: pages visited,
         referrer, country, browser and device type, plus anonymous conversion events such as a
-        checkout being started. No cookies, no identifier that lasts beyond the day or follows you
-        to other sites, and your browser never contacts the analytics provider directly (events are
-        relayed through our own server). Websites only: there is none of this in the mobile app or
-        on your sandbox.
+        checkout being started. On public marketing and sign-up pages, we also collect sampled
+        interaction recordings and click/scroll heatmaps to understand confusing journeys. Form
+        controls are excluded, typed values are masked, and account, OAuth, repository, and
+        workspace pages are never recorded. Recordings expire after 30 days. Umami uses no
+        cookies or browser storage for replay, no identifier lasts beyond the day or follows you
+        to other sites, and your browser only contacts our website (data is relayed to our
+        self-hosted Umami instance). Websites only: there is none of this in the mobile app or on
+        your sandbox.
       </li>
       <li>
         <strong>Communications.</strong> Emails you send us, and messages submitted through forms
@@ -167,7 +171,6 @@
       <li><strong>Stripe:</strong> payments and subscription billing.</li>
       <li><strong>Fly.io:</strong> the cloud infrastructure your sandbox runs on.</li>
       <li><strong>Tigris:</strong> object storage for images you upload.</li>
-      <li><strong>Plausible:</strong> cookieless website analytics, processed and stored in the EU.</li>
       <li><strong>Expo:</strong> push-notification delivery, relayed onward through Google's Firebase Cloud Messaging.</li>
       <li><strong>Google:</strong> Firebase Cloud Messaging (the push relay above); Google Sheets for contact-form submissions.</li>
       <li><strong>Proton:</strong> our email.</li>

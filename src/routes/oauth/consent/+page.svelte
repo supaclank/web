@@ -169,7 +169,7 @@
         >
       </div>
       <p class="mt-3 text-xs text-dim">
-        Signed in as <code class="rounded bg-surface px-1.5 py-0.5 font-mono">{userLabel}</code>
+        Signed in as <code class="analytics-sensitive rounded bg-surface px-1.5 py-0.5 font-mono">{userLabel}</code>
       </p>
     </div>
   {/if}

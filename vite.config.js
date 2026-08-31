@@ -23,7 +23,8 @@ export default defineConfig(({ command, mode }) => {
     process.env.PUBLIC_SUPABASE_URL ??= 'http://supaclank.test:54321';
     process.env.PUBLIC_SUPABASE_ANON_KEY ??= 'sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH';
     process.env.PUBLIC_GATEWAY_URL ??= 'http://supaclank.test:18080';
-    process.env.PUBLIC_PLAUSIBLE_DOMAIN ??= '';
+    process.env.PUBLIC_UMAMI_TRACKED_DOMAIN ??= '';
+    process.env.PUBLIC_UMAMI_WEBSITE_ID ??= '';
   }
 
   return {
