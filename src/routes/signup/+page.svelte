@@ -292,7 +292,7 @@
           required
           autocomplete="email"
           placeholder="you@example.com"
-          class="w-full rounded-lg border border-line bg-paper px-3 py-2.5 text-sm outline-none focus:border-brand"
+          class="analytics-sensitive w-full rounded-lg border border-line bg-paper px-3 py-2.5 text-sm outline-none focus:border-brand"
         />
         <input
           type="password"
@@ -300,7 +300,7 @@
           required
           autocomplete={mode === 'signup' ? 'new-password' : 'current-password'}
           placeholder="Password"
-          class="w-full rounded-lg border border-line bg-paper px-3 py-2.5 text-sm outline-none focus:border-brand"
+          class="analytics-sensitive w-full rounded-lg border border-line bg-paper px-3 py-2.5 text-sm outline-none focus:border-brand"
         />
         <button
           type="submit"

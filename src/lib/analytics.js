@@ -54,11 +54,20 @@ export function initAnalytics() {
           recorder.dataset.hostUrl = config.hostUrl;
           document.head.append(recorder);
         }
-        resolve(window.umami ?? null);
+        const tracker = window.umami ?? null;
+        if (!tracker) umami = null; // allow a later initAnalytics() call to retry
+        resolve(tracker);
       },
       { once: true }
     );
-    script.addEventListener('error', () => resolve(null), { once: true });
+    script.addEventListener(
+      'error',
+      () => {
+        umami = null; // allow a later initAnalytics() call to retry
+        resolve(null);
+      },
+      { once: true }
+    );
     document.head.append(script);
   });
 
