@@ -15,7 +15,8 @@ jobs:
       PUBLIC_SUPABASE_URL: http://supaclank.test:54321
       PUBLIC_SUPABASE_ANON_KEY: sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH
       PUBLIC_GATEWAY_URL: http://supaclank.test:18080
-      PUBLIC_PLAUSIBLE_DOMAIN: ""
+      PUBLIC_UMAMI_TRACKED_DOMAIN: ""
+      PUBLIC_UMAMI_WEBSITE_ID: ""
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2

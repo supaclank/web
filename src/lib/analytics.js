@@ -1,11 +1,14 @@
-import { PLAUSIBLE_DOMAIN } from '$lib/config.js';
+import { UMAMI_TRACKED_DOMAIN, UMAMI_WEBSITE_ID } from '$lib/config.js';
+import { sanitizeAnalyticsPayload } from '$lib/analytics-payload.js';
+import {
+  ANALYTICS_BEFORE_SEND_HANDLER,
+  analyticsScriptConfiguration,
+  isAnalyticsRecordingUrl
+} from '$lib/analytics-script.js';
 
-// The tracker reads browser globals during module evaluation. Keep it dynamic so
-// prerendering and off-domain visits never evaluate or download the tracker.
-let plausible = null;
+let umami = null;
 
-// Keep names in one place: Plausible goals and funnels match these
-// strings exactly, so a typo at a call site would silently split data.
+// Funnel steps match these strings exactly, so call sites share one vocabulary.
 export const analyticsEvents = Object.freeze({
   trialStarted: 'Trial Started',
   signupFailed: 'Signup Failed',
@@ -22,63 +25,55 @@ export const analyticsEvents = Object.freeze({
 
 function onTrackedHost() {
   const host = location.hostname;
-  return host === PLAUSIBLE_DOMAIN || host.endsWith('.' + PLAUSIBLE_DOMAIN);
+  return host === UMAMI_TRACKED_DOMAIN || host.endsWith('.' + UMAMI_TRACKED_DOMAIN);
 }
-
-// Auth tokens can arrive in URL fragments. Analytics keeps only the path and
-// explicit marketing attribution, so credentials never transit to Plausible.
-function sanitizeUrl(raw) {
-  try {
-    const { origin, pathname, searchParams } = new URL(raw, location.origin);
-    const kept = new URLSearchParams();
-    for (const [key, value] of searchParams) {
-      if (key.startsWith('utm_') || key === 'ref' || key === 'source') kept.append(key, value);
-    }
-    const query = kept.toString();
-    return origin + pathname + (query ? `?${query}` : '');
-  } catch {
-    // Malformed input still loses its query string and fragment.
-    return raw.split(/[?#]/)[0];
-  }
-}
-
 
 export function initAnalytics() {
-  if (plausible || !PLAUSIBLE_DOMAIN || !onTrackedHost()) return;
-  plausible = import('@plausible-analytics/tracker')
-    .then((mod) => {
-      mod.init({
-        domain: PLAUSIBLE_DOMAIN,
-        // Production supplies a same-origin relay, keeping the browser CSP first-party.
-        endpoint: location.origin + '/-/pv',
-        // SvelteKit navigations use history.pushState, so automatic pageviews
-        // cover both client-side navigation and full document loads.
-        autoCapturePageviews: true,
-        // Play Store and other external links become outbound-click events.
-        outboundLinks: true,
-        transformRequest: (payload) => {
-          payload.u = sanitizeUrl(payload.u);
-          // Same-origin referrers may contain OAuth or marketing parameters;
-          // the sanitized origin and path are sufficient for attribution.
-          if (payload.r) payload.r = sanitizeUrl(payload.r);
-          return payload;
+  if (umami) return true;
+  if (!UMAMI_WEBSITE_ID || !UMAMI_TRACKED_DOMAIN || !onTrackedHost()) return false;
+
+  window[ANALYTICS_BEFORE_SEND_HANDLER] = (_type, payload) =>
+    sanitizeAnalyticsPayload(payload, location.origin);
+
+  const config = analyticsScriptConfiguration(location.origin, UMAMI_WEBSITE_ID);
+  umami = new Promise((resolve) => {
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = config.src;
+    script.dataset.websiteId = config.websiteId;
+    script.dataset.hostUrl = config.hostUrl;
+    script.dataset.beforeSend = config.beforeSend;
+    script.addEventListener(
+      'load',
+      () => {
+        if (isAnalyticsRecordingUrl(location)) {
+          const recorder = document.createElement('script');
+          recorder.async = true;
+          recorder.src = config.recorderSrc;
+          recorder.dataset.websiteId = config.websiteId;
+          recorder.dataset.hostUrl = config.hostUrl;
+          document.head.append(recorder);
         }
-      });
-      return mod;
-    })
-    .catch(() => null);
+        resolve(window.umami ?? null);
+      },
+      { once: true }
+    );
+    script.addEventListener('error', () => resolve(null), { once: true });
+    document.head.append(script);
+  });
+
+  return true;
 }
 
-
 /**
- * Report a named Plausible goal with optional string properties.
+ * Report a named Umami event with optional properties.
  * Resolves true once the tracker accepts the event for delivery.
  */
 export async function trackEvent(name, props) {
-  const mod = await plausible;
-  if (!mod) return false;
+  const tracker = await umami;
+  if (!tracker) return false;
   try {
-    mod.track(name, { props });
+    tracker.track(name, props);
     return true;
   } catch {
     // Analytics is best-effort and must never interrupt a user flow.

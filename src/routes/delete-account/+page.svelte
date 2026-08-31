@@ -114,7 +114,7 @@
   {:else}
     <div class="rounded-2xl border border-line bg-elevated p-6 shadow-sm">
       <h1 class="text-xl font-semibold">Delete your account</h1>
-      {#if email}<p class="mt-1 text-sm text-muted">Signed in as {email}</p>{/if}
+      {#if email}<p class="analytics-sensitive mt-1 text-sm text-muted">Signed in as {email}</p>{/if}
 
       <div class="mt-5 rounded-xl border border-danger/30 bg-danger/5 p-4">
         <p class="text-sm font-medium text-danger">This cannot be undone</p>

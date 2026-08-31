@@ -227,7 +227,7 @@
         <h1 class="text-xl font-semibold">Confirm your email</h1>
       </div>
       <p class="mt-2 text-sm text-muted">
-        We sent a confirmation link to <strong class="font-medium text-ink">{email}</strong>. Open
+        We sent a confirmation link to <strong class="analytics-sensitive font-medium text-ink">{email}</strong>. Open
         it and this page continues by itself.
       </p>
 
