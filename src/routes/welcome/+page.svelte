@@ -276,7 +276,14 @@
       </div>
     {/if}
 
-    <WelcomeSetup {supabase} onpreferences={(value) => onboardingPreferences = value} />
+    <WelcomeSetup
+      {supabase}
+      onpreferences={(value) => {
+        const wasLocalOnly = onboardingPreferences?.usage === USAGE.local;
+        onboardingPreferences = value;
+        if (wasLocalOnly && value?.usage !== USAGE.local && !status) loadStatus();
+      }}
+    />
 
     <div class="rounded-2xl border border-line bg-elevated p-6 shadow-sm">
       <h1 class="text-xl font-semibold">Your account</h1>
