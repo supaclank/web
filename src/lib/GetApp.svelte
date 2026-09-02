@@ -6,7 +6,16 @@
   import PlayBadge from '$lib/PlayBadge.svelte';
   import QrPlay from '$lib/QrPlay.svelte';
 
-  let { qr = false, variant = 'onlight', qrPosition = 'below' } = $props();
+  let { qr = false, variant = 'onlight', qrPosition = 'below', onopenstore, onshowqr } = $props();
+  let qrPopover = $state();
+  let hasReportedQr = false;
+
+  function reportQrShown(event) {
+    if (!onshowqr || hasReportedQr || event.target !== qrPopover || event.propertyName !== 'opacity') return;
+    if (!qrPopover.getClientRects().length || getComputedStyle(qrPopover).opacity !== '1') return;
+    hasReportedQr = true;
+    onshowqr();
+  }
 </script>
 
 <div class="flex flex-wrap items-center gap-x-4 gap-y-3">
@@ -14,9 +23,11 @@
     <!-- Badge + scan-to-install popover. The QR is only useful on a larger
          screen, so the popover is hover/focus-driven and hidden on phones. -->
     <div class="group relative">
-      <PlayBadge {variant} />
+      <PlayBadge {variant} onclick={onopenstore} />
 
       <div
+        bind:this={qrPopover}
+        ontransitionend={reportQrShown}
         class="pointer-events-none absolute z-20 hidden opacity-0 transition duration-150 ease-out group-hover:opacity-100 group-focus-within:opacity-100 lg:block {qrPosition === 'right' ? 'top-1/2 left-full ml-3 -translate-x-1 -translate-y-1/2 group-hover:translate-x-0 group-focus-within:translate-x-0' : 'top-full left-1/2 mt-3 -translate-x-1/2 -translate-y-1 group-hover:translate-y-0 group-focus-within:translate-y-0'}"
         aria-hidden="true"
       >
@@ -35,6 +46,6 @@
       </div>
     </div>
   {:else}
-    <PlayBadge {variant} />
+    <PlayBadge {variant} onclick={onopenstore} />
   {/if}
 </div>

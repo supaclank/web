@@ -1,9 +1,11 @@
 <script>
   import { onMount, tick } from 'svelte';
   import ChoiceCard from './ChoiceCard.svelte';
+  import { analyticsEvents, trackEvent } from '$lib/analytics.js';
+  import { onboardingStepProperties } from './analytics-properties.js';
   import { BUILD_TARGET, DEVICE, USAGE, ONBOARDING_VERSION } from './preferences.js';
 
-  let { initial = null, initialUsage = '', initialStep = 0, oncomplete, onclose, isSaving = false, error = '' } = $props();
+  let { placement, initial = null, initialUsage = '', initialStep = 0, oncomplete, onclose, isSaving = false, error = '' } = $props();
   const STEPS = ['Build', 'Devices', 'Setup'];
   let step = $state(0);
   let buildTargets = $state([]);
@@ -27,6 +29,7 @@
     document.body.style.overflow = 'hidden';
     dialog.showModal();
     heading.focus();
+    report(analyticsEvents.onboardingOpened);
     return () => {
       dialog.close();
       document.body.style.overflow = previousOverflow;
@@ -47,13 +50,24 @@
 
   function continueSetup() {
     if (!canContinue || isSaving) return;
+    report(analyticsEvents.onboardingStepCompleted);
     if (step < STEPS.length - 1) return moveStep(step + 1);
     oncomplete({ version: ONBOARDING_VERSION, buildTargets, devices, usage });
+  }
+
+  function report(event) {
+    trackEvent(event, onboardingStepProperties(placement, { buildTargets, devices, usage }, step, Boolean(initial)));
+  }
+
+  function dismiss() {
+    if (isSaving) return;
+    report(analyticsEvents.onboardingDismissed);
+    onclose();
   }
 </script>
 
 <dialog bind:this={dialog} aria-labelledby="onboarding-heading"
-  oncancel={(event) => { event.preventDefault(); if (!isSaving) onclose(); }}
+  oncancel={(event) => { event.preventDefault(); dismiss(); }}
   class="m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl border-0 bg-white p-0 text-ink shadow-xl outline-none">
   <div class="p-6 sm:p-8">
     <div class="flex items-start justify-between gap-4">
@@ -63,7 +77,7 @@
         </h1>
         {#if step === 2}<p class="mt-1.5 text-sm text-muted">Pick one to start with</p>{/if}
       </div>
-      <button onclick={onclose} disabled={isSaving} aria-label="Close onboarding" class="-mr-2 -mt-1 flex h-10 w-10 shrink-0 items-center justify-center text-dim hover:text-ink disabled:opacity-40">
+      <button onclick={dismiss} disabled={isSaving} aria-label="Close onboarding" class="-mr-2 -mt-1 flex h-10 w-10 shrink-0 items-center justify-center text-dim hover:text-ink disabled:opacity-40">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15" /></svg>
       </button>
     </div>

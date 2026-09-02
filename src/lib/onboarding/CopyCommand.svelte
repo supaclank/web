@@ -1,5 +1,5 @@
 <script>
-  let { command } = $props();
+  let { command, oncopied } = $props();
   let isCopied = $state(false);
   let error = $state('');
 
@@ -8,6 +8,7 @@
       await navigator.clipboard.writeText(command);
       isCopied = true;
       error = '';
+      oncopied?.();
     } catch {
       isCopied = false;
       error = 'Couldn’t copy. Select the command and copy it manually.';

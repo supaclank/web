@@ -20,7 +20,15 @@ export const analyticsEvents = Object.freeze({
   installCommandsCopied: 'Install Commands Copied',
   installQrShown: 'Install QR Shown',
   fleetWaitlistSubmitted: 'Fleet Waitlist Submitted',
-  feedbackSubmitted: 'Feedback Submitted'
+  feedbackSubmitted: 'Feedback Submitted',
+  onboardingOpened: 'Onboarding Opened',
+  onboardingStepCompleted: 'Onboarding Step Completed',
+  onboardingDismissed: 'Onboarding Dismissed',
+  onboardingCompleted: 'Onboarding Completed',
+  onboardingSetupViewed: 'Onboarding Setup Viewed',
+  onboardingSaved: 'Onboarding Saved',
+  onboardingSaveFailed: 'Onboarding Save Failed',
+  onboardingAction: 'Onboarding Action'
 });
 
 function onTrackedHost() {

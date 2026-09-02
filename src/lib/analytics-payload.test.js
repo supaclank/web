@@ -39,6 +39,17 @@ test('analytics sanitization does not mutate the tracker payload', () => {
   assert.deepEqual(payload, { url: '/welcome?source=qr' });
 });
 
+test('onboarding choices stay in explicit event properties, not signup return URLs', () => {
+  const payload = sanitizeAnalyticsPayload({
+    url: '/signup?return_to=%2Fwelcome%3Fbuild%3Dweb%26devices%3Dlaptop%26usage%3Dcloud&utm_source=launch',
+    referrer: 'https://supaclank.com/get-started?build=web&devices=laptop&usage=cloud',
+    data: { placement: 'get-started', build_targets: 'web', devices: 'laptop', usage: 'cloud' }
+  }, SITE_ORIGIN);
+  assert.equal(payload.url, '/signup?utm_source=launch');
+  assert.equal(payload.referrer, 'https://supaclank.com/get-started');
+  assert.deepEqual(payload.data, { placement: 'get-started', build_targets: 'web', devices: 'laptop', usage: 'cloud' });
+});
+
 test('analytics strips queries and fragments from malformed URLs', () => {
   const payload = sanitizeAnalyticsPayload(
     { url: 'https://[invalid/?secret=yes#token' },
@@ -63,7 +74,7 @@ test('recording is limited to public marketing and signup routes', () => {
     assert.equal(isAnalyticsRecordingUrl(new URL(pathname, SITE_ORIGIN)), true, pathname);
   }
 
-  for (const pathname of ['/auth/callback', '/oauth/consent', '/welcome', '/delete-account', '/owner/repo']) {
+  for (const pathname of ['/auth/callback', '/oauth/consent', '/get-started', '/welcome', '/delete-account', '/owner/repo']) {
     assert.equal(isAnalyticsRecordingUrl(new URL(pathname, SITE_ORIGIN)), false, pathname);
   }
 });
