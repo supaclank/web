@@ -29,7 +29,7 @@
   });
 
   function reportAction(action) {
-    trackEvent(analyticsEvents.onboardingAction, onboardingActionProperties(placement, preferences, action));
+    return trackEvent(analyticsEvents.onboardingAction, onboardingActionProperties(placement, preferences, action));
   }
 
   function toggle(values, value) {

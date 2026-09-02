@@ -4,11 +4,12 @@
   let repository = $state('');
   let error = $state('');
 
-  function openRepository(event) {
+  async function openRepository(event) {
     event.preventDefault();
     try {
       const path = repositoryInputPath(repository);
-      onopen?.();
+      // Await the tracking call so it isn't dropped by the hard navigation below.
+      await onopen?.();
       location.assign(path);
     } catch (cause) {
       error = cause.message;
