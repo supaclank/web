@@ -13,12 +13,22 @@
   let initialUsage = $state('');
   let isSignedIn = $state(false);
 
+  // Referencing localStorage itself (not just its methods) can throw in some
+  // browsers' private-browsing modes.
+  function safeStorage() {
+    try {
+      return localStorage;
+    } catch {
+      return null;
+    }
+  }
+
   onMount(async () => {
     const params = new URLSearchParams(location.search);
     const linkedPreferences = preferencesFromSearch(params);
     const hasPreferenceQuery = PREFERENCE_QUERY_KEYS.some((key) => params.has(key));
-    preferences = linkedPreferences ?? (hasPreferenceQuery ? null : preferencesFromStorage(localStorage));
-    if (linkedPreferences) storePreferences(localStorage, linkedPreferences);
+    preferences = linkedPreferences ?? (hasPreferenceQuery ? null : preferencesFromStorage(safeStorage()));
+    if (linkedPreferences) storePreferences(safeStorage(), linkedPreferences);
     if (Object.values(USAGE).includes(params.get('usage'))) initialUsage = params.get('usage');
     isOpen = !preferences;
     const { createSupabase } = await import('$lib/supabase');
@@ -27,7 +37,7 @@
   });
 
   function complete(answers) {
-    preferences = storePreferences(localStorage, answers);
+    preferences = storePreferences(safeStorage(), answers);
     replaceState(preferencesPath(GET_STARTED_PATH, answers), page.state);
     isOpen = false;
   }
@@ -38,7 +48,7 @@
   }
 
   function update(answers) {
-    preferences = storePreferences(localStorage, answers);
+    preferences = storePreferences(safeStorage(), answers);
     replaceState(preferencesPath(GET_STARTED_PATH, answers), page.state);
   }
 </script>

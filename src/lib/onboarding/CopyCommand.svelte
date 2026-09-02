@@ -9,6 +9,7 @@
       isCopied = true;
       error = '';
     } catch {
+      isCopied = false;
       error = 'Couldn’t copy. Select the command and copy it manually.';
     }
   }

@@ -4,7 +4,7 @@
 </script>
 
 <label class="choice relative flex min-h-36 cursor-pointer flex-col items-center justify-center rounded-xl bg-transparent px-3 py-6 text-center sm:min-h-40 {checked ? 'border-2 border-dashed border-brand' : 'border-2 border-solid border-transparent ring-1 ring-line ring-inset hover:ring-ink/25'}">
-  <input {type} {name} value={kind} {checked} {onchange} aria-label={title} class="sr-only" />
+  <input {type} {name} value={kind} {checked} {onchange} class="sr-only" />
   <span aria-hidden="true" class="absolute top-3 right-3 flex h-5 w-5 items-center justify-center border {type === 'checkbox' ? 'rounded-md' : 'rounded-full'} {checked ? 'border-brand bg-brand text-white' : 'border-line bg-transparent'}">
     {#if checked}
       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
