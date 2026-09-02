@@ -5,7 +5,7 @@
   import { safeReturnTo } from '$lib/navigation.js';
   import { CLOUD_MONTHLY_PLAN } from '$lib/pricing.js';
   import WelcomeSetup from '$lib/onboarding/WelcomeSetup.svelte';
-  import { USAGE } from '$lib/onboarding/preferences.js';
+  import { USAGE, preferencesFromUser } from '$lib/onboarding/preferences.js';
 
   let phase = $state('loading');
   let confirmMsg = $state(null);
@@ -57,21 +57,27 @@
     }
     token = session.access_token;
     email = session.user.email || '';
-    await loadStatus();
+    // Read preferences from the session we already have so a local-only user
+    // is known before touching billing, which lazily creates a trial row.
+    onboardingPreferences = preferencesFromUser(session.user);
+    const isLocalOnly = onboardingPreferences?.usage === USAGE.local;
+    if (!isLocalOnly) await loadStatus();
     phase = 'ready';
 
-    // Stripe redirects here the instant checkout completes, but the
-    // subscription only becomes active once the customer.subscription.*
-    // webhook reaches clankgw. That race is normally a second or two, and
-    // losing it used to leave a paying customer staring at "Subscribe",
-    // corrected only if they happened to reload. Poll while the
-    // checkout marker is set, so the page settles by itself.
-    if (checkoutWasStarted() && status?.status !== 'active') {
-      confirming = true;
-      await pollUntilActive();
-      confirming = false;
+    if (!isLocalOnly) {
+      // Stripe redirects here the instant checkout completes, but the
+      // subscription only becomes active once the customer.subscription.*
+      // webhook reaches clankgw. That race is normally a second or two, and
+      // losing it used to leave a paying customer staring at "Subscribe",
+      // corrected only if they happened to reload. Poll while the
+      // checkout marker is set, so the page settles by itself.
+      if (checkoutWasStarted() && status?.status !== 'active') {
+        confirming = true;
+        await pollUntilActive();
+        confirming = false;
+      }
+      await recordBillingConversions();
     }
-    await recordBillingConversions();
   });
 
   // ~30s of polling, backing off 1s to 3s. Generous enough for a slow
