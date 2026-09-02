@@ -240,12 +240,14 @@
       data. If you believe a child has an account, contact us and we will delete it.
     </p>
 
-    <h2>12. Cookies</h2>
+    <h2>12. Cookies and local storage</h2>
     <p>
       Our sites store only what's needed to keep you signed in (an authentication session, in your
-      browser's local storage). We use no advertising cookies and no cross-site trackers, and our
-      analytics is cookieless and stores nothing on your device. That is why you don't see a cookie
-      banner here.
+      browser's local storage) and to remember the setup choices you make (build targets, devices,
+      and local or cloud usage). Setup choices contain no account identifier and remain in your
+      browser until you change them or clear your browser data. We use no advertising cookies and
+      no cross-site trackers, and our analytics is cookieless and stores nothing on your device.
+      That is why you don't see a cookie banner here.
     </p>
 
     <h2>13. Changes</h2>

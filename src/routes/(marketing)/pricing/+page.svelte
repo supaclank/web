@@ -193,7 +193,7 @@
       </ul>
       <div class="mt-auto pt-7">
         <a
-          href="/signup"
+          href="/get-started?usage=cloud"
           class="block rounded-xl bg-brand px-5 py-3 text-center font-medium text-white transition-colors hover:bg-brand-muted"
           >Get started</a
         >

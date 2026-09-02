@@ -2,6 +2,7 @@
   import { onDestroy, onMount } from 'svelte';
   import { analyticsEvents, trackEvent } from '$lib/analytics.js';
   import { safeReturnTo } from '$lib/navigation.js';
+  import { GET_STARTED_PATH, ONBOARDING_METADATA_KEY, WELCOME_PATH, preferencesFromSearch, preferencesPath } from '$lib/onboarding/preferences.js';
 
   let supabase = $state(null);
   let mode = $state('signup'); // 'signup' | 'signin'
@@ -14,9 +15,14 @@
   let returnTo = $state('/welcome');
   let resendCooldown = $state(0);
   let authSubscription = null;
+  let onboarding = $state(null);
 
   onMount(async () => {
-    returnTo = safeReturnTo(new URLSearchParams(location.search).get('return_to'));
+    const params = new URLSearchParams(location.search);
+    if (params.get('mode') === 'signin') mode = 'signin';
+    returnTo = safeReturnTo(params.get('return_to'));
+    const destination = new URL(returnTo, location.origin);
+    if (destination.pathname === WELCOME_PATH) onboarding = preferencesFromSearch(destination.searchParams);
     const { createSupabase } = await import('$lib/supabase');
     supabase = createSupabase();
 
@@ -84,7 +90,10 @@
       const { data, error: err } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: authCallbackURL() }
+        options: {
+          emailRedirectTo: authCallbackURL(),
+          ...(onboarding ? { data: { [ONBOARDING_METADATA_KEY]: onboarding } } : {})
+        }
       });
       if (err) {
         busy = false;
@@ -258,19 +267,31 @@
     </div>
   {:else}
     <div class="rounded-2xl border border-line bg-elevated p-6 shadow-sm">
-      <h1 class="text-xl font-semibold">
-        {mode === 'signup' ? 'Create your account' : 'Welcome back'}
-      </h1>
-      <p class="mt-1 text-sm text-muted">
-        {mode === 'signup'
-          ? 'Free and open source. Sign in to start building.'
-          : 'Sign in to your account.'}
-      </p>
+      <div class="flex items-center gap-2.5">
+        <h1 class="text-xl font-semibold">
+          {mode === 'signup' ? 'Create your account' : 'Welcome back'}
+        </h1>
+        {#if mode === 'signup'}
+          <span class="rounded-full border border-brand/30 bg-brand-dim px-2 py-0.5 text-[10px] font-semibold tracking-wide text-brand-muted uppercase">Free trial</span>
+        {/if}
+      </div>
+      {#if mode !== 'signup'}<p class="mt-1 text-sm text-muted">Sign in to your account.</p>{/if}
+
+      {#if mode === 'signup'}
+        <p class="mt-2 hidden text-xs text-muted sm:block">
+          {#if onboarding}
+            Your setup choices are saved for after signup.
+            <a href={preferencesPath(GET_STARTED_PATH, onboarding)} class="underline decoration-line underline-offset-4 hover:text-ink">Change setup</a>
+          {:else}
+            Or <a href={GET_STARTED_PATH} class="underline decoration-line underline-offset-4 hover:text-ink">get started locally</a>
+          {/if}
+        </p>
+      {/if}
 
       <button
         onclick={github}
         disabled={!supabase || busy}
-        class="mt-5 flex w-full items-center justify-center gap-2.5 rounded-lg bg-ink px-4 py-2.5 font-medium text-paper transition-colors hover:opacity-90 disabled:opacity-50"
+        class="flex w-full items-center justify-center gap-2.5 rounded-lg bg-ink px-4 py-2.5 font-medium text-paper transition-colors hover:opacity-90 disabled:opacity-50 {mode === 'signup' ? 'mt-5 sm:mt-7' : 'mt-5'}"
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
           ><path
