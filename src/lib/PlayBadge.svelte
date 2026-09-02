@@ -18,8 +18,11 @@
       return;
     }
     event.preventDefault();
-    await onclick();
-    location.href = PLAY_URL;
+    try {
+      await onclick();
+    } finally {
+      location.href = PLAY_URL;
+    }
   }
 </script>
 
