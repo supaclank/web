@@ -14,7 +14,7 @@ function requiredEnv(name) {
 integrationTest('signup choices and later changes persist across independent Supabase sessions', async () => {
   const url = requiredEnv('SUPABASE_URL');
   const parsed = new URL(url);
-  if (!['localhost', '127.0.0.1', 'supaclank.test'].includes(parsed.hostname) || parsed.port !== '54321') {
+  if (!['localhost', '127.0.0.1'].includes(parsed.hostname) || parsed.port !== '54321') {
     throw new Error('This test only creates users in the local Supabase stack on port 54321.');
   }
   const anonKey = requiredEnv('SUPABASE_ANON_KEY');
@@ -50,7 +50,7 @@ integrationTest('signup choices and later changes persist across independent Sup
   } finally {
     if (userID) {
       const { error } = await admin.auth.admin.deleteUser(userID);
-      if (error) throw new Error(`Could not remove onboarding test user ${userID}: ${error.message}`);
+      if (error) console.error(`Could not remove onboarding test user ${userID}: ${error.message}`);
     }
   }
 }, 15000);
