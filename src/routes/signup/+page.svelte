@@ -1,5 +1,6 @@
 <script>
   import { onDestroy, onMount } from 'svelte';
+  import CorridorPage from '$lib/CorridorPage.svelte';
   import { analyticsEvents, trackEvent } from '$lib/analytics.js';
   import { safeReturnTo } from '$lib/navigation.js';
   import { GET_STARTED_PATH, ONBOARDING_METADATA_KEY, WELCOME_PATH, preferencesFromSearch, preferencesPath } from '$lib/onboarding/preferences.js';
@@ -223,14 +224,9 @@
   ></svelte:head
 >
 
-<div class="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-5 py-12">
-  <a href="/" class="mb-8 flex items-center justify-center gap-2.5">
-    <img src="/mascot.png" alt="" width="40" height="40" class="rounded-xl" />
-    <span class="text-lg font-semibold tracking-tight">supaclank</span>
-  </a>
-
-  {#if view === 'confirm'}
-    <div class="rounded-2xl border border-line bg-elevated p-6 shadow-sm">
+<CorridorPage>
+    {#if view === 'confirm'}
+      <div class="auth-card rounded-2xl border border-line bg-elevated p-6 shadow-sm">
       <div class="flex items-center gap-2.5">
         <span class="h-2.5 w-2.5 animate-pulse rounded-full bg-brand"></span>
         <h1 class="text-xl font-semibold">Confirm your email</h1>
@@ -264,9 +260,9 @@
           >use a different email</button
         >.
       </p>
-    </div>
-  {:else}
-    <div class="rounded-2xl border border-line bg-elevated p-6 shadow-sm">
+      </div>
+    {:else}
+      <div class="auth-card rounded-2xl border border-line bg-elevated p-6 shadow-sm">
       <div class="flex items-center gap-2.5">
         <h1 class="text-xl font-semibold">
           {mode === 'signup' ? 'Create your account' : 'Welcome back'}
@@ -358,22 +354,47 @@
           >.
         </p>
       {/if}
-    </div>
-  {/if}
+      </div>
+    {/if}
 
-  {#if view !== 'confirm'}
-    <p class="mt-5 text-center text-sm text-muted">
-      {#if mode === 'signup'}
-        Already have an account?
-        <button class="font-medium text-brand hover:underline" onclick={() => (mode = 'signin')}
-          >Sign in</button
-        >
-      {:else}
-        New here?
-        <button class="font-medium text-brand hover:underline" onclick={() => (mode = 'signup')}
-          >Sign up</button
-        >
-      {/if}
-    </p>
-  {/if}
-</div>
+    {#if view !== 'confirm'}
+      <p class="auth-switch mt-5 text-center text-sm text-muted">
+        {#if mode === 'signup'}
+          Already have an account?
+          <button class="font-medium text-brand hover:underline" onclick={() => (mode = 'signin')}
+            >Sign in</button
+          >
+        {:else}
+          New here?
+          <button class="font-medium text-brand hover:underline" onclick={() => (mode = 'signup')}
+            >Sign up</button
+          >
+        {/if}
+      </p>
+    {/if}
+  </CorridorPage>
+
+<style>
+  .auth-card {
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.9) inset,
+      0 1px 2px rgba(26, 23, 20, 0.08),
+      0 20px 55px rgba(26, 23, 20, 0.12);
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+  }
+
+  .auth-switch {
+    width: fit-content;
+    margin-right: auto;
+    margin-left: auto;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.62);
+    border-radius: 999px;
+    background: rgba(250, 248, 244, 0.78);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+  }
+
+</style>

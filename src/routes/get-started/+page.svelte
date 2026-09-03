@@ -2,14 +2,15 @@
   import { onMount } from 'svelte';
   import { replaceState } from '$app/navigation';
   import { page } from '$app/state';
-  import MarketingHeader from '$lib/MarketingHeader.svelte';
-  import OnboardingModal from '$lib/onboarding/OnboardingModal.svelte';
+  import CorridorPage from '$lib/CorridorPage.svelte';
+  import OnboardingCard from '$lib/onboarding/OnboardingCard.svelte';
   import SetupPlan from '$lib/onboarding/SetupPlan.svelte';
   import { analyticsEvents, trackEvent } from '$lib/analytics.js';
   import { ONBOARDING_PLACEMENT, onboardingProperties } from '$lib/onboarding/analytics-properties.js';
   import { GET_STARTED_PATH, PREFERENCE_QUERY_KEYS, preferencesFromSearch, preferencesFromStorage, preferencesPath, storePreferences, USAGE } from '$lib/onboarding/preferences.js';
 
   let preferences = $state(null);
+  let ready = $state(false);
   let isOpen = $state(false);
   let initialStep = $state(0);
   let initialUsage = $state('');
@@ -33,6 +34,7 @@
     if (linkedPreferences) storePreferences(safeStorage(), linkedPreferences);
     if (Object.values(USAGE).includes(params.get('usage'))) initialUsage = params.get('usage');
     isOpen = !preferences;
+    ready = true;
     const { createSupabase } = await import('$lib/supabase');
     const { data } = await createSupabase().auth.getSession();
     isSignedIn = Boolean(data.session);
@@ -53,6 +55,10 @@
     isOpen = true;
   }
 
+  function cancelChange() {
+    isOpen = false;
+  }
+
   function update(answers) {
     preferences = storePreferences(safeStorage(), answers);
     replaceState(preferencesPath(GET_STARTED_PATH, answers), page.state);
@@ -64,22 +70,43 @@
   <meta name="description" content="Find your way to build with Clank. Web or mobile apps, from your laptop or phone, locally or in the cloud." />
 </svelte:head>
 
-<MarketingHeader signedIn={isSignedIn} />
-
-<main class="mx-auto flex min-h-[calc(100dvh-4rem)] max-w-2xl flex-col justify-center px-5 py-10 sm:py-16">
-  {#if preferences}
-    <h1 class="sr-only">Your Clank setup</h1>
-    <SetupPlan placement={ONBOARDING_PLACEMENT.getStarted} {preferences} {isSignedIn} isSaved={false} onchange={change} onupdate={update} />
+<CorridorPage width="wide">
+  {#if ready}
+    {#if isOpen}
+      <div class="mx-auto max-w-lg">
+        <OnboardingCard
+          placement={ONBOARDING_PLACEMENT.getStarted}
+          initial={preferences}
+          {initialUsage}
+          {initialStep}
+          oncomplete={complete}
+          oncancel={preferences ? cancelChange : null}
+        />
+        {#if !preferences}
+          <p class="flow-note mt-5 text-center text-xs text-muted">Three quick questions. No account needed.</p>
+        {/if}
+      </div>
+    {:else if preferences}
+      <h1 class="sr-only">Your Clank setup</h1>
+      <div class="mx-auto max-w-lg">
+        <SetupPlan placement={ONBOARDING_PLACEMENT.getStarted} {preferences} {isSignedIn} isSaved={false} onchange={change} onupdate={update} />
+      </div>
+    {/if}
   {:else}
-    <section class="rounded-3xl border border-line bg-elevated px-6 py-12 text-center sm:px-12">
-      <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">What will you build?</h1>
-      <p class="mx-auto mt-4 max-w-sm text-sm leading-relaxed text-muted">Tell us what you have in mind. We’ll point you to the right tools, whether that’s a quick install or a cloud workspace.</p>
-      <button onclick={() => isOpen = true} class="mt-7 rounded-xl bg-brand px-6 py-3 text-sm font-medium text-white hover:bg-brand-muted">Find my setup <span aria-hidden="true" class="ml-2">→</span></button>
-      <p class="mt-4 text-xs text-dim">Three quick questions. No account needed.</p>
-    </section>
+    <p class="text-center text-muted">Loading…</p>
   {/if}
-</main>
+</CorridorPage>
 
-{#if isOpen}
-  <OnboardingModal placement={ONBOARDING_PLACEMENT.getStarted} initial={preferences} {initialUsage} {initialStep} oncomplete={complete} onclose={() => isOpen = false} />
-{/if}
+<style>
+  .flow-note {
+    width: fit-content;
+    margin-right: auto;
+    margin-left: auto;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.62);
+    border-radius: 999px;
+    background: rgba(250, 248, 244, 0.78);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+  }
+</style>
