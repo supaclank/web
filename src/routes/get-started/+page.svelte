@@ -92,6 +92,8 @@
         <SetupPlan placement={ONBOARDING_PLACEMENT.getStarted} {preferences} {isSignedIn} isSaved={false} onchange={change} onupdate={update} />
       </div>
     {/if}
+  {:else}
+    <p class="text-center text-muted">Loading…</p>
   {/if}
 </CorridorPage>
 
