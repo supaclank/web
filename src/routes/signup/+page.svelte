@@ -1,14 +1,9 @@
 <script>
   import { onDestroy, onMount } from 'svelte';
+  import CorridorPage from '$lib/CorridorPage.svelte';
   import { analyticsEvents, trackEvent } from '$lib/analytics.js';
   import { safeReturnTo } from '$lib/navigation.js';
   import { GET_STARTED_PATH, ONBOARDING_METADATA_KEY, WELCOME_PATH, preferencesFromSearch, preferencesPath } from '$lib/onboarding/preferences.js';
-
-  // One projected mesh drives every surface so grid lines share the same
-  // points at the room's corners and back-wall seams.
-  const CORRIDOR_COLUMNS = Array.from({ length: 23 }, (_, index) => (index + 1) / 24);
-  const CORRIDOR_ROWS = Array.from({ length: 20 }, (_, index) => (index + 1) / 21);
-  const CORRIDOR_DEPTHS = [0.217, 0.385, 0.517, 0.625, 0.714, 0.79, 0.853, 0.908, 0.957];
 
   let supabase = $state(null);
   let mode = $state('signup'); // 'signup' | 'signin'
@@ -229,64 +224,7 @@
   ></svelte:head
 >
 
-<div class="auth-page">
-  <div class="corridor" aria-hidden="true">
-    <svg class="corridor-art" viewBox="0 0 1000 1000" preserveAspectRatio="none" focusable="false">
-      <defs>
-        <radialGradient id="signup-wall-light" cx="50%" cy="50%" r="62%">
-          <stop offset="0" stop-color="#ffffff" stop-opacity="0.9" />
-          <stop offset="0.65" stop-color="#ffffff" stop-opacity="0.34" />
-          <stop offset="1" stop-color="#fa5573" stop-opacity="0.035" />
-        </radialGradient>
-        <radialGradient id="signup-room-light" cx="50%" cy="50%" r="66%">
-          <stop offset="0" stop-color="#ffffff" stop-opacity="0" />
-          <stop offset="0.62" stop-color="#faf8f4" stop-opacity="0.08" />
-          <stop offset="1" stop-color="#dfd9d0" stop-opacity="0.5" />
-        </radialGradient>
-      </defs>
-
-      <rect width="1000" height="1000" class="room-base" />
-      <polygon class="room-surface ceiling-surface" points="0,0 1000,0 700,165 300,165" />
-      <polygon class="room-surface floor-surface" points="0,1000 300,835 700,835 1000,1000" />
-      <polygon class="room-surface wall-surface" points="0,0 300,165 300,835 0,1000" />
-      <polygon class="room-surface wall-surface" points="1000,0 700,165 700,835 1000,1000" />
-      <rect x="300" y="165" width="400" height="670" class="back-wall" />
-
-      <g class="room-grid">
-        {#each CORRIDOR_COLUMNS as position}
-          <!-- Longitudinal ceiling/floor lines terminate on the same back-wall column. -->
-          <line x1={position * 1000} y1="0" x2={300 + position * 400} y2="165" />
-          <line x1={position * 1000} y1="1000" x2={300 + position * 400} y2="835" />
-          <line x1={300 + position * 400} y1="165" x2={300 + position * 400} y2="835" />
-        {/each}
-
-        {#each CORRIDOR_ROWS as position}
-          <!-- Longitudinal wall lines terminate on the same back-wall row. -->
-          <line x1="0" y1={position * 1000} x2="300" y2={165 + position * 670} />
-          <line x1="1000" y1={position * 1000} x2="700" y2={165 + position * 670} />
-          <line x1="300" y1={165 + position * 670} x2="700" y2={165 + position * 670} />
-        {/each}
-
-        {#each CORRIDOR_DEPTHS as depth}
-          <!-- Each depth ring continues around all four planes at shared corners. -->
-          <line x1={depth * 300} y1={depth * 165} x2={1000 - depth * 300} y2={depth * 165} />
-          <line x1={depth * 300} y1={1000 - depth * 165} x2={1000 - depth * 300} y2={1000 - depth * 165} />
-          <line x1={depth * 300} y1={depth * 165} x2={depth * 300} y2={1000 - depth * 165} />
-          <line x1={1000 - depth * 300} y1={depth * 165} x2={1000 - depth * 300} y2={1000 - depth * 165} />
-        {/each}
-      </g>
-
-      <rect width="1000" height="1000" fill="url(#signup-room-light)" />
-      <path class="room-seams" d="M0 0 300 165H700L1000 0M0 1000 300 835H700L1000 1000M300 165V835M700 165V835" />
-    </svg>
-  </div>
-
-  <main class="auth-shell">
-    <a href="/" class="auth-logo mb-8 flex items-center justify-center gap-2.5">
-      <img src="/mascot.png" alt="" width="40" height="40" class="rounded-xl" />
-      <span class="text-lg font-semibold tracking-tight">supaclank</span>
-    </a>
-
+<CorridorPage>
     {#if view === 'confirm'}
       <div class="auth-card rounded-2xl border border-line bg-elevated p-6 shadow-sm">
       <div class="flex items-center gap-2.5">
@@ -434,79 +372,9 @@
         {/if}
       </p>
     {/if}
-  </main>
-</div>
+  </CorridorPage>
 
 <style>
-  .auth-page {
-    position: relative;
-    isolation: isolate;
-    display: grid;
-    min-height: 100svh;
-    place-items: center;
-    overflow: hidden;
-    padding: 3rem 1.25rem;
-    background: var(--color-paper);
-  }
-
-  .corridor {
-    position: absolute;
-    z-index: -1;
-    inset: 0;
-    overflow: hidden;
-    pointer-events: none;
-  }
-
-  .corridor-art {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-  }
-
-  .room-base {
-    fill: var(--color-paper);
-  }
-
-  .room-surface {
-    fill: #f7f4ef;
-  }
-
-  .floor-surface {
-    fill: #f1eee8;
-  }
-
-  .room-grid line {
-    stroke: rgba(26, 23, 20, 0.09);
-    stroke-width: 1;
-    vector-effect: non-scaling-stroke;
-  }
-
-  .back-wall {
-    fill: url(#signup-wall-light);
-  }
-
-  .room-seams {
-    fill: none;
-    stroke: rgba(250, 85, 115, 0.24);
-    stroke-width: 1.25;
-    vector-effect: non-scaling-stroke;
-  }
-
-  .auth-shell {
-    position: relative;
-    width: 100%;
-    max-width: 24rem;
-  }
-
-  .auth-logo {
-    width: fit-content;
-    margin-right: auto;
-    margin-left: auto;
-    border-radius: 0.875rem;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
-  }
-
   .auth-card {
     background: rgba(255, 255, 255, 0.94);
     box-shadow:
@@ -529,41 +397,4 @@
     backdrop-filter: blur(4px);
   }
 
-  @media (max-width: 640px) {
-    .auth-page {
-      overflow-y: auto;
-      padding-top: 2rem;
-      padding-bottom: 2rem;
-    }
-
-    .corridor-art {
-      left: -65%;
-      width: 230%;
-    }
-
-    .room-grid line {
-      stroke-opacity: 0.78;
-    }
-
-    .auth-logo {
-      margin-bottom: 1.5rem;
-    }
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .auth-shell {
-      animation: settle-on-wall 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
-    }
-  }
-
-  @keyframes settle-on-wall {
-    from {
-      opacity: 0;
-      transform: translateY(8px) scale(0.985);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
 </style>
