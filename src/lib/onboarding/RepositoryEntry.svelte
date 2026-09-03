@@ -8,8 +8,13 @@
     event.preventDefault();
     try {
       const path = repositoryInputPath(repository);
-      // Await the tracking call so it isn't dropped by the hard navigation below.
-      await onopen?.();
+      // Await the tracking call so it isn't dropped by the hard navigation below,
+      // but a tracking failure must not block a valid repository submission.
+      try {
+        await onopen?.();
+      } catch {
+        // ignore
+      }
       location.assign(path);
     } catch (cause) {
       error = cause.message;
