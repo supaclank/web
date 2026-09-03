@@ -85,7 +85,9 @@
     </div>
   {:else if preferences}
     <h1 class="sr-only">Your Clank setup</h1>
-    <SetupPlan placement={ONBOARDING_PLACEMENT.getStarted} {preferences} {isSignedIn} isSaved={false} onchange={change} onupdate={update} />
+    <div class="mx-auto max-w-lg">
+      <SetupPlan placement={ONBOARDING_PLACEMENT.getStarted} {preferences} {isSignedIn} isSaved={false} onchange={change} onupdate={update} />
+    </div>
   {/if}
 </CorridorPage>
 

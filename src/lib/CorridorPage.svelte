@@ -79,7 +79,7 @@
   }
 
   .corridor {
-    position: absolute;
+    position: fixed;
     z-index: -1;
     inset: 0;
     overflow: hidden;
