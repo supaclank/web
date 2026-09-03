@@ -8,10 +8,15 @@
       await navigator.clipboard.writeText(command);
       isCopied = true;
       error = '';
-      oncopied?.();
     } catch {
       isCopied = false;
       error = 'Couldn’t copy. Select the command and copy it manually.';
+      return;
+    }
+    try {
+      await oncopied?.();
+    } catch {
+      // Tracking failure must not change the successful copy state.
     }
   }
 </script>
