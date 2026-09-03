@@ -1,4 +1,5 @@
 <script>
+  // TODO(ai-review): duplicates OnboardingModal's step flow; extract a shared controller. https://github.com/supaclank/web/pull/26
   import { onMount, tick, untrack } from 'svelte';
   import ChoiceCard from './ChoiceCard.svelte';
   import { analyticsEvents, trackEvent } from '$lib/analytics.js';
@@ -28,7 +29,10 @@
     step === 0 ? buildTargets.length > 0 : step === 1 ? devices.length > 0 : Boolean(usage)
   );
 
-  onMount(() => report(analyticsEvents.onboardingOpened));
+  onMount(() => {
+    heading.focus();
+    report(analyticsEvents.onboardingOpened);
+  });
 
   // The route learns query-string defaults on mount; adopt that late value
   // only while this question has not yet been answered.

@@ -10,7 +10,8 @@
   import { GET_STARTED_PATH, PREFERENCE_QUERY_KEYS, preferencesFromSearch, preferencesFromStorage, preferencesPath, storePreferences, USAGE } from '$lib/onboarding/preferences.js';
 
   let preferences = $state(null);
-  let isOpen = $state(true);
+  let ready = $state(false);
+  let isOpen = $state(false);
   let initialStep = $state(0);
   let initialUsage = $state('');
   let isSignedIn = $state(false);
@@ -33,6 +34,7 @@
     if (linkedPreferences) storePreferences(safeStorage(), linkedPreferences);
     if (Object.values(USAGE).includes(params.get('usage'))) initialUsage = params.get('usage');
     isOpen = !preferences;
+    ready = true;
     const { createSupabase } = await import('$lib/supabase');
     const { data } = await createSupabase().auth.getSession();
     isSignedIn = Boolean(data.session);
@@ -69,25 +71,27 @@
 </svelte:head>
 
 <CorridorPage width="wide">
-  {#if isOpen}
-    <div class="mx-auto max-w-lg">
-      <OnboardingCard
-        placement={ONBOARDING_PLACEMENT.getStarted}
-        initial={preferences}
-        {initialUsage}
-        {initialStep}
-        oncomplete={complete}
-        oncancel={preferences ? cancelChange : null}
-      />
-      {#if !preferences}
-        <p class="flow-note mt-5 text-center text-xs text-muted">Three quick questions. No account needed.</p>
-      {/if}
-    </div>
-  {:else if preferences}
-    <h1 class="sr-only">Your Clank setup</h1>
-    <div class="mx-auto max-w-lg">
-      <SetupPlan placement={ONBOARDING_PLACEMENT.getStarted} {preferences} {isSignedIn} isSaved={false} onchange={change} onupdate={update} />
-    </div>
+  {#if ready}
+    {#if isOpen}
+      <div class="mx-auto max-w-lg">
+        <OnboardingCard
+          placement={ONBOARDING_PLACEMENT.getStarted}
+          initial={preferences}
+          {initialUsage}
+          {initialStep}
+          oncomplete={complete}
+          oncancel={preferences ? cancelChange : null}
+        />
+        {#if !preferences}
+          <p class="flow-note mt-5 text-center text-xs text-muted">Three quick questions. No account needed.</p>
+        {/if}
+      </div>
+    {:else if preferences}
+      <h1 class="sr-only">Your Clank setup</h1>
+      <div class="mx-auto max-w-lg">
+        <SetupPlan placement={ONBOARDING_PLACEMENT.getStarted} {preferences} {isSignedIn} isSaved={false} onchange={change} onupdate={update} />
+      </div>
+    {/if}
   {/if}
 </CorridorPage>
 
