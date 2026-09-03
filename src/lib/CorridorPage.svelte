@@ -1,14 +1,93 @@
 <script>
-  let { children, width = 'narrow' } = $props();
+  import { onMount } from 'svelte';
+
+  let { children, width = 'narrow', parallax = true } = $props();
 
   // A shared projected mesh keeps every surface connected at the room's
   // corners and back-wall seams.
   const COLUMNS = Array.from({ length: 23 }, (_, index) => (index + 1) / 24);
   const ROWS = Array.from({ length: 20 }, (_, index) => (index + 1) / 21);
   const DEPTHS = [0.217, 0.385, 0.517, 0.625, 0.714, 0.79, 0.853, 0.908, 0.957];
+  const NEAR_VERTICAL_OVERSCAN = 340;
+  const MAX_NEAR_SHIFT_Y = -320;
+  const MAX_BACK_SHIFT_Y = -70;
+
+  let pageElement;
+  let scrollOffset = $state(0);
+  let maxScroll = $state(1);
+  let prefersReducedMotion = $state(false);
+  let projection = $derived.by(() => {
+    const progress = prefersReducedMotion || !parallax
+      ? 0
+      : Math.min(Math.max(scrollOffset, 0) / maxScroll, 1);
+    const nearShiftY = progress * MAX_NEAR_SHIFT_Y;
+    const backShiftY = progress * MAX_BACK_SHIFT_Y;
+
+    return {
+      left: 300,
+      right: 700,
+      top: 165 + backShiftY,
+      bottom: 835 + backShiftY,
+      width: 400,
+      height: 670,
+      nearLeft: 0,
+      nearRight: 1000,
+      nearTop: -NEAR_VERTICAL_OVERSCAN + nearShiftY,
+      nearBottom: 1000 + NEAR_VERTICAL_OVERSCAN + nearShiftY,
+      nearWidth: 1000,
+      nearHeight: 1000 + NEAR_VERTICAL_OVERSCAN * 2
+    };
+  });
+
+  onMount(() => {
+    const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let animationFrame = 0;
+    let layoutFrame = 0;
+
+    function readScroll() {
+      animationFrame = 0;
+      scrollOffset = window.scrollY;
+    }
+
+    function scheduleRead() {
+      if (!animationFrame) animationFrame = window.requestAnimationFrame(readScroll);
+    }
+
+    function readLayout() {
+      layoutFrame = 0;
+      maxScroll = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+      scrollOffset = window.scrollY;
+    }
+
+    function scheduleLayoutRead() {
+      if (!layoutFrame) layoutFrame = window.requestAnimationFrame(readLayout);
+    }
+
+    function readMotionPreference() {
+      prefersReducedMotion = motionPreference.matches;
+      scheduleRead();
+    }
+
+    readMotionPreference();
+    readLayout();
+    window.addEventListener('scroll', scheduleRead, { passive: true });
+    window.addEventListener('resize', scheduleLayoutRead, { passive: true });
+    motionPreference.addEventListener('change', readMotionPreference);
+    const resizeObserver = new ResizeObserver(scheduleLayoutRead);
+    resizeObserver.observe(pageElement);
+
+    return () => {
+      window.removeEventListener('scroll', scheduleRead);
+      window.removeEventListener('resize', scheduleLayoutRead);
+      motionPreference.removeEventListener('change', readMotionPreference);
+      resizeObserver.disconnect();
+      if (animationFrame) window.cancelAnimationFrame(animationFrame);
+      if (layoutFrame) window.cancelAnimationFrame(layoutFrame);
+    };
+  });
 </script>
 
-<div class:wide-room={width === 'wide'} class="corridor-page">
+<div bind:this={pageElement} class:wide-room={width === 'wide'} class="corridor-page">
   <div class="corridor" aria-hidden="true">
     <svg class="corridor-art" viewBox="0 0 1000 1000" preserveAspectRatio="none" focusable="false">
       <defs>
@@ -25,35 +104,38 @@
       </defs>
 
       <rect width="1000" height="1000" class="room-base" />
-      <polygon class="room-surface" points="0,0 1000,0 700,165 300,165" />
-      <polygon class="room-surface floor-surface" points="0,1000 300,835 700,835 1000,1000" />
-      <polygon class="room-surface" points="0,0 300,165 300,835 0,1000" />
-      <polygon class="room-surface" points="1000,0 700,165 700,835 1000,1000" />
-      <rect x="300" y="165" width="400" height="670" class="back-wall" />
+      <polygon class="room-surface" points={`${projection.nearLeft},${projection.nearTop} ${projection.nearRight},${projection.nearTop} ${projection.right},${projection.top} ${projection.left},${projection.top}`} />
+      <polygon class="room-surface floor-surface" points={`${projection.nearLeft},${projection.nearBottom} ${projection.left},${projection.bottom} ${projection.right},${projection.bottom} ${projection.nearRight},${projection.nearBottom}`} />
+      <polygon class="room-surface" points={`${projection.nearLeft},${projection.nearTop} ${projection.left},${projection.top} ${projection.left},${projection.bottom} ${projection.nearLeft},${projection.nearBottom}`} />
+      <polygon class="room-surface" points={`${projection.nearRight},${projection.nearTop} ${projection.right},${projection.top} ${projection.right},${projection.bottom} ${projection.nearRight},${projection.nearBottom}`} />
+      <rect x={projection.left} y={projection.top} width={projection.width} height={projection.height} class="back-wall" />
 
       <g class="room-grid">
         {#each COLUMNS as position}
-          <line x1={position * 1000} y1="0" x2={300 + position * 400} y2="165" />
-          <line x1={position * 1000} y1="1000" x2={300 + position * 400} y2="835" />
-          <line x1={300 + position * 400} y1="165" x2={300 + position * 400} y2="835" />
+          <line x1={projection.nearLeft + position * projection.nearWidth} y1={projection.nearTop} x2={projection.left + position * projection.width} y2={projection.top} />
+          <line x1={projection.nearLeft + position * projection.nearWidth} y1={projection.nearBottom} x2={projection.left + position * projection.width} y2={projection.bottom} />
+          <line x1={projection.left + position * projection.width} y1={projection.top} x2={projection.left + position * projection.width} y2={projection.bottom} />
         {/each}
 
         {#each ROWS as position}
-          <line x1="0" y1={position * 1000} x2="300" y2={165 + position * 670} />
-          <line x1="1000" y1={position * 1000} x2="700" y2={165 + position * 670} />
-          <line x1="300" y1={165 + position * 670} x2="700" y2={165 + position * 670} />
+          <line x1={projection.nearLeft} y1={projection.nearTop + position * projection.nearHeight} x2={projection.left} y2={projection.top + position * projection.height} />
+          <line x1={projection.nearRight} y1={projection.nearTop + position * projection.nearHeight} x2={projection.right} y2={projection.top + position * projection.height} />
+          <line x1={projection.left} y1={projection.top + position * projection.height} x2={projection.right} y2={projection.top + position * projection.height} />
         {/each}
 
         {#each DEPTHS as depth}
-          <line x1={depth * 300} y1={depth * 165} x2={1000 - depth * 300} y2={depth * 165} />
-          <line x1={depth * 300} y1={1000 - depth * 165} x2={1000 - depth * 300} y2={1000 - depth * 165} />
-          <line x1={depth * 300} y1={depth * 165} x2={depth * 300} y2={1000 - depth * 165} />
-          <line x1={1000 - depth * 300} y1={depth * 165} x2={1000 - depth * 300} y2={1000 - depth * 165} />
+          <line x1={projection.nearLeft + depth * (projection.left - projection.nearLeft)} y1={projection.nearTop + depth * (projection.top - projection.nearTop)} x2={projection.nearRight + depth * (projection.right - projection.nearRight)} y2={projection.nearTop + depth * (projection.top - projection.nearTop)} />
+          <line x1={projection.nearLeft + depth * (projection.left - projection.nearLeft)} y1={projection.nearBottom + depth * (projection.bottom - projection.nearBottom)} x2={projection.nearRight + depth * (projection.right - projection.nearRight)} y2={projection.nearBottom + depth * (projection.bottom - projection.nearBottom)} />
+          <line x1={projection.nearLeft + depth * (projection.left - projection.nearLeft)} y1={projection.nearTop + depth * (projection.top - projection.nearTop)} x2={projection.nearLeft + depth * (projection.left - projection.nearLeft)} y2={projection.nearBottom + depth * (projection.bottom - projection.nearBottom)} />
+          <line x1={projection.nearRight + depth * (projection.right - projection.nearRight)} y1={projection.nearTop + depth * (projection.top - projection.nearTop)} x2={projection.nearRight + depth * (projection.right - projection.nearRight)} y2={projection.nearBottom + depth * (projection.bottom - projection.nearBottom)} />
         {/each}
       </g>
 
       <rect width="1000" height="1000" fill="url(#corridor-room-light)" />
-      <path class="room-seams" d="M0 0 300 165H700L1000 0M0 1000 300 835H700L1000 1000M300 165V835M700 165V835" />
+      <path
+        class="room-seams"
+        d={`M${projection.nearLeft} ${projection.nearTop} ${projection.left} ${projection.top}H${projection.right}L${projection.nearRight} ${projection.nearTop}M${projection.nearLeft} ${projection.nearBottom} ${projection.left} ${projection.bottom}H${projection.right}L${projection.nearRight} ${projection.nearBottom}M${projection.left} ${projection.top}V${projection.bottom}M${projection.right} ${projection.top}V${projection.bottom}`}
+      />
     </svg>
   </div>
 
@@ -79,7 +161,7 @@
   }
 
   .corridor {
-    position: absolute;
+    position: fixed;
     z-index: -1;
     inset: 0;
     overflow: hidden;

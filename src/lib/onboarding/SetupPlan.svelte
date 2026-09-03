@@ -43,9 +43,6 @@
       </div>
       <button onclick={() => onchange(0)} class="-mr-2 min-h-11 shrink-0 rounded-lg px-2 text-xs text-muted underline decoration-line underline-offset-4 hover:text-ink">Change</button>
     </div>
-    <p class="mt-3 text-sm leading-relaxed text-muted">
-      {isLocal ? 'Everything runs on your computer. Free and open source. No account needed.' : isSaved ? 'Your setup is saved. Follow the steps below to start building.' : isSignedIn ? 'Save these choices to your account and continue setting up your workspace.' : 'Start with 7 days free. Just sign up!'}
-    </p>
     <ul aria-label="Your choices" class="mt-4 flex flex-wrap gap-2 text-xs text-muted">
       <li><button type="button" aria-expanded={activeChoice === 'build'} onclick={() => activeChoice = activeChoice === 'build' ? null : 'build'} class="inline-flex items-center gap-1.5 rounded-full border bg-transparent px-3 py-1.5 transition-colors {activeChoice === 'build' ? 'border-brand text-ink' : 'border-line text-muted hover:border-ink/25 hover:text-ink'}"><span class={activeChoice === 'build' ? 'text-brand-muted' : 'text-dim'}>Build ·</span>{buildChoiceLabel}</button></li>
       <li><button type="button" aria-expanded={activeChoice === 'device'} onclick={() => activeChoice = activeChoice === 'device' ? null : 'device'} class="inline-flex items-center gap-1.5 rounded-full border bg-transparent px-3 py-1.5 transition-colors {activeChoice === 'device' ? 'border-brand text-ink' : 'border-line text-muted hover:border-ink/25 hover:text-ink'}"><span class={activeChoice === 'device' ? 'text-brand-muted' : 'text-dim'}>From ·</span>{deviceChoiceLabel}</button></li>

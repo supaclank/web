@@ -62,7 +62,7 @@
   <meta name="description" content="Find your way to build with Clank. Web or mobile apps, from your laptop or phone, locally or in the cloud." />
 </svelte:head>
 
-<CorridorPage width="wide">
+<CorridorPage width="wide" parallax={!isOpen && preferences?.usage === USAGE.local}>
   {#if isOpen}
     <div class="mx-auto max-w-lg">
       <OnboardingCard
@@ -77,8 +77,10 @@
       {/if}
     </div>
   {:else if preferences}
-    <h1 class="sr-only">Your Clank setup</h1>
-    <SetupPlan {preferences} {isSignedIn} isSaved={false} onchange={change} onupdate={update} />
+    <div class="mx-auto max-w-lg {preferences.usage === USAGE.local ? 'pb-32 sm:pb-40' : ''}">
+      <h1 class="sr-only">Your Clank setup</h1>
+      <SetupPlan {preferences} {isSignedIn} isSaved={false} onchange={change} onupdate={update} />
+    </div>
   {/if}
 </CorridorPage>
 
