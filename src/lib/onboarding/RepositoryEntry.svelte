@@ -1,12 +1,16 @@
 <script>
   import { repositoryInputPath } from './preferences.js';
+  let { onopen } = $props();
   let repository = $state('');
   let error = $state('');
 
-  function openRepository(event) {
+  async function openRepository(event) {
     event.preventDefault();
     try {
-      location.assign(repositoryInputPath(repository));
+      const path = repositoryInputPath(repository);
+      // Await the tracking call so it isn't dropped by the hard navigation below.
+      await onopen?.();
+      location.assign(path);
     } catch (cause) {
       error = cause.message;
     }

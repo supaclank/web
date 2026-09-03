@@ -5,6 +5,8 @@
   import MarketingHeader from '$lib/MarketingHeader.svelte';
   import OnboardingModal from '$lib/onboarding/OnboardingModal.svelte';
   import SetupPlan from '$lib/onboarding/SetupPlan.svelte';
+  import { analyticsEvents, trackEvent } from '$lib/analytics.js';
+  import { ONBOARDING_PLACEMENT, onboardingProperties } from '$lib/onboarding/analytics-properties.js';
   import { GET_STARTED_PATH, PREFERENCE_QUERY_KEYS, preferencesFromSearch, preferencesFromStorage, preferencesPath, storePreferences, USAGE } from '$lib/onboarding/preferences.js';
 
   let preferences = $state(null);
@@ -37,9 +39,13 @@
   });
 
   function complete(answers) {
+    const isEdit = Boolean(preferences);
     preferences = storePreferences(safeStorage(), answers);
     replaceState(preferencesPath(GET_STARTED_PATH, answers), page.state);
     isOpen = false;
+    trackEvent(analyticsEvents.onboardingCompleted, {
+      ...onboardingProperties(ONBOARDING_PLACEMENT.getStarted, preferences), is_edit: isEdit
+    });
   }
 
   function change(step = 0) {
@@ -63,7 +69,7 @@
 <main class="mx-auto flex min-h-[calc(100dvh-4rem)] max-w-2xl flex-col justify-center px-5 py-10 sm:py-16">
   {#if preferences}
     <h1 class="sr-only">Your Clank setup</h1>
-    <SetupPlan {preferences} {isSignedIn} isSaved={false} onchange={change} onupdate={update} />
+    <SetupPlan placement={ONBOARDING_PLACEMENT.getStarted} {preferences} {isSignedIn} isSaved={false} onchange={change} onupdate={update} />
   {:else}
     <section class="rounded-3xl border border-line bg-elevated px-6 py-12 text-center sm:px-12">
       <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">What will you build?</h1>
@@ -75,5 +81,5 @@
 </main>
 
 {#if isOpen}
-  <OnboardingModal initial={preferences} {initialUsage} {initialStep} oncomplete={complete} onclose={() => isOpen = false} />
+  <OnboardingModal placement={ONBOARDING_PLACEMENT.getStarted} initial={preferences} {initialUsage} {initialStep} oncomplete={complete} onclose={() => isOpen = false} />
 {/if}

@@ -3,9 +3,11 @@
   import ChoiceCard from './ChoiceCard.svelte';
   import CopyCommand from './CopyCommand.svelte';
   import RepositoryEntry from './RepositoryEntry.svelte';
+  import { analyticsEvents, trackEvent } from '$lib/analytics.js';
+  import { ONBOARDING_ACTION, onboardingProperties, onboardingActionProperties } from './analytics-properties.js';
   import { BUILD_TARGET, DEVICE, USAGE, INSTALL_COMMAND, PREVIEW_COMMAND, PAIR_COMMAND, setupNeeds, setupContinuation, signupPath } from './preferences.js';
 
-  let { preferences, isSignedIn, isSaved, onchange, onupdate, isUpdating = false } = $props();
+  let { placement, preferences, isSignedIn, isSaved, onchange, onupdate, isUpdating = false } = $props();
   let needs = $derived(setupNeeds(preferences));
   let isLocal = $derived(preferences.usage === USAGE.local);
   let hasMobileTarget = $derived(preferences.buildTargets.includes(BUILD_TARGET.mobile));
@@ -16,6 +18,19 @@
   let buildChoiceLabel = $derived(preferences.buildTargets.map((target) => target === BUILD_TARGET.web ? 'Web apps' : 'Mobile apps').join(' + '));
   let deviceChoiceLabel = $derived(preferences.devices.map((device) => device === DEVICE.laptop ? 'Computer' : 'Phone').join(' + '));
   let activeChoice = $state('usage');
+  let previousView = '';
+
+  $effect(() => {
+    const properties = onboardingProperties(placement, preferences);
+    const view = JSON.stringify(properties);
+    if (view === previousView) return;
+    previousView = view;
+    trackEvent(analyticsEvents.onboardingSetupViewed, properties);
+  });
+
+  function reportAction(action) {
+    return trackEvent(analyticsEvents.onboardingAction, onboardingActionProperties(placement, preferences, action));
+  }
 
   function toggle(values, value) {
     if (values.includes(value)) return values.length > 1 ? values.filter((item) => item !== value) : values;
@@ -73,7 +88,7 @@
       <li>
         <h3>{isSignedIn ? 'Continue with your account' : 'Create your cloud account'}</h3>
         {#if isSignedIn}<p>Keep your personalized setup with your account so it’s ready next time you sign in.</p>{/if}
-        <a href={continuation.href} class="mt-4 inline-flex min-h-11 items-center gap-3 rounded-xl bg-brand px-5 py-3 text-sm font-medium text-white hover:bg-brand-muted">{continuation.label} <span aria-hidden="true">→</span></a>
+        <a href={continuation.href} onclick={() => reportAction(isSignedIn ? ONBOARDING_ACTION.saveAccount : ONBOARDING_ACTION.cloudSignup)} class="mt-4 inline-flex min-h-11 items-center gap-3 rounded-xl bg-brand px-5 py-3 text-sm font-medium text-white hover:bg-brand-muted">{continuation.label} <span aria-hidden="true">→</span></a>
       </li>
     {/if}
 
@@ -88,8 +103,8 @@
       <li>
         <h3>Install Clank on your laptop</h3>
         <p>Run this in your terminal with Homebrew installed.</p>
-        <CopyCommand command={INSTALL_COMMAND} />
-        {#if needs.needsLaptopReminder}<p class="mt-3 rounded-lg bg-surface p-3">Even when you work from your phone, this laptop needs to stay on and reachable. <a href={cloudSignupHref} class="font-medium text-brand-muted underline underline-offset-4">Sign up for a cloud sandbox, and peace of mind.</a></p>{/if}
+        <CopyCommand command={INSTALL_COMMAND} oncopied={() => reportAction(ONBOARDING_ACTION.copyInstall)} />
+        {#if needs.needsLaptopReminder}<p class="mt-3 rounded-lg bg-surface p-3">Even when you work from your phone, this laptop needs to stay on and reachable. <a href={cloudSignupHref} onclick={() => reportAction(ONBOARDING_ACTION.cloudSignup)} class="font-medium text-brand-muted underline underline-offset-4">Sign up for a cloud sandbox, and peace of mind.</a></p>{/if}
       </li>
     {/if}
 
@@ -101,14 +116,14 @@
         {:else if !isLocal}
           <p>Sign in with the same Supaclank account.</p>
         {/if}
-        <div class="mt-4"><GetApp qr qrPosition="right" /></div>
+        <div class="mt-4"><GetApp qr qrPosition="right" onopenstore={() => reportAction(ONBOARDING_ACTION.appDownload)} onshowqr={() => reportAction(ONBOARDING_ACTION.appQrShown)} /></div>
       </li>
     {/if}
 
     {#if needs.pairPhone}
       <li>
         <h3>Connect your phone to your laptop</h3>
-        <CopyCommand command={PAIR_COMMAND} />
+        <CopyCommand command={PAIR_COMMAND} oncopied={() => reportAction(ONBOARDING_ACTION.copyPair)} />
       </li>
     {/if}
 
@@ -116,7 +131,7 @@
       <li>
         <h3>Open your project and start a preview</h3>
         <p>In your project folder, run:</p>
-        <CopyCommand command={PREVIEW_COMMAND} />
+        <CopyCommand command={PREVIEW_COMMAND} oncopied={() => reportAction(ONBOARDING_ACTION.copyPreview)} />
         {#if hasWebTarget}<p class="mt-3">For web apps, open the browser preview and press ⌘E / Ctrl+E to start editing.</p>{/if}
         {#if hasMobileTarget}<p class="mt-3">For Expo apps, open the preview in Clank on your phone. Shake to bring up the editor.</p>{/if}
       </li>
@@ -125,7 +140,7 @@
         <li>
           <h3>Open a project in your browser</h3>
           <p>Choose a GitHub repository. You’ll connect GitHub and review it before creating a cloud workspace.</p>
-          <RepositoryEntry />
+          <RepositoryEntry onopen={() => reportAction(ONBOARDING_ACTION.openRepository)} />
         </li>
       {/if}
       {#if needs.downloadApp}
@@ -138,7 +153,7 @@
   </ol>
   {#if isLocal && isSignedIn && !isSaved}
     <div class="border-t border-line-subtle p-6 sm:px-8">
-      <a href={continuation.href} class="text-sm font-medium text-brand-muted underline underline-offset-4">Save this setup to my account</a>
+      <a href={continuation.href} onclick={() => reportAction(ONBOARDING_ACTION.saveAccount)} class="text-sm font-medium text-brand-muted underline underline-offset-4">Save this setup to my account</a>
     </div>
   {/if}
 </section>

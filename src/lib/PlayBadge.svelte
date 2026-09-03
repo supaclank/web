@@ -2,17 +2,35 @@
   // Inline "Get it on Google Play" badge (asset-light — no image request).
   // variant: 'onlight' = dark badge for light backgrounds, 'ondark' = light.
   // size: 'md' (default) or 'sm' (compact, e.g. inside the phone preview).
-  let { variant = 'onlight', size = 'md', tabindex = undefined } = $props();
+  let { variant = 'onlight', size = 'md', tabindex = undefined, onclick } = $props();
 
   const PLAY_URL = 'https://play.google.com/store/apps/details?id=com.supaclank.clank';
   let dark = $derived(variant === 'onlight');
   let sm = $derived(size === 'sm');
+
+  // Plain clicks would otherwise unload the page before the async tracking
+  // call finishes; hold the navigation until it settles. Modified clicks
+  // (new tab, etc.) are left to the browser's default handling untouched.
+  async function handleClick(event) {
+    if (!onclick) return;
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+      onclick();
+      return;
+    }
+    event.preventDefault();
+    try {
+      await onclick();
+    } finally {
+      location.href = PLAY_URL;
+    }
+  }
 </script>
 
 <a
   href={PLAY_URL}
   rel="noreferrer"
   {tabindex}
+  onclick={handleClick}
   aria-label="Get it on Google Play"
   class="inline-flex items-center shadow-sm ring-1 transition-transform hover:-translate-y-0.5 {sm
     ? 'gap-2 rounded-lg px-3 py-1.5'
