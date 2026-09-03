@@ -1,15 +1,11 @@
 <script>
-  // Post-auth landing. Three jobs:
-  //  1. If we arrived from an email confirmation / magic link, surface a
-  //     friendly message (token is in the URL fragment) and strip it.
-  //  2. Read the trial/subscription state from clankgw's GET
-  //     /v1/billing/status and render the right call-to-action.
-  //  3. Offer subscribe (Checkout) / manage (Billing Portal). Selling on
-  //     the web so app-store revenue share doesn't apply.
+  // Account setup and cloud billing after sign-in.
   import { onMount } from 'svelte';
   import { analyticsEvents, trackEvent } from '$lib/analytics.js';
   import { safeReturnTo } from '$lib/navigation.js';
   import { CLOUD_MONTHLY_PLAN } from '$lib/pricing.js';
+  import WelcomeSetup from '$lib/onboarding/WelcomeSetup.svelte';
+  import { USAGE, preferencesFromUser } from '$lib/onboarding/preferences.js';
 
   let phase = $state('loading');
   let confirmMsg = $state(null);
@@ -18,10 +14,11 @@
   let busy = $state(false);
   let confirming = $state(false);
   let error = $state('');
-  let supabase;
+  let supabase = $state(null);
   let gatewayURL = '';
   let token = '';
   let returnTo = $state('/welcome');
+  let onboardingPreferences = $state(null);
 
   const confirmMessages = {
     signup: { title: 'Email confirmed', body: 'Your account is active and your free trial has started.' },
@@ -60,21 +57,27 @@
     }
     token = session.access_token;
     email = session.user.email || '';
-    await loadStatus();
+    // Read preferences from the session we already have so a local-only user
+    // is known before touching billing, which lazily creates a trial row.
+    onboardingPreferences = preferencesFromUser(session.user);
+    const isLocalOnly = onboardingPreferences?.usage === USAGE.local;
+    if (!isLocalOnly) await loadStatus();
     phase = 'ready';
 
-    // Stripe redirects here the instant checkout completes, but the
-    // subscription only becomes active once the customer.subscription.*
-    // webhook reaches clankgw. That race is normally a second or two, and
-    // losing it used to leave a paying customer staring at "Subscribe",
-    // corrected only if they happened to reload. Poll while the
-    // checkout marker is set, so the page settles by itself.
-    if (checkoutWasStarted() && status?.status !== 'active') {
-      confirming = true;
-      await pollUntilActive();
-      confirming = false;
+    if (!isLocalOnly) {
+      // Stripe redirects here the instant checkout completes, but the
+      // subscription only becomes active once the customer.subscription.*
+      // webhook reaches clankgw. That race is normally a second or two, and
+      // losing it used to leave a paying customer staring at "Subscribe",
+      // corrected only if they happened to reload. Poll while the
+      // checkout marker is set, so the page settles by itself.
+      if (checkoutWasStarted() && status?.status !== 'active') {
+        confirming = true;
+        await pollUntilActive();
+        confirming = false;
+      }
+      await recordBillingConversions();
     }
-    await recordBillingConversions();
   });
 
   // ~30s of polling, backing off 1s to 3s. Generous enough for a slow
@@ -247,7 +250,7 @@
 
 <svelte:head><title>Welcome · Supaclank</title></svelte:head>
 
-<div class="mx-auto flex min-h-screen max-w-md flex-col justify-center px-5 py-12">
+<div class="mx-auto flex min-h-screen max-w-2xl flex-col justify-center px-5 py-12">
   <a href="/" class="mb-8 flex items-center justify-center gap-2.5">
     <img src="/mascot.png" alt="" width="40" height="40" class="rounded-xl" />
     <span class="text-lg font-semibold tracking-tight">supaclank</span>
@@ -260,7 +263,7 @@
       <h1 class="text-xl font-semibold">You're signed out</h1>
       <p class="mt-1 text-sm text-muted">Sign in to see your account.</p>
       <a
-        href="/signup"
+        href="/signup?mode=signin"
         class="mt-5 inline-block rounded-lg bg-brand px-5 py-2.5 font-medium text-white hover:bg-brand-muted"
         >Sign in</a
       >
@@ -273,86 +276,78 @@
       </div>
     {/if}
 
+    <WelcomeSetup
+      {supabase}
+      onpreferences={(value) => {
+        const wasLocalOnly = onboardingPreferences?.usage === USAGE.local;
+        onboardingPreferences = value;
+        if (wasLocalOnly && value?.usage !== USAGE.local && !status) loadStatus();
+      }}
+    />
+
     <div class="rounded-2xl border border-line bg-elevated p-6 shadow-sm">
-      <h1 class="text-xl font-semibold">Welcome!</h1>
+      <h1 class="text-xl font-semibold">Your account</h1>
       {#if email}<p class="mt-1 text-sm text-muted">Signed in as {email}</p>{/if}
 
-      <!-- Billing status -->
-      <div class="mt-5 rounded-xl bg-surface p-4">
-        {#if confirming && !active}
-          <p class="text-sm font-medium">Confirming your subscription…</p>
-          <p class="mt-0.5 text-sm text-muted">
-            Payment went through. This updates by itself in a moment.
-          </p>
-        {:else if !status}
-          <p class="text-sm text-muted">Could not load billing status.</p>
-        {:else if active}
-          <p class="text-sm font-medium text-success">Pro plan active</p>
-          <p class="mt-0.5 text-sm text-muted">Thanks for subscribing.</p>
-          <button
-            onclick={manage}
-            disabled={busy}
-            class="mt-3 rounded-lg border border-line bg-elevated px-4 py-2 text-sm font-medium hover:bg-paper disabled:opacity-50"
-            >Manage subscription</button
-          >
-        {:else if trialing && !needsPay}
-          <p class="text-sm font-medium">
-            {status.days_left}
-            {status.days_left === 1 ? 'day' : 'days'} left of your free trial
-          </p>
-          <p class="mt-0.5 text-sm text-muted">Enjoy Pro on us. Subscribe anytime to keep going.</p>
-          <button
-            onclick={subscribe}
-            disabled={busy}
-            class="mt-3 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-muted disabled:opacity-50"
-            >{CLOUD_MONTHLY_PLAN.checkoutLabel}</button
-          >
-        {:else}
-          <p class="text-sm font-medium text-danger">Your trial has ended</p>
-          <p class="mt-0.5 text-sm text-muted">Subscribe to keep using the cloud.</p>
-          <button
-            onclick={subscribe}
-            disabled={busy}
-            class="mt-3 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-muted disabled:opacity-50"
-            >{CLOUD_MONTHLY_PLAN.checkoutLabel}</button
-          >
-        {/if}
-        <!-- Consent point for the paid contract. Shown only when a Subscribe
-             button is on screen, i.e. not on the manage-subscription branch. -->
-        {#if status && !active && !confirming}
-          <p class="mt-2.5 text-xs text-dim">
-            Subscribing means accepting our
-            <a href="/terms" class="underline decoration-line underline-offset-2 transition-colors hover:text-muted"
-              >Terms</a
-            >, including the cancellation and refund terms.
-          </p>
-        {/if}
-        {#if error}<p class="mt-2 text-sm text-danger">{error}</p>{/if}
-      </div>
-
-      {#if status?.allowed && returnTo !== '/welcome'}
-        <a href={returnTo} onclick={clearCheckoutReturnTo} class="mt-4 block rounded-lg bg-brand px-4 py-2.5 text-center text-sm font-medium text-white hover:bg-brand-muted">Continue to your preview</a>
-      {/if}
-
-      <!-- Get the app -->
-      <div class="mt-5">
-        <p class="text-sm font-medium">Get the mobile app</p>
-        <p class="mt-0.5 text-sm text-muted">
-          Watch your agents and approve changes from your phone.
-        </p>
-        <div class="mt-3 flex gap-2.5">
-          <a
-            href="#app-store"
-            class="flex-1 rounded-lg border border-line px-4 py-2 text-center text-sm font-medium hover:bg-surface"
-            >App Store</a
-          >
-          <a
-            href="#play-store"
-            class="flex-1 rounded-lg border border-line px-4 py-2 text-center text-sm font-medium hover:bg-surface"
-            >Google Play</a
-          >
+      <details class="mt-4" open={onboardingPreferences?.usage !== USAGE.local || active || returnTo !== '/welcome'}>
+        <summary class="cursor-pointer text-sm font-medium text-muted">Cloud account &amp; billing</summary>
+        <!-- Billing status -->
+        <div class="mt-5 rounded-xl bg-surface p-4">
+          {#if confirming && !active}
+            <p class="text-sm font-medium">Confirming your subscription…</p>
+            <p class="mt-0.5 text-sm text-muted">
+              Payment went through. This updates by itself in a moment.
+            </p>
+          {:else if !status}
+            <p class="text-sm text-muted">Could not load billing status.</p>
+          {:else if active}
+            <p class="text-sm font-medium text-success">Pro plan active</p>
+            <p class="mt-0.5 text-sm text-muted">Thanks for subscribing.</p>
+            <button
+              onclick={manage}
+              disabled={busy}
+              class="mt-3 rounded-lg border border-line bg-elevated px-4 py-2 text-sm font-medium hover:bg-paper disabled:opacity-50"
+              >Manage subscription</button
+            >
+          {:else if trialing && !needsPay}
+            <p class="text-sm font-medium">
+              {status.days_left}
+              {status.days_left === 1 ? 'day' : 'days'} left of your free trial
+            </p>
+            <p class="mt-0.5 text-sm text-muted">Enjoy Pro on us. Subscribe anytime to keep going.</p>
+            <button
+              onclick={subscribe}
+              disabled={busy}
+              class="mt-3 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-muted disabled:opacity-50"
+              >{CLOUD_MONTHLY_PLAN.checkoutLabel}</button
+            >
+          {:else}
+            <p class="text-sm font-medium text-danger">Your trial has ended</p>
+            <p class="mt-0.5 text-sm text-muted">Subscribe to keep using the cloud.</p>
+            <button
+              onclick={subscribe}
+              disabled={busy}
+              class="mt-3 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-muted disabled:opacity-50"
+              >{CLOUD_MONTHLY_PLAN.checkoutLabel}</button
+            >
+          {/if}
+          <!-- Consent point for the paid contract. Shown only when a Subscribe
+               button is on screen, i.e. not on the manage-subscription branch. -->
+          {#if status && !active && !confirming}
+            <p class="mt-2.5 text-xs text-dim">
+              Subscribing means accepting our
+              <a href="/terms" class="underline decoration-line underline-offset-2 transition-colors hover:text-muted"
+                >Terms</a
+              >, including the cancellation and refund terms.
+            </p>
+          {/if}
+          {#if error}<p class="mt-2 text-sm text-danger">{error}</p>{/if}
         </div>
-      </div>
+
+        {#if status?.allowed && returnTo !== '/welcome'}
+          <a href={returnTo} onclick={clearCheckoutReturnTo} class="mt-4 block rounded-lg bg-brand px-4 py-2.5 text-center text-sm font-medium text-white hover:bg-brand-muted">Continue to your preview</a>
+        {/if}
+      </details>
     </div>
 
     <button onclick={signOut} class="mt-5 text-center text-sm text-muted hover:text-ink">Sign out</button>

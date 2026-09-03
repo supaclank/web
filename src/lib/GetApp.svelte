@@ -6,7 +6,7 @@
   import PlayBadge from '$lib/PlayBadge.svelte';
   import QrPlay from '$lib/QrPlay.svelte';
 
-  let { qr = false, variant = 'onlight' } = $props();
+  let { qr = false, variant = 'onlight', qrPosition = 'below' } = $props();
 </script>
 
 <div class="flex flex-wrap items-center gap-x-4 gap-y-3">
@@ -17,12 +17,12 @@
       <PlayBadge {variant} />
 
       <div
-        class="pointer-events-none absolute top-full left-1/2 z-20 mt-3 hidden -translate-x-1/2 -translate-y-1 opacity-0 transition duration-150 ease-out group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100 lg:block"
+        class="pointer-events-none absolute z-20 hidden opacity-0 transition duration-150 ease-out group-hover:opacity-100 group-focus-within:opacity-100 lg:block {qrPosition === 'right' ? 'top-1/2 left-full ml-3 -translate-x-1 -translate-y-1/2 group-hover:translate-x-0 group-focus-within:translate-x-0' : 'top-full left-1/2 mt-3 -translate-x-1/2 -translate-y-1 group-hover:translate-y-0 group-focus-within:translate-y-0'}"
         aria-hidden="true"
       >
-        <!-- little pointer up toward the badge -->
+        <!-- little pointer toward the badge -->
         <div
-          class="absolute bottom-full left-1/2 -mb-1.5 h-3 w-3 -translate-x-1/2 rotate-45 border-t border-l border-line bg-paper"
+          class="absolute h-3 w-3 rotate-45 border-line bg-paper {qrPosition === 'right' ? 'top-1/2 right-full -mr-1.5 -translate-y-1/2 border-b border-l' : 'bottom-full left-1/2 -mb-1.5 -translate-x-1/2 border-t border-l'}"
         ></div>
         <div
           class="flex flex-col items-center gap-1.5 rounded-xl border border-line bg-paper p-2.5 shadow-lg"
