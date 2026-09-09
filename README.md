@@ -1,6 +1,6 @@
 # Supaclank Web
 
-This repository contains the frontend that runs at [supaclank.com](https://supaclank.com), including the interactive [demo](https://supaclank.com/demo).
+This repository contains the frontend that runs at [supaclank.com](https://supaclank.com), including the prompt-first landing page and a pannable workspace with agent chat and live web/Expo previews.
 
 ## Run it
 
@@ -11,7 +11,7 @@ bun install
 bun run dev
 ```
 
-The development server uses local defaults. To point it at another Supabase or Clank gateway environment, copy `.env.example` to `.env` and change the public values.
+Copy `.env.example` to `.env` before starting. Set the public Supabase values, gateway URL, and preview root domain for your environment. The preview root must match your gateway configuration.
 
 You can also open the repository in Clank:
 
@@ -39,3 +39,16 @@ Deployment credentials, infrastructure configuration, and backend services are i
 See [CONTRIBUTING.md](CONTRIBUTING.md). Security issues should be reported according to [SECURITY.md](SECURITY.md).
 
 The code is available under the [MIT License](LICENSE). Bundled fonts retain their SIL Open Font License notices in `static/fonts/`.
+
+## Builder integration check
+
+The regular tests cover draft validation, session streaming reconciliation, board restoration, and preview origin restrictions. An opt-in test also calls a real gateway and host, sends a harmless message, starts the preview, and verifies the signed embedded response:
+
+```sh
+CLANK_BUILDER_TEST_URL=http://your-local-gateway:18191 \
+CLANK_BUILDER_TEST_TOKEN=... \
+CLANK_BUILDER_TEST_SESSION_ID=... \
+bun test src/lib/builder/gateway.integration.test.js
+```
+
+Use a disposable Svelte starter session. The test requires an idle connected agent and adds a message to that session. Keep test credentials out of committed files. Other tests run without gateway credentials.

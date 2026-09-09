@@ -1,0 +1,260 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-09T13:31:59.754208+00:00",
+  "title": "Design System: Clank landing and builder board",
+  "extensions": {
+    "colorMeta": {
+      "builder-bg": {
+        "role": "neutral",
+        "displayName": "Graphite canvas",
+        "tonalRamp": [
+          "oklch(15.00% 0.0040 286.02)",
+          "oklch(26.43% 0.0040 286.02)",
+          "oklch(37.86% 0.0040 286.02)",
+          "oklch(49.29% 0.0040 286.02)",
+          "oklch(60.71% 0.0040 286.02)",
+          "oklch(72.14% 0.0040 286.02)",
+          "oklch(83.57% 0.0040 286.02)",
+          "oklch(95.00% 0.0040 286.02)"
+        ]
+      },
+      "builder-panel": {
+        "role": "neutral",
+        "displayName": "Graphite panel",
+        "tonalRamp": [
+          "oklch(15.00% 0.0057 285.96)",
+          "oklch(26.43% 0.0057 285.96)",
+          "oklch(37.86% 0.0057 285.96)",
+          "oklch(49.29% 0.0057 285.96)",
+          "oklch(60.71% 0.0057 285.96)",
+          "oklch(72.14% 0.0057 285.96)",
+          "oklch(83.57% 0.0057 285.96)",
+          "oklch(95.00% 0.0057 285.96)"
+        ]
+      },
+      "builder-raised": {
+        "role": "neutral",
+        "displayName": "Raised graphite",
+        "tonalRamp": [
+          "oklch(15.00% 0.0055 286.03)",
+          "oklch(26.43% 0.0055 286.03)",
+          "oklch(37.86% 0.0055 286.03)",
+          "oklch(49.29% 0.0055 286.03)",
+          "oklch(60.71% 0.0055 286.03)",
+          "oklch(72.14% 0.0055 286.03)",
+          "oklch(83.57% 0.0055 286.03)",
+          "oklch(95.00% 0.0055 286.03)"
+        ]
+      },
+      "builder-line": {
+        "role": "neutral",
+        "displayName": "Structural gray",
+        "tonalRamp": [
+          "oklch(15.00% 0.0086 285.93)",
+          "oklch(26.43% 0.0086 285.93)",
+          "oklch(37.86% 0.0086 285.93)",
+          "oklch(49.29% 0.0086 285.93)",
+          "oklch(60.71% 0.0086 285.93)",
+          "oklch(72.14% 0.0086 285.93)",
+          "oklch(83.57% 0.0086 285.93)",
+          "oklch(95.00% 0.0086 285.93)"
+        ]
+      },
+      "builder-text": {
+        "role": "neutral",
+        "displayName": "Warm white",
+        "tonalRamp": [
+          "oklch(15.00% 0.0052 67.76)",
+          "oklch(26.43% 0.0052 67.76)",
+          "oklch(37.86% 0.0052 67.76)",
+          "oklch(49.29% 0.0052 67.76)",
+          "oklch(60.71% 0.0052 67.76)",
+          "oklch(72.14% 0.0052 67.76)",
+          "oklch(83.57% 0.0052 67.76)",
+          "oklch(95.00% 0.0052 67.76)"
+        ]
+      },
+      "builder-muted": {
+        "role": "neutral",
+        "displayName": "Muted gray",
+        "tonalRamp": [
+          "oklch(15.00% 0.0113 316.48)",
+          "oklch(26.43% 0.0113 316.48)",
+          "oklch(37.86% 0.0113 316.48)",
+          "oklch(49.29% 0.0113 316.48)",
+          "oklch(60.71% 0.0113 316.48)",
+          "oklch(72.14% 0.0113 316.48)",
+          "oklch(83.57% 0.0113 316.48)",
+          "oklch(95.00% 0.0113 316.48)"
+        ]
+      },
+      "builder-accent": {
+        "role": "primary",
+        "displayName": "Coral",
+        "tonalRamp": [
+          "oklch(15.00% 0.1485 9.33)",
+          "oklch(26.43% 0.1485 9.33)",
+          "oklch(37.86% 0.1485 9.33)",
+          "oklch(49.29% 0.1485 9.33)",
+          "oklch(60.71% 0.1485 9.33)",
+          "oklch(72.14% 0.1485 9.33)",
+          "oklch(83.57% 0.1485 9.33)",
+          "oklch(95.00% 0.1485 9.33)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "title": {
+        "displayName": "Form title",
+        "purpose": "Board sign-in, new-project and build-progress headings."
+      },
+      "body": {
+        "displayName": "Builder body",
+        "purpose": "Base type inherited by builder content and controls."
+      },
+      "label": {
+        "displayName": "Selection label",
+        "purpose": "Execution/output choices and project header titles."
+      },
+      "code": {
+        "displayName": "Code",
+        "purpose": "Local commands and disclosed tool output."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "control-color",
+        "value": "background-color 160ms ease-out, color 160ms ease-out",
+        "purpose": "Builder button color changes."
+      },
+      {
+        "name": "connector-stroke",
+        "value": "stroke .3s",
+        "purpose": "Landing connection selection."
+      },
+      {
+        "name": "canvas-breathe",
+        "value": "9s ease-in-out infinite; opacity .24 → .47 → .24",
+        "purpose": "Landing dot-field illumination; disabled for reduced motion."
+      },
+      {
+        "name": "working-indicator",
+        "value": "2s infinite",
+        "purpose": "Progress line and thinking dot; disabled for reduced motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "connected-prompt",
+        "value": "1000px"
+      },
+      {
+        "name": "narrow-layout",
+        "value": "699px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary button",
+      "kind": "button",
+      "description": "Coral action used in project forms and preview setup.",
+      "html": "<button class=\"ds-primary\">Allow</button>",
+      "css": ".ds-primary{display:inline-flex;align-items:center;justify-content:center;gap:9px;border-radius:8px;min-height:40px;font:14px/1.6 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;cursor:pointer;transition:background-color 160ms ease-out,color 160ms ease-out;background:#fa8198;color:#221417;padding:10px 17px;font-weight:600;border:0}.ds-primary:hover{background:#ff9aab}.ds-primary:focus-visible{outline:2px solid #fa8198;outline-offset:4px}.ds-primary:disabled{opacity:.45;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-primary{transition:none}}",
+      "refersTo": "button-primary"
+    },
+    {
+      "name": "Quiet button",
+      "kind": "button",
+      "description": "Outlined secondary action used in navigation and forms.",
+      "html": "<button class=\"ds-quiet\">Start preview again</button>",
+      "css": ".ds-quiet{display:inline-flex;align-items:center;justify-content:center;gap:9px;border-radius:8px;min-height:40px;font:14px/1.6 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;cursor:pointer;transition:background-color 160ms ease-out,color 160ms ease-out;background:transparent;color:#f3f0ed;border:1px solid #38383d;padding:8px 14px}.ds-quiet:hover{background:#262629}.ds-quiet:focus-visible{outline:2px solid #fa8198;outline-offset:4px}.ds-quiet:disabled{opacity:.45;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-quiet{transition:none}}",
+      "refersTo": "button-quiet"
+    },
+    {
+      "name": "Text button",
+      "kind": "button",
+      "description": "Low-emphasis action for details and supporting flows.",
+      "html": "<button class=\"ds-text\">Show build output</button>",
+      "css": ".ds-text{display:inline-flex;align-items:center;justify-content:center;gap:9px;border-radius:8px;min-height:40px;font:14px/1.6 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;cursor:pointer;transition:background-color 160ms ease-out,color 160ms ease-out;background:none;color:#fa8198;border:0;padding:5px 0}.ds-text:hover{color:#f3f0ed}.ds-text:focus-visible{outline:2px solid #fa8198;outline-offset:4px}.ds-text:disabled{opacity:.45;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-text{transition:none}}",
+      "refersTo": "button-text"
+    },
+    {
+      "name": "Icon button",
+      "kind": "button",
+      "description": "Compact toolbar action with an accessible name.",
+      "html": "<button class=\"ds-icon\" aria-label=\"Reload preview\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 7v5h-5 M4 17v-5h5 M6 6a8 8 0 0 1 13 3 M5 15a8 8 0 0 0 13 3\"/></svg></button>",
+      "css": ".ds-icon{display:inline-flex;align-items:center;justify-content:center;gap:9px;border-radius:8px;min-height:40px;font:14px/1.6 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;cursor:pointer;transition:background-color 160ms ease-out,color 160ms ease-out;width:32px;min-height:32px;background:transparent;color:#b2adb4;border:0;padding:0}.ds-icon:hover{background:#38383d;color:white}.ds-icon:focus-visible{outline:2px solid #fa8198;outline-offset:4px}.ds-icon:disabled{opacity:.45;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-icon{transition:none}}",
+      "refersTo": "button-icon"
+    },
+    {
+      "name": "Send button",
+      "kind": "button",
+      "description": "Shared trailing action in idea and conversation composers.",
+      "html": "<button class=\"ds-send\" aria-label=\"Send message\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 19V5 M6 11l6-6 6 6\"/></svg></button>",
+      "css": ".ds-send{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:36px;height:36px;border:0;border-radius:9px;background:#fa8198;color:#23161a;cursor:pointer;transition:background-color 160ms ease-out,color 160ms ease-out}.ds-send:focus-visible{outline:2px solid #fa8198;outline-offset:4px}.ds-send:disabled{background:#54414a;color:#b6a4ac;cursor:not-allowed;opacity:1}@media(prefers-reduced-motion:reduce){.ds-send{transition:none}}",
+      "refersTo": "button-send"
+    },
+    {
+      "name": "Text field",
+      "kind": "input",
+      "description": "Inset field used by board sign-in and project forms.",
+      "html": "<label class=\"ds-field\">Email<input type=\"email\" placeholder=\"you@example.com\"/></label>",
+      "css": ".ds-field{display:flex;flex-direction:column;gap:6px;font:12px/1.6 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;color:#b2adb4}.ds-field input{background:#19171c;color:#f3f0ed;border:1px solid #4e444f;border-radius:8px;padding:10px 12px;font:14px/1.6 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;caret-color:#fa8198}.ds-field input::placeholder{color:#aaa4ad;opacity:1}.ds-field input:focus-visible{outline:2px solid #fa8198;outline-offset:4px}",
+      "refersTo": "input"
+    },
+    {
+      "name": "Header navigation",
+      "kind": "nav",
+      "description": "Landing wordmark, secondary links, and sign-in action; mascot asset stays in the implementation.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Main\"><a class=\"ds-wordmark\" href=\"/\">clank</a><a href=\"/pricing\">Pricing</a><button>Sign in <svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 19V5 M6 11l6-6 6 6\"/></svg></button></nav>",
+      "css": ".ds-nav{display:flex;align-items:center;gap:28px;color:#b2adb4;font:13px/1.6 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif}.ds-nav a{color:inherit;text-decoration:none;text-underline-offset:4px}.ds-nav .ds-wordmark{color:#f3f0ed;font-size:21px;font-weight:650;letter-spacing:-.04em}.ds-nav a:hover{color:#f3f0ed}.ds-nav button{display:inline-flex;align-items:center;justify-content:center;gap:9px;border-radius:8px;min-height:40px;font:14px/1.6 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;cursor:pointer;transition:background-color 160ms ease-out,color 160ms ease-out;margin-left:auto;padding:8px 14px;border:1px solid #38383d;background:transparent;color:#f3f0ed}.ds-nav button:hover{background:#262629}.ds-nav a:focus-visible,.ds-nav button:focus-visible{outline:2px solid #fa8198;outline-offset:4px}@media(prefers-reduced-motion:reduce){.ds-nav,.ds-wordmark{transition:none}}"
+    },
+    {
+      "name": "Target choice",
+      "kind": "chip",
+      "description": "Radio-backed web/mobile selection in the new project form.",
+      "html": "<div class=\"ds-targets\"><label><input type=\"radio\" name=\"ds-target\" checked/><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 4h18v16H3z M3 9h18 M7 6.5h.01 M10 6.5h.01\"/></svg>Website</label><label><input type=\"radio\" name=\"ds-target\"/><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M7 2h10a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z M10 5h4 M11 19h2\"/></svg>Mobile app</label></div>",
+      "css": ".ds-targets{display:flex;gap:10px;color:#f3f0ed;font:13px/1.6 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif}.ds-targets label{position:relative;display:flex;align-items:center;justify-content:center;flex:1;gap:8px;border:1px solid #49414b;border-radius:8px;padding:10px 13px;cursor:pointer}.ds-targets input{position:absolute;opacity:0;width:1px;height:1px}.ds-targets label:has(input:checked){border-color:#c16a82;background:#30232b;color:#f4b5c7}.ds-targets label:focus-within{outline:2px solid #fa8198;outline-offset:4px}",
+      "refersTo": "target-choice"
+    },
+    {
+      "name": "Project widget shell",
+      "kind": "card",
+      "description": "Tinted drag header and bordered project surface; this sample omits the runtime chat and iframe.",
+      "html": "<section class=\"ds-project\"><header><strong>Your project</strong><span>Ready</span></header><div>Your conversation and live preview share this widget.</div></section>",
+      "css": ".ds-project{border:1px solid #4a424c;border-radius:14px;background:#1e1e21;color:#f3f0ed;overflow:hidden;font:14px/1.6 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif}.ds-project header{display:flex;align-items:center;justify-content:space-between;height:49px;padding:0 16px;background:#242126;border-bottom:1px solid #39313b;color:#cbbfcf;font-size:13px}.ds-project strong{color:#f3f0ed;font-weight:500}.ds-project header span{font-size:11px}.ds-project>div{padding:28px}",
+      "refersTo": "project-card"
+    },
+    {
+      "name": "Chat composer",
+      "kind": "custom",
+      "description": "Inset conversation composer with a trailing send action.",
+      "html": "<form class=\"ds-composer\"><textarea aria-label=\"Message your agent\" placeholder=\"What should we change?\" rows=\"3\"></textarea><div><span>Describe a change. Make it yours.</span><button type=\"button\" aria-label=\"Send message\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 19V5 M6 11l6-6 6 6\"/></svg></button></div></form>",
+      "css": ".ds-composer{margin:12px;padding:12px;background:#29232c;border:1px solid #504151;border-radius:10px;color:#f3f0ed;font:14px/1.6 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif}.ds-composer:focus-within{border-color:#fa8198}.ds-composer textarea{width:100%;min-height:63px;max-height:180px;background:transparent;border:0;font:13px/1.6 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;color:#f3f0ed;caret-color:#fa8198;resize:vertical}.ds-composer textarea::placeholder{color:#aaa4ad;opacity:1}.ds-composer textarea:focus{outline:none}.ds-composer>div{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px}.ds-composer span{font-size:9px;line-height:1.5;color:#b2adb4}.ds-composer button{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;flex-shrink:0;border:0;border-radius:9px;background:#fa8198;color:#23161a;cursor:pointer;transition:background-color 160ms ease-out,color 160ms ease-out}.ds-composer button:focus-visible{outline:2px solid #fa8198;outline-offset:4px}.ds-composer button:disabled{background:#54414a;color:#b6a4ac;cursor:not-allowed}@media(max-width:699px){.ds-composer textarea{font-size:16px}}@media(prefers-reduced-motion:reduce){.ds-composer{transition:none}}",
+      "refersTo": "chat-composer"
+    }
+  ],
+  "narrative": {
+    "northStar": "Dark connected canvas",
+    "overview": "Clank uses a clean graphite field, warm white text, coral selection paths, and the existing mascot. Controls stay compact while the canvas gives ideas room to grow. Surface borders and restrained tonal shifts organize the interface.\n\nThis document covers only the landing page and builder board rendered inside `.clank-builder`, including the board's embedded sign-in and project forms. Pricing, account, onboarding, and other existing pages retain their incumbent system. Implementation evidence lives in `src/lib/builder/`, with shared font definitions in `src/app.css`; surface composition belongs in `.impeccable/landing.brief.md`.",
+    "keyCharacteristics": [
+      "Graphite surfaces with warm white text and coral interaction accents.",
+      "Compact controls, softly rounded containers, and thin structural borders.",
+      "A fading dot field on entry and a pannable project board."
+    ],
+    "rules": [],
+    "dos": [
+      "Do preserve the recognizable Clank mascot and shared SVG icon geometry.",
+      "Do use coral to make actions, selection, and keyboard focus visible.",
+      "Do retain the board's readable widget widths and narrow-screen Chat/Preview tabs.",
+      "Do honor reduced-motion preferences for the dot field and control transitions."
+    ],
+    "donts": [
+      "Don't apply this scoped palette to existing pricing, account, or onboarding pages.",
+      "Don't use tiny status-label sizes as the default for operational text.",
+      "Don't let canvas dragging consume normal interaction inside forms, transcripts, or previews."
+    ]
+  }
+}

@@ -135,8 +135,10 @@
     {:else if isSaved}
       {#if needs.openComputerWorkspace}
         <li>
-          <h3>Open a project in your browser</h3>
-          <p>Choose a GitHub repository. You’ll connect GitHub and review it before creating a cloud workspace.</p>
+          <h3>Start building on your board</h3>
+          <p>Describe an idea to create a website or mobile app with your agent.</p>
+          <a href="/workspace" class="mt-4 inline-flex min-h-11 items-center gap-3 rounded-xl bg-brand px-5 py-3 text-sm font-medium text-white hover:bg-brand-muted">Open your board <span aria-hidden="true">→</span></a>
+          <p>Or choose a GitHub repository. You’ll connect GitHub and review it before creating a cloud workspace.</p>
           <RepositoryEntry onopen={() => reportAction(ONBOARDING_ACTION.openRepository)} />
         </li>
       {/if}
