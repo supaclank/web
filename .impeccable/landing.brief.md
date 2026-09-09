@@ -9,3 +9,5 @@ The prompt grows into a live project widget on a pannable Svelte Flow board with
 Quality bar: working input and output selections, explicit active paths, no fake controls, readable 13–16px operational type, keyboard focus, deliberate empty/loading/error states, private prompts excluded from recording. Browser previews use isolated origins and sandboxed iframes. Board positions persist per account; session contents come from the host.
 
 Workflow: user explicitly chose code-first. No image comp. Review against the objective file and this contract.
+
+Next iteration: preserve substantially more of the previous landing page's content and structure around the prompt. Treat the current page as a first iteration, not the approved final composition; decide which previous sections to retain with the user.
