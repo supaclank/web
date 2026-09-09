@@ -28,7 +28,7 @@ test.skipIf(!url)('real host streams a board conversation and serves its private
   } finally { controller.abort(); await stream; }
   const initial = await gateway.previewStart(session.git_ref.worktree_id);
   const status = await pollUntil(() => gateway.previewStatus(session.git_ref.worktree_id, initial.service_name), (value) => value.state === 'ready', { timeoutMs: 60000 });
-  expect(status.can_preview_web).toBe(true);
+  expect(status.kind).toBe('web');
   const signed = await gateway.signPreviewToken(status.token, session.backend, sessionID);
   const preview = new URL(signed.signed_url);
   preview.searchParams.set('__clank_embed', '1');

@@ -94,8 +94,7 @@ describe('onboarding choices', () => {
       for (const usage of Object.values(USAGE)) {
         test(`${buildTargets.join('+')} on ${devices.join('+')} with ${usage} gets the required setup`, () => {
           const needs = setupNeeds({ version: 1, buildTargets, devices, usage });
-          const needsPhoneApp = devices.includes(DEVICE.mobile) ||
-            (usage === USAGE.local && buildTargets.includes(BUILD_TARGET.mobile));
+          const needsPhoneApp = devices.includes(DEVICE.mobile) || buildTargets.includes(BUILD_TARGET.mobile);
           expect(needs.installCLI).toBe(usage === USAGE.local);
           expect(needs.downloadApp).toBe(needsPhoneApp);
           expect(needs.pairPhone).toBe(usage === USAGE.local && needsPhoneApp);
@@ -106,15 +105,21 @@ describe('onboarding choices', () => {
     }
   }
 
-  test('does not recommend the phone app for a computer-only cloud sandbox', () => {
+  test('mobile development requires the phone app even when building from a cloud laptop workspace', () => {
     const needs = setupNeeds({
       version: 1,
       buildTargets: [BUILD_TARGET.mobile],
       devices: [DEVICE.laptop],
       usage: USAGE.cloud
     });
-    expect(needs.downloadApp).toBe(false);
+    expect(needs.downloadApp).toBe(true);
     expect(needs.pairPhone).toBe(false);
+  });
+
+  test('web development from a laptop does not require a phone', () => {
+    const needs = setupNeeds({ version: 1, buildTargets: [BUILD_TARGET.web], devices: [DEVICE.laptop], usage: USAGE.cloud });
+    expect(needs.downloadApp).toBe(false);
+    expect(needs.openComputerWorkspace).toBe(true);
   });
 });
 

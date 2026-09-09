@@ -24,6 +24,8 @@ The existing host supports template-based projects, persistent agent sessions, p
 
 The signed-in workspace is a pannable board. Each project node contains a chat and live preview side by side. Submitting the landing prompt opens the board in the same surface; signing in preserves the idea and board context. Multiple project conversations can remain open together. Rich reference materials and collaboration are future extensions.
 
+Web projects preview in the board. Expo projects require the Clank phone app: show the app download while the preview starts and a QR code when it is ready. Do not offer Expo browser previews or streamed simulators. The current public phone app is available on Android.
+
 ## Brand Commitments
 
 Use Clank as the product name. Keep the recognizable mascot. The requested landing page is primarily dark, clean, minimal, and uses modest text sizes. A central prompt connects to cloud/local input choices and web/mobile output choices. Cloud is selected initially. Selecting local reveals copyable Homebrew commands. A softly animated, fading dot grid sits behind the prompt.

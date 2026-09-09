@@ -55,7 +55,7 @@
         </div>
         <fieldset class="canvas-options outputs"><legend>What you’re making</legend>
           <label class:chosen={target === BUILD_TARGET.web}><input type="radio" name="output" value={BUILD_TARGET.web} bind:group={target} /><Icon name="web" /><span><strong>A website</strong><small>Bring it to the browser</small></span><span class="selection-dot"></span></label>
-          <label class:chosen={target === BUILD_TARGET.mobile}><input type="radio" name="output" value={BUILD_TARGET.mobile} bind:group={target} /><Icon name="mobile" /><span><strong>A mobile app</strong><small>Made to feel native</small></span><span class="selection-dot"></span></label>
+          <label class:chosen={target === BUILD_TARGET.mobile}><input type="radio" name="output" value={BUILD_TARGET.mobile} bind:group={target} /><Icon name="mobile" /><span><strong>A mobile app</strong><small>Preview on your phone</small></span><span class="selection-dot"></span></label>
         </fieldset>
       </div>
       {#if error}<p class="builder-error" role="alert">{error}</p>{/if}
@@ -64,7 +64,7 @@
     </section>
     <section class="possibilities" id="possibilities">
       <div><h2>From “what if”<br />to right in front of you.</h2><p>Talk through an idea, see it take shape, and keep making it yours. Your conversation and your app live together on one board.</p><button class="text-button" onclick={() => onstart(null)}>Open your board <Icon name="arrow" size={14} /></button></div>
-      <div class="product-notes"><article><Icon name="web" /><h3>See what you’re making.</h3><p>A live website preview beside your conversation. Ask for a change and keep building.</p></article><article><Icon name="mobile" /><h3>Take it off the desktop.</h3><p>Build native apps with Expo. Preview in your browser, then try the real thing on your phone.</p><a href="https://play.google.com/store/apps/details?id=com.supaclank.clank" rel="noreferrer">Meet the Android app <Icon name="external" size={13} /></a></article><article><Icon name="github" /><h3>Keep the keys.</h3><p>Your code, your agent, your choice of cloud or local. Clank is open source from the start.</p><a href="https://github.com/supaclank/clank" rel="noreferrer">Explore the source <Icon name="external" size={13} /></a></article></div>
+      <div class="product-notes"><article><Icon name="web" /><h3>See what you’re making.</h3><p>A live website preview beside your conversation. Ask for a change and keep building.</p></article><article><Icon name="mobile" /><h3>Take it off the desktop.</h3><p>Build native apps with Expo. Install Clank on your Android phone, then scan the QR code to try your app.</p><a href="https://play.google.com/store/apps/details?id=com.supaclank.clank" rel="noreferrer">Meet the Android app <Icon name="external" size={13} /></a></article><article><Icon name="github" /><h3>Keep the keys.</h3><p>Your code, your agent, your choice of cloud or local. Clank is open source from the start.</p><a href="https://github.com/supaclank/clank" rel="noreferrer">Explore the source <Icon name="external" size={13} /></a></article></div>
     </section>
   </main>
   <footer class="builder-footer"><a class="wordmark" href="/">clank</a><span>Room for your next idea.</span><nav><a href="/pricing">Pricing</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a></nav></footer>
