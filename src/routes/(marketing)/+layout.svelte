@@ -3,6 +3,7 @@
   // group so sign-in and consent do not inherit marketing navigation.
   import { onMount } from 'svelte';
   import MarketingHeader from '$lib/MarketingHeader.svelte';
+  import { page } from '$app/state';
 
   let { children } = $props();
 
@@ -11,6 +12,7 @@
   let signedIn = $state(false);
 
   onMount(async () => {
+    if (page.url.pathname === '/') return;
     const { createSupabase } = await import('$lib/supabase');
     const supabase = createSupabase();
     const { data } = await supabase.auth.getSession();
@@ -18,6 +20,9 @@
   });
 </script>
 
+{#if page.url.pathname === '/'}
+  {@render children()}
+{:else}
 <div class="flex min-h-screen flex-col">
   <MarketingHeader {signedIn} />
 
@@ -49,3 +54,4 @@
     </div>
   </footer>
 </div>
+{/if}

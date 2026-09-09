@@ -102,8 +102,7 @@ export function setupContinuation(value, isSignedIn) {
 export function setupNeeds(value) {
   const { buildTargets, devices, usage } = validatePreferences(value);
   const isLocal = usage === USAGE.local;
-  const downloadApp = devices.includes(DEVICE.mobile) ||
-    (isLocal && buildTargets.includes(BUILD_TARGET.mobile));
+  const downloadApp = devices.includes(DEVICE.mobile) || buildTargets.includes(BUILD_TARGET.mobile);
   return {
     installCLI: isLocal,
     downloadApp,

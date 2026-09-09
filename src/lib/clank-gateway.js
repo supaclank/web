@@ -1,3 +1,5 @@
+import { readEventStream } from './builder/event-stream.js';
+
 export class GatewayError extends Error {
   constructor(message, { status = 0, code = '', details = null } = {}) {
     super(message);
@@ -51,6 +53,29 @@ export class ClankGateway {
     return value;
   }
 
+  templates() { return this.request('/v1/templates'); }
+
+  createProject(cloneURL, name) {
+    if (!cloneURL || !name?.trim()) throw new Error('A template and project name are required.');
+    return this.request('/v1/projects/create', { method: 'POST', body: { clone_url: cloneURL, name } });
+  }
+
+  sessions(signal) { return this.request('/sessions', { signal }); }
+  messages(id, signal) { return this.request(`/sessions/${encodeURIComponent(id)}/messages`, { signal }); }
+  permissions(id, signal) { return this.request(`/sessions/${encodeURIComponent(id)}/pending-permission`, { signal }); }
+  abortSession(id) { return this.request(`/sessions/${encodeURIComponent(id)}/abort`, { method: 'POST' }); }
+  replyPermission(id, requestID, allow) {
+    return this.request(`/sessions/${encodeURIComponent(id)}/permissions/${encodeURIComponent(requestID)}/reply`, { method: 'POST', body: { allow } });
+  }
+  async sessionEvents(id, onEvent, signal) {
+    const response = await this.fetcher(`${this.baseURL}/sessions/${encodeURIComponent(id)}/events`, {
+      headers: { Authorization: `Bearer ${this.accessToken}`, Accept: 'text/event-stream' }, signal
+    });
+    if (!response.ok) throw new GatewayError(`Live updates disconnected (HTTP ${response.status}).`, { status: response.status });
+    if (!response.body) throw new Error('The gateway returned an empty event stream.');
+    await readEventStream(response.body, onEvent, signal);
+  }
+
   inspectPullRequest(locator, signal) {
     return this.request('/v1/github/pull-requests/inspect', { method: 'POST', body: locator, signal });
   }
@@ -96,11 +121,11 @@ export class ClankGateway {
     return this.request(`/worktrees/${encodeURIComponent(worktreeID)}/preview/logs${query}`);
   }
 
-  signPreviewToken(token, backend) {
+  signPreviewToken(token, backend, sessionID) {
     if (!backend) throw new Error('An editing backend is required before signing a preview.');
     return this.request(`/v1/preview/tokens/${encodeURIComponent(token)}/sign`, {
       method: 'POST',
-      body: { ttl: SIGNED_PREVIEW_TTL, backend }
+      body: { ttl: SIGNED_PREVIEW_TTL, backend, ...(sessionID ? { session_id: sessionID } : {}) }
     });
   }
 
