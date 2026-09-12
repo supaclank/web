@@ -20,7 +20,7 @@
   onMount(() => { void initialize(); });
   async function initialize() {
     try {
-      try { draft = loadDraft(localStorage); }
+      try { draft = await loadDraft(localStorage); }
       catch { error = 'Your saved idea couldn’t be restored. You can still open your projects or start a new idea.'; }
       const query = new URLSearchParams(location.search);
       shouldAutoStart = query.has('build');
@@ -38,9 +38,9 @@
   }
   async function start(value) {
     error = '';
-    if (value) { try { storeDraft(localStorage, value); draft = value; shouldAutoStart = true; } catch (cause) { error = `Your idea couldn’t be saved: ${cause.message}`; return; } }
+    if (value) { try { await storeDraft(localStorage, value); draft = value; shouldAutoStart = true; } catch (cause) { error = `Your idea couldn’t be saved: ${cause.message}`; return; } }
     await revealBoard();
   }
 </script>
-<svelte:head><title>Clank — Make websites and mobile apps with AI</title><meta name="description" content="Turn your ideas into websites and native mobile apps on one canvas. Build with an agent, see a live preview, and keep your code. Open source. Free locally." /><meta name="theme-color" content="#141416" /></svelte:head>
+<svelte:head><title>Clank — Make websites and mobile apps with AI</title><meta name="description" content="Turn your ideas into websites and native mobile apps on one canvas. Build with an agent, see a live preview, and keep your code. Open source. Free locally." /><meta name="theme-color" content="#101010" /></svelte:head>
 <div class="clank-builder">{#if showBoard}{#if Board}{#key user?.id}<Board {gateway} {supabase} {user} {draft} {shouldAutoStart} ondraftconsumed={() => { draft = null; shouldAutoStart = false; }} onhome={() => showBoard = false} />{/key}{:else}<div class="opening-board" role="status">Opening your board…</div>{/if}{:else}<Landing onstart={start} />{/if}{#if error}<div class="entry-error" role="alert">{error}<button onclick={() => location.reload()}>Reload</button></div>{/if}</div>

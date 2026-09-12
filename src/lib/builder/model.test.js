@@ -1,5 +1,11 @@
 import { test, expect } from 'bun:test';
-import { validateDraft, templateForTarget, applyAgentEvent, visibleMessages, projectNodes, mergeBoardNodes } from './model.js';
+import { validateDraft, templateForTarget, applyAgentEvent, visibleMessages, projectNodes, mergeBoardNodes, nextNodePosition } from './model.js';
+
+test('placing another conversation clears a project and its attached input column', () => {
+  const nodes = [{ type: 'project', position: { x: 200, y: 0 }, data: { inputs: { image_ids: ['image'] } } }];
+  expect(nextNodePosition(nodes).x).toBeGreaterThan(200 + 1080 + 220 + 48);
+  expect(nextNodePosition([])).toEqual({ x: 0, y: 0 });
+});
 
 test('drafts preserve the idea and reject missing or unknown output targets', () => {
   expect(validateDraft({ prompt: '  A garden planner  ', target: 'web', name: 'Garden' })).toEqual({ prompt: 'A garden planner', target: 'web', name: 'Garden' });
@@ -13,6 +19,11 @@ test('output selection uses explicit catalog metadata and never guesses from a t
   expect(templateForTarget(templates, 'web').clone_url).toBe('https://example.com/web.git');
   expect(() => templateForTarget(templates.slice(0, 2), 'web')).toThrow('web');
   expect(() => templateForTarget([...templates, templates[2]], 'web')).toThrow();
+});
+
+test('import drafts retain a repository without inventing a build target', () => {
+  expect(validateDraft({ prompt: 'Improve it', name: 'Clank', repository: 'github.com/supaclank/clank.git' })).toEqual({ prompt: 'Improve it', name: 'Clank', repository: 'https://github.com/supaclank/clank' });
+  expect(() => validateDraft({ prompt: 'Improve it', name: 'Clank', repository: 'github.com/supaclank/clank', target: 'web' })).toThrow('own app type');
 });
 
 test('streamed text appends deltas and replaces authoritative snapshots without duplication', () => {

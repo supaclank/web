@@ -4,6 +4,11 @@
   import PreviewPanel from './PreviewPanel.svelte';
   import Transcript from './Transcript.svelte';
   import Icon from './Icon.svelte';
+  import InputGraph from './InputGraph.svelte';
+  import { GRAPH_PORT } from './graph-ports.js';
+  import { loadImages } from './image-store.js';
+  let images = $state([]);
+  let inputError = $state('');
   let { id, data } = $props();
   const workspace = getContext(WORKSPACE_CONTEXT);
   let session = $state(untrack(() => data.session));
@@ -24,7 +29,7 @@
   let reconnectTimer;
   const controller = new AbortController();
   let shownMessages = $derived(transcriptMessages(visibleMessages(messages, session.revert_message_id)));
-  onMount(() => { void connect(); refreshTimer = setInterval(() => void refresh(), 15000); });
+  onMount(() => { if (data.inputs?.image_ids?.length) void loadImages(data.inputs.image_ids).then((loaded) => { images = loaded; }).catch((cause) => { inputError = cause.message; }); void connect(); refreshTimer = setInterval(() => void refresh(), 15000); });
   onDestroy(() => { controller.abort(); clearInterval(refreshTimer); clearTimeout(reconnectTimer); });
   $effect(() => { shownMessages; if (transcript && shouldScroll) requestAnimationFrame(() => { if (transcript) transcript.scrollTop = transcript.scrollHeight; }); });
   async function refresh() {
@@ -73,8 +78,10 @@
     catch (cause) { error = cause.message; }
   }
 </script>
+<div class="project-workspace" data-umami-mask>
+<InputGraph isWorking={session.status === 'busy'} repository={data.inputs?.repository || ''} isImport={!!data.inputs?.repository} {images} readonly>
 <section class="project-node" aria-label={session.title || session.git_ref.display_name || 'Project'}>
-  <header class="node-handle"><span><img src="/mascot.png" alt="" width="22" height="22" /><strong>{session.title || session.git_ref.display_name || 'Your project'}</strong></span><div><span class="agent-state" class:working={session.status === 'busy'}>{session.status === 'busy' ? 'Working' : session.status === 'idle' ? 'Ready' : session.status}</span><button class="icon-button nodrag" aria-label="Close project on board" onclick={() => workspace.close(id)}><Icon name="close" size={16} /></button></div></header>
+  <header class="node-handle" data-graph-port={GRAPH_PORT.repository}><span><img src="/mascot.png" alt="" width="22" height="22" /><strong>{session.title || session.git_ref.display_name || 'Your project'}</strong></span><div><span class="agent-state" class:working={session.status === 'busy'}>{session.status === 'busy' ? 'Working' : session.status === 'idle' ? 'Ready' : session.status}</span><button class="icon-button nodrag" aria-label="Close project on board" onclick={() => workspace.close(id)}><Icon name="close" size={16} /></button></div></header>
   <div class="mobile-project-tabs nodrag nopan"><button class:chosen={tab === 'chat'} onclick={() => tab = 'chat'}>Chat</button><button class:chosen={tab === 'preview'} onclick={() => tab = 'preview'}>Preview</button></div>
   <div class="project-content nodrag nopan nowheel" class:show-preview={tab === 'preview'}>
     <div class="chat-panel"><div class="chat-heading"><span>Your conversation</span><small>{isConnected ? session.backend : 'Reconnecting…'}</small></div>
@@ -84,8 +91,12 @@
         {#if session.status === 'busy'}<p class="thinking-status" role="status"><span></span>Clank is working on your app…</p>{/if}
       </div>
       {#if error}<div class="chat-error" role="alert">{error}<button class="text-button" onclick={() => { error = ''; void refresh(); }}>Refresh conversation</button></div>{/if}
-      <form class="chat-composer" onsubmit={send}><label class="sr-only" for={`message-${id}`}>Message your agent</label><textarea id={`message-${id}`} bind:value={text} placeholder="What should we change?" rows="3" maxlength="20000" onkeydown={(event) => { if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) void send(event); }}></textarea><div class="composer-footer"><span>{session.status === 'busy' ? 'You can write your next idea while Clank works.' : 'Describe a change. Make it yours.'}</span>{#if session.status === 'busy'}<button type="button" class="send-button stop-button" onclick={stop} aria-label="Stop agent"><Icon name="stop" size={15} /></button>{:else}<button class="send-button" disabled={isSending || !text.trim()} aria-label="Send message"><Icon name="arrow" size={18} /></button>{/if}</div></form>
+      <form data-graph-port={GRAPH_PORT.attachment} class="chat-composer" onsubmit={send}><label class="sr-only" for={`message-${id}`}>Message your agent</label><textarea id={`message-${id}`} bind:value={text} placeholder="What should we change?" rows="3" maxlength="20000" onkeydown={(event) => { if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) void send(event); }}></textarea><div class="composer-footer"><span>{session.status === 'busy' ? 'You can write your next idea while Clank works.' : 'Describe a change. Make it yours.'}</span>{#if session.status === 'busy'}<button type="button" class="send-button stop-button" onclick={stop} aria-label="Stop agent"><Icon name="stop" size={15} /></button>{:else}<button class="send-button" disabled={isSending || !text.trim()} aria-label="Send message"><Icon name="arrow" size={18} /></button>{/if}</div></form>
     </div>
     <PreviewPanel gateway={workspace.gateway} {session} />
   </div>
 </section>
+
+</InputGraph>
+{#if inputError}<p class="input-error" role="alert">{inputError}</p>{/if}
+</div>

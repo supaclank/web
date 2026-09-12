@@ -1,17 +1,53 @@
 import { BUILD_TARGET } from '../onboarding/preferences.js';
+import { repositoryLocator, validateImages } from './image-inputs.js';
+import { loadImages, storeImages } from './image-store.js';
 
 export const DRAFT_KEY = 'clank:build-draft:v1';
 export const BOARD_KEY = 'clank:board:v1:';
 export const WORKSPACE_CONTEXT = Symbol('clank-workspace');
 export const NODE_TYPE = Object.freeze({ project: 'project', draft: 'draft', note: 'note' });
 export const SESSION_STATUS = Object.freeze({ busy: 'busy', idle: 'idle', error: 'error', dead: 'dead' });
+export const PROJECT_MODE = Object.freeze({ new: 'new', import: 'import' });
+const NODE_WIDTH = Object.freeze({ project: 1080, draft: 1100, narrow: 350, inputs: 268 });
+const NODE_GAP = 100;
+
+export function nodeWidth(node, isNarrow) {
+  if (isNarrow) return NODE_WIDTH.narrow;
+  if (node.type === NODE_TYPE.draft) return NODE_WIDTH.draft;
+  if (node.type !== NODE_TYPE.project) throw new Error('Unknown board node type.');
+  const hasInputs = node.data.inputs?.repository || node.data.inputs?.image_ids?.length;
+  return NODE_WIDTH.project + (hasInputs ? NODE_WIDTH.inputs : 0);
+}
+
+export function nextNodePosition(nodes) {
+  return { x: nodes.length ? Math.max(...nodes.map((node) => node.position.x + nodeWidth(node, false))) + NODE_GAP : 0, y: 0 };
+}
+
+export function newDraftNode(position, draft, autoStart) {
+  if (![position?.x, position?.y].every(Number.isFinite)) throw new Error('A canvas position is required.');
+  return { id: crypto.randomUUID(), type: NODE_TYPE.draft, dragHandle: '.node-handle', position: { ...position }, data: { draft, autoStart } };
+}
 
 export function validateDraft(value) {
   if (!value || typeof value.prompt !== 'string' || !value.prompt.trim() || value.prompt.length > 20000 ||
-      !Object.values(BUILD_TARGET).includes(value.target) || typeof value.name !== 'string' || !value.name.trim() || value.name.length > 100) {
+      typeof value.name !== 'string' || !value.name.trim() || value.name.length > 100) {
     throw new Error('Add a project name, describe your idea, and choose web or mobile.');
   }
-  return { prompt: value.prompt.trim(), target: value.target, name: value.name.trim() };
+  const draft = { prompt: value.prompt.trim(), name: value.name.trim() };
+  if (value.repository !== undefined) {
+    if (value.target !== undefined) throw new Error('An imported repository supplies its own app type.');
+    const { owner, repo } = repositoryLocator(value.repository);
+    draft.repository = `https://github.com/${owner}/${repo}`;
+  } else {
+    if (!Object.values(BUILD_TARGET).includes(value.target)) throw new Error('Choose web or mobile.');
+    draft.target = value.target;
+  }
+  if (value.images !== undefined) draft.images = validateImages(value.images);
+  if (value.project !== undefined) {
+    if (typeof value.project?.worktree_id !== 'string' || !value.project.worktree_id) throw new Error('The saved project has no workspace identity.');
+    draft.project = value.project;
+  }
+  return draft;
 }
 
 export function templateForTarget(templates, target) {
@@ -56,24 +92,29 @@ export function projectNodes(sessions, saved) {
   return saved.flatMap((item) => {
     const session = sessions.find((session) => session.id === item.id && session.git_ref?.worktree_id);
     if (!session || !Number.isFinite(item.position?.x) || !Number.isFinite(item.position?.y)) return [];
-    return [{ id: session.id, type: NODE_TYPE.project, dragHandle: '.node-handle', position: item.position, data: { session } }];
+    return [{ id: session.id, type: NODE_TYPE.project, dragHandle: '.node-handle', position: item.position, data: { session, ...(item.inputs ? { inputs: item.inputs } : {}) } }];
   });
 }
 
-export function storeDraft(storage, draft) {
-  storage.setItem(DRAFT_KEY, JSON.stringify(validateDraft(draft)));
+export async function storeDraft(storage, value) {
+  const draft = validateDraft(value);
+  const { images, ...metadata } = draft;
+  if (images !== undefined) {
+    await storeImages(images);
+    metadata.image_ids = images.map((image) => image.image_id);
+  }
+  storage.setItem(DRAFT_KEY, JSON.stringify(metadata));
 }
 
-export function loadDraft(storage) {
+export async function loadDraft(storage) {
   const stored = storage.getItem(DRAFT_KEY);
   if (!stored) return null;
   const parsed = JSON.parse(stored);
-  const draft = validateDraft(parsed);
-  if (parsed.project) {
-    if (typeof parsed.project.worktree_id !== 'string' || !parsed.project.worktree_id) throw new Error('The saved project has no workspace identity.');
-    return { ...draft, project: parsed.project };
+  if (parsed.image_ids !== undefined) {
+    if (!Array.isArray(parsed.image_ids) || parsed.image_ids.some((id) => typeof id !== 'string' || !id)) throw new Error('The saved image references are invalid.');
+    parsed.images = await loadImages(parsed.image_ids);
   }
-  return draft;
+  return validateDraft(parsed);
 }
 
 export function mergeBoardNodes(restored, current) {
