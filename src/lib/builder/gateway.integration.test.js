@@ -1,7 +1,7 @@
 import { test, expect } from 'bun:test';
 import { ClankGateway } from '../clank-gateway.js';
 import { defaultPresetFor, pollUntil } from '../pull-request-preview.js';
-import { templateForTarget } from './model.js';
+import { starterForShortcut } from './starter-templates.js';
 
 const url = process.env.CLANK_BUILDER_TEST_URL;
 const token = process.env.CLANK_BUILDER_TEST_TOKEN;
@@ -11,8 +11,7 @@ test.skipIf(!url)('real host streams a board conversation and serves its private
   if (!token || !sessionID) throw new Error('The integration gateway token and disposable session ID are required.');
   const gateway = new ClankGateway(url, token);
   const templates = await gateway.templates();
-  expect(templateForTarget(templates, 'web').clone_url).toContain('svelte-starter-template');
-  expect(templateForTarget(templates, 'mobile').clone_url).toContain('expo-56-starter-template');
+  for (const shortcut of ['web', 'mobile']) expect(templates.some((template) => template.clone_url === starterForShortcut(shortcut).clone_url)).toBe(true);
   const session = await gateway.session(sessionID);
   expect(defaultPresetFor(await gateway.presets(session.backend), session.backend).config).toBeDefined();
   expect(await gateway.permissions(sessionID)).toEqual([]);

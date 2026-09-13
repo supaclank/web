@@ -50,14 +50,6 @@ export function validateDraft(value) {
   return draft;
 }
 
-export function templateForTarget(templates, target) {
-  const matches = templates.filter((item) => item.source === 'builtin' && item.build_target === target);
-  if (matches.length !== 1 || !matches[0].clone_url) {
-    throw new Error(`Your host must configure exactly one ${target} starter. Update its template catalog to build this app.`);
-  }
-  return matches[0];
-}
-
 export function applyAgentEvent(messages, event) {
   if (event.type === 'message') {
     const index = event.data.id ? messages.findIndex((item) => item.id === event.data.id) : -1;

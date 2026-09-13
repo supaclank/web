@@ -1,5 +1,6 @@
 import { test, expect } from 'bun:test';
-import { validateDraft, templateForTarget, applyAgentEvent, visibleMessages, projectNodes, mergeBoardNodes, nextNodePosition } from './model.js';
+import { starterForShortcut } from './starter-templates.js';
+import { validateDraft, applyAgentEvent, visibleMessages, projectNodes, mergeBoardNodes, nextNodePosition } from './model.js';
 
 test('placing another conversation clears a project and its attached input column', () => {
   const nodes = [{ type: 'project', position: { x: 200, y: 0 }, data: { inputs: { image_ids: ['image'] } } }];
@@ -14,11 +15,10 @@ test('drafts preserve the idea and reject missing or unknown output targets', ()
   }
 });
 
-test('output selection uses explicit catalog metadata and never guesses from a title', () => {
-  const templates = [{ display_name: 'Web', clone_url: 'https://example.com/unknown.git' }, { build_target: 'mobile', source: 'builtin', clone_url: 'https://example.com/mobile.git' }, { build_target: 'web', source: 'builtin', clone_url: 'https://example.com/web.git' }];
-  expect(templateForTarget(templates, 'web').clone_url).toBe('https://example.com/web.git');
-  expect(() => templateForTarget(templates.slice(0, 2), 'web')).toThrow('web');
-  expect(() => templateForTarget([...templates, templates[2]], 'web')).toThrow();
+test('friendly shortcuts select concrete templates without classifying the host catalog', () => {
+  expect(starterForShortcut('web')).toEqual({ display_name: 'Svelte', clone_url: 'https://github.com/supaclank/svelte-starter-template.git' });
+  expect(starterForShortcut('mobile')).toEqual({ display_name: 'Expo', clone_url: 'https://github.com/supaclank/expo-56-starter-template.git' });
+  expect(() => starterForShortcut('unknown')).toThrow('Unknown starter shortcut');
 });
 
 test('import drafts retain a repository without inventing a build target', () => {

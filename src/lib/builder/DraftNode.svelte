@@ -1,7 +1,8 @@
 <script>
   import { getContext, untrack } from 'svelte';
-  import { WORKSPACE_CONTEXT, DRAFT_KEY, validateDraft, templateForTarget, storeDraft } from './model.js';
+  import { WORKSPACE_CONTEXT, DRAFT_KEY, validateDraft, storeDraft } from './model.js';
   import { repositoryLocator } from './image-inputs.js';
+  import { starterForShortcut } from './starter-templates.js';
   import { sessionRequest } from './session-request.js';
   import { FREE_AI_CHOICE } from '../free-ai.js';
   import { defaultPresetFor } from '../pull-request-preview.js';
@@ -46,7 +47,7 @@
           project = await workspace.gateway.launchRepository(repositoryLocator(draft.repository));
         } else {
           detail = `Creating your ${draft.target === 'web' ? 'website' : 'mobile app'}…`;
-          const template = templateForTarget(await workspace.gateway.templates(), draft.target);
+          const template = starterForShortcut(draft.target);
           project = await workspace.gateway.createProject(template.clone_url, draft.name);
         }
         if (!project.worktree_id) { project = null; throw new Error('The host created a project without its workspace identity.'); }
