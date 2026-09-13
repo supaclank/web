@@ -4,7 +4,6 @@ export const ANALYTICS_HOST_PATH = '/-/stats';
 export const ANALYTICS_RECORDER_PATH = '/-/stats/recorder.js';
 
 const ANALYTICS_RECORDING_PATHS = new Set([
-  '/',
   '/demo',
   '/pricing',
   '/privacy',

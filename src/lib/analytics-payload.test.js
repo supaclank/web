@@ -70,11 +70,11 @@ test('Umami loads and collects through the first-party relay', () => {
 });
 
 test('recording is limited to public marketing and signup routes', () => {
-  for (const pathname of ['/', '/demo', '/pricing/', '/privacy', '/signup', '/terms']) {
+  for (const pathname of ['/demo', '/pricing/', '/privacy', '/signup', '/terms']) {
     assert.equal(isAnalyticsRecordingUrl(new URL(pathname, SITE_ORIGIN)), true, pathname);
   }
 
-  for (const pathname of ['/auth/callback', '/oauth/consent', '/get-started', '/welcome', '/delete-account', '/owner/repo']) {
+  for (const pathname of ['/', '/workspace', '/auth/callback', '/oauth/consent', '/get-started', '/welcome', '/delete-account', '/owner/repo']) {
     assert.equal(isAnalyticsRecordingUrl(new URL(pathname, SITE_ORIGIN)), false, pathname);
   }
 });

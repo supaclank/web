@@ -1,0 +1,510 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-12T14:34:47.686260+00:00",
+  "title": "Design System: Clank landing and builder board",
+  "extensions": {
+    "colorMeta": {
+      "builder-bg": {
+        "role": "neutral",
+        "displayName": "Graphite canvas",
+        "tonalRamp": [
+          "oklch(15.00% 0 0)",
+          "oklch(26.43% 0 0)",
+          "oklch(37.86% 0 0)",
+          "oklch(49.29% 0 0)",
+          "oklch(60.71% 0 0)",
+          "oklch(72.14% 0 0)",
+          "oklch(83.57% 0 0)",
+          "oklch(95.00% 0 0)"
+        ]
+      },
+      "builder-panel": {
+        "role": "neutral",
+        "displayName": "Graphite panel",
+        "tonalRamp": [
+          "oklch(15.00% 0 0)",
+          "oklch(26.43% 0 0)",
+          "oklch(37.86% 0 0)",
+          "oklch(49.29% 0 0)",
+          "oklch(60.71% 0 0)",
+          "oklch(72.14% 0 0)",
+          "oklch(83.57% 0 0)",
+          "oklch(95.00% 0 0)"
+        ]
+      },
+      "builder-raised": {
+        "role": "neutral",
+        "displayName": "Raised graphite",
+        "tonalRamp": [
+          "oklch(15.00% 0 0)",
+          "oklch(26.43% 0 0)",
+          "oklch(37.86% 0 0)",
+          "oklch(49.29% 0 0)",
+          "oklch(60.71% 0 0)",
+          "oklch(72.14% 0 0)",
+          "oklch(83.57% 0 0)",
+          "oklch(95.00% 0 0)"
+        ]
+      },
+      "builder-line": {
+        "role": "neutral",
+        "displayName": "Structural gray",
+        "tonalRamp": [
+          "oklch(15.00% 0 0)",
+          "oklch(26.43% 0 0)",
+          "oklch(37.86% 0 0)",
+          "oklch(49.29% 0 0)",
+          "oklch(60.71% 0 0)",
+          "oklch(72.14% 0 0)",
+          "oklch(83.57% 0 0)",
+          "oklch(95.00% 0 0)"
+        ]
+      },
+      "builder-text": {
+        "role": "neutral",
+        "displayName": "Interface white",
+        "tonalRamp": [
+          "oklch(15.00% 0 0)",
+          "oklch(26.43% 0 0)",
+          "oklch(37.86% 0 0)",
+          "oklch(49.29% 0 0)",
+          "oklch(60.71% 0 0)",
+          "oklch(72.14% 0 0)",
+          "oklch(83.57% 0 0)",
+          "oklch(95.00% 0 0)"
+        ]
+      },
+      "builder-muted": {
+        "role": "neutral",
+        "displayName": "Muted gray",
+        "tonalRamp": [
+          "oklch(15.00% 0 0)",
+          "oklch(26.43% 0 0)",
+          "oklch(37.86% 0 0)",
+          "oklch(49.29% 0 0)",
+          "oklch(60.71% 0 0)",
+          "oklch(72.14% 0 0)",
+          "oklch(83.57% 0 0)",
+          "oklch(95.00% 0 0)"
+        ]
+      },
+      "builder-accent": {
+        "role": "primary",
+        "displayName": "Action white",
+        "tonalRamp": [
+          "oklch(15.00% 0 0)",
+          "oklch(26.43% 0 0)",
+          "oklch(37.86% 0 0)",
+          "oklch(49.29% 0 0)",
+          "oklch(60.71% 0 0)",
+          "oklch(72.14% 0 0)",
+          "oklch(83.57% 0 0)",
+          "oklch(95.00% 0 0)"
+        ]
+      },
+      "source-border": {
+        "role": "neutral",
+        "displayName": "Source border",
+        "tonalRamp": [
+          "oklch(15.00% 0 0)",
+          "oklch(26.43% 0 0)",
+          "oklch(37.86% 0 0)",
+          "oklch(49.29% 0 0)",
+          "oklch(60.71% 0 0)",
+          "oklch(72.14% 0 0)",
+          "oklch(83.57% 0 0)",
+          "oklch(95.00% 0 0)"
+        ]
+      },
+      "input-border": {
+        "role": "neutral",
+        "displayName": "Field border",
+        "tonalRamp": [
+          "oklch(15.00% 0 0)",
+          "oklch(26.43% 0 0)",
+          "oklch(37.86% 0 0)",
+          "oklch(49.29% 0 0)",
+          "oklch(60.71% 0 0)",
+          "oklch(72.14% 0 0)",
+          "oklch(83.57% 0 0)",
+          "oklch(95.00% 0 0)"
+        ]
+      },
+      "connector": {
+        "role": "neutral",
+        "displayName": "Dotted connection",
+        "tonalRamp": [
+          "oklch(15.00% 0 0)",
+          "oklch(26.43% 0 0)",
+          "oklch(37.86% 0 0)",
+          "oklch(49.29% 0 0)",
+          "oklch(60.71% 0 0)",
+          "oklch(72.14% 0 0)",
+          "oklch(83.57% 0 0)",
+          "oklch(95.00% 0 0)"
+        ]
+      },
+      "demo-canvas": {
+        "role": "neutral",
+        "displayName": "Demo canvas",
+        "tonalRamp": [
+          "oklch(15.00% 0 0)",
+          "oklch(26.43% 0 0)",
+          "oklch(37.86% 0 0)",
+          "oklch(49.29% 0 0)",
+          "oklch(60.71% 0 0)",
+          "oklch(72.14% 0 0)",
+          "oklch(83.57% 0 0)",
+          "oklch(95.00% 0 0)"
+        ]
+      },
+      "demo-chrome": {
+        "role": "neutral",
+        "displayName": "Demo browser and node surfaces",
+        "tonalRamp": [
+          "oklch(15.00% 0 0)",
+          "oklch(26.43% 0 0)",
+          "oklch(37.86% 0 0)",
+          "oklch(49.29% 0 0)",
+          "oklch(60.71% 0 0)",
+          "oklch(72.14% 0 0)",
+          "oklch(83.57% 0 0)",
+          "oklch(95.00% 0 0)"
+        ]
+      },
+      "demo-connector": {
+        "role": "neutral",
+        "displayName": "Inactive demo connection",
+        "tonalRamp": [
+          "oklch(15.00% 0 0)",
+          "oklch(26.43% 0 0)",
+          "oklch(37.86% 0 0)",
+          "oklch(49.29% 0 0)",
+          "oklch(60.71% 0 0)",
+          "oklch(72.14% 0 0)",
+          "oklch(83.57% 0 0)",
+          "oklch(95.00% 0 0)"
+        ]
+      },
+      "demo-preview-bg": {
+        "role": "neutral",
+        "displayName": "Sample-app light surface",
+        "tonalRamp": [
+          "oklch(15.00% 0 0)",
+          "oklch(26.43% 0 0)",
+          "oklch(37.86% 0 0)",
+          "oklch(49.29% 0 0)",
+          "oklch(60.71% 0 0)",
+          "oklch(72.14% 0 0)",
+          "oklch(83.57% 0 0)",
+          "oklch(95.00% 0 0)"
+        ]
+      },
+      "demo-preview-ink": {
+        "role": "neutral",
+        "displayName": "Sample-app dark ink",
+        "tonalRamp": [
+          "oklch(15.00% 0 0)",
+          "oklch(26.43% 0 0)",
+          "oklch(37.86% 0 0)",
+          "oklch(49.29% 0 0)",
+          "oklch(60.71% 0 0)",
+          "oklch(72.14% 0 0)",
+          "oklch(83.57% 0 0)",
+          "oklch(95.00% 0 0)"
+        ]
+      },
+      "demo-preview-muted": {
+        "role": "neutral",
+        "displayName": "Sample-app muted ink",
+        "tonalRamp": [
+          "oklch(15.00% 0 0)",
+          "oklch(26.43% 0 0)",
+          "oklch(37.86% 0 0)",
+          "oklch(49.29% 0 0)",
+          "oklch(60.71% 0 0)",
+          "oklch(72.14% 0 0)",
+          "oklch(83.57% 0 0)",
+          "oklch(95.00% 0 0)"
+        ]
+      },
+      "demo-added": {
+        "role": "secondary",
+        "displayName": "Demo additions and Working",
+        "tonalRamp": [
+          "oklch(15% 0.1088 154.60)",
+          "oklch(25% 0.1088 154.60)",
+          "oklch(35% 0.1088 154.60)",
+          "oklch(45% 0.1088 154.60)",
+          "oklch(60% 0.1088 154.60)",
+          "oklch(75% 0.1088 154.60)",
+          "oklch(85% 0.1088 154.60)",
+          "oklch(95% 0.1088 154.60)"
+        ]
+      },
+      "demo-removed": {
+        "role": "secondary",
+        "displayName": "Demo removals",
+        "tonalRamp": [
+          "oklch(15% 0.1233 20.42)",
+          "oklch(25% 0.1233 20.42)",
+          "oklch(35% 0.1233 20.42)",
+          "oklch(45% 0.1233 20.42)",
+          "oklch(60% 0.1233 20.42)",
+          "oklch(75% 0.1233 20.42)",
+          "oklch(85% 0.1233 20.42)",
+          "oklch(95% 0.1233 20.42)"
+        ]
+      },
+      "demo-selection": {
+        "role": "secondary",
+        "displayName": "Demo node selection",
+        "tonalRamp": [
+          "oklch(15% 0.1047 61.70)",
+          "oklch(25% 0.1047 61.70)",
+          "oklch(35% 0.1047 61.70)",
+          "oklch(45% 0.1047 61.70)",
+          "oklch(60% 0.1047 61.70)",
+          "oklch(75% 0.1047 61.70)",
+          "oklch(85% 0.1047 61.70)",
+          "oklch(95% 0.1047 61.70)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Landing heading",
+        "purpose": "Compact landing heading; 36px at the narrow breakpoint."
+      },
+      "title": {
+        "displayName": "Form title",
+        "purpose": "Board sign-in and build-progress headings."
+      },
+      "body": {
+        "displayName": "Builder body",
+        "purpose": "Base type inherited by builder content and controls."
+      },
+      "prompt": {
+        "displayName": "Initial prompt",
+        "purpose": "Bare prompt textarea within the project-tab composer."
+      },
+      "label": {
+        "displayName": "Project label",
+        "purpose": "Project header titles."
+      },
+      "code": {
+        "displayName": "Code",
+        "purpose": "Local commands and disclosed tool output."
+      },
+      "demo-title": {
+        "displayName": "Demo heading",
+        "purpose": "Browser-demo introduction; 20px at the narrow breakpoint."
+      }
+    },
+    "shadows": [
+      {
+        "name": "demo-cursor",
+        "value": "filter: drop-shadow(0 2px 3px #0006)",
+        "purpose": "Local cursor separation from canvas and preview; not a surface elevation scale."
+      }
+    ],
+    "motion": [
+      {
+        "name": "control-color",
+        "value": "background-color 160ms ease-out, color 160ms ease-out",
+        "purpose": "Builder button color changes."
+      },
+      {
+        "name": "working-indicator",
+        "value": "2s infinite",
+        "purpose": "Progress line and thinking dot; disabled for reduced motion."
+      },
+      {
+        "name": "graph-flow",
+        "value": "1.2s linear infinite; stroke-dashoffset 0 \u2192 -9; working input paths .5s",
+        "purpose": "Directional 1/8 dotted paths. Paused offscreen or when hidden; disabled for reduced motion."
+      },
+      {
+        "name": "graph-packet",
+        "value": "1.4s linear infinite; offset-distance 0% \u2192 100%",
+        "purpose": "Active real output pulse from the submit port to its destination; hidden for reduced motion."
+      },
+      {
+        "name": "demo-packet",
+        "value": "1.6s linear infinite; offset-distance 0% \u2192 100%",
+        "purpose": "Active demo edge pulse; shares demo playback and visibility gating."
+      },
+      {
+        "name": "demo-loading",
+        "value": "1s ease-in-out infinite; translateX(-24px) \u2192 translateX(80px)",
+        "purpose": "Preview startup indicator; paused with demo playback, offscreen, or when hidden; disabled for reduced motion."
+      },
+      {
+        "name": "demo-phase-timing",
+        "value": "Scripted: type 900\u20133500ms, submit 4200ms, editing 5900ms, checks 9500ms, preview startup 10400ms, ready 11700ms, checkbox 12800ms, end 13500ms; work-step dwell: 1700ms, 1200ms, 1200ms, 1200ms, 900ms, 1300ms",
+        "purpose": "Reading, three file edits, checks, preview startup, and completion drive the session summary, sidebar history, and incremental diff counts. Scripted playback pauses offscreen/hidden or through Pause. Reduced motion retains discrete progression and a static cursor. Explicit Clank follow tracks the cursor; opening a session conversation preserves the camera."
+      },
+      {
+        "name": "demo-progress-transitions",
+        "value": "session height 200ms ease; code height 240ms ease; sidebar width/height 220ms ease; counts 320ms; content 160\u2013200ms",
+        "purpose": "Measured progress content, incremental file rows/counts, and sidebar expansion; all disabled or zero-duration for reduced motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "input-columns",
+        "value": "1050px"
+      },
+      {
+        "name": "supporting-content-gap",
+        "value": "1000px"
+      },
+      {
+        "name": "narrow-layout",
+        "value": "699px"
+      },
+      {
+        "name": "demo-focus-width",
+        "value": "1110px canvas width"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary button",
+      "kind": "button",
+      "description": "White action used in project forms and preview setup.",
+      "html": "<button class=\"ds-primary\">Allow</button>",
+      "css": ".ds-primary{display:inline-flex;align-items:center;justify-content:center;gap:9px;border-radius:8px;min-height:40px;font:14px/1.6 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;cursor:pointer;transition:background-color 160ms ease-out,color 160ms ease-out;background:#ededed;color:#171717;padding:10px 17px;font-weight:600;border:0}.ds-primary:hover{background:#b1b1b1}.ds-primary:focus-visible{outline:2px solid #ededed;outline-offset:4px}.ds-primary:disabled{opacity:.45;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-primary{transition:none}}",
+      "refersTo": "button-primary"
+    },
+    {
+      "name": "Quiet button",
+      "kind": "button",
+      "description": "Outlined secondary action used in navigation and forms.",
+      "html": "<button class=\"ds-quiet\">Start preview again</button>",
+      "css": ".ds-quiet{display:inline-flex;align-items:center;justify-content:center;gap:9px;border-radius:8px;min-height:40px;font:14px/1.6 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;cursor:pointer;transition:background-color 160ms ease-out,color 160ms ease-out;background:transparent;color:#f0f0f0;border:1px solid #383838;padding:8px 14px}.ds-quiet:hover{background:#262626}.ds-quiet:focus-visible{outline:2px solid #ededed;outline-offset:4px}.ds-quiet:disabled{opacity:.45;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-quiet{transition:none}}",
+      "refersTo": "button-quiet"
+    },
+    {
+      "name": "Send button",
+      "kind": "button",
+      "description": "The 36px trailing conversation action; the initial prompt uses a compact 30px variant.",
+      "html": "<button class=\"ds-send\" aria-label=\"Send message\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 19V5 M6 11l6-6 6 6\"/></svg></button>",
+      "css": ".ds-send{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:36px;height:36px;border:0;border-radius:9px;background:#ededed;color:#191919;cursor:pointer;transition:background-color 160ms ease-out,color 160ms ease-out}.ds-send:focus-visible{outline:2px solid #ededed;outline-offset:4px}.ds-send:disabled{background:#464646;color:#a8a8a8;cursor:not-allowed;opacity:1}@media(prefers-reduced-motion:reduce){.ds-send{transition:none}}",
+      "refersTo": "button-send"
+    },
+    {
+      "name": "Text field",
+      "kind": "input",
+      "description": "Inset field used by board sign-in forms; repository input has its own compact treatment.",
+      "html": "<label class=\"ds-field\">Email<input type=\"email\" placeholder=\"you@example.com\"/></label>",
+      "css": ".ds-field{display:flex;flex-direction:column;gap:6px;font:12px/1.6 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;color:#afafaf}.ds-field input{background:#181818;color:#f0f0f0;border:1px solid #474747;border-radius:8px;padding:10px 12px;font:14px/1.6 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;caret-color:#ededed}.ds-field input::placeholder{color:#a6a6a6;opacity:1}.ds-field input:focus-visible{outline:2px solid #ededed;outline-offset:4px}",
+      "refersTo": "input"
+    },
+    {
+      "name": "Header navigation",
+      "kind": "nav",
+      "description": "Landing wordmark, secondary links, and sign-in action; mascot asset stays in the implementation.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Main\"><a class=\"ds-wordmark\" href=\"/\">clank</a><a href=\"/pricing\">Pricing</a><button>Sign in <svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 19V5 M6 11l6-6 6 6\"/></svg></button></nav>",
+      "css": ".ds-nav{display:flex;align-items:center;gap:28px;color:#afafaf;font:13px/1.6 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif}.ds-nav a{color:inherit;text-decoration:none;text-underline-offset:4px}.ds-nav .ds-wordmark{color:#f0f0f0;font-size:21px;font-weight:650;letter-spacing:-.04em}.ds-nav a:hover{color:#f0f0f0}.ds-nav button{display:inline-flex;align-items:center;justify-content:center;gap:9px;border-radius:8px;min-height:40px;font:14px/1.6 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;cursor:pointer;transition:background-color 160ms ease-out,color 160ms ease-out;margin-left:auto;padding:8px 14px;border:1px solid #383838;background:transparent;color:#f0f0f0}.ds-nav button:hover{background:#262626}.ds-nav a:focus-visible,.ds-nav button:focus-visible{outline:2px solid #ededed;outline-offset:4px}@media(prefers-reduced-motion:reduce){.ds-nav,.ds-wordmark{transition:none}}"
+    },
+    {
+      "name": "Project widget shell",
+      "kind": "card",
+      "description": "Tinted drag header and bordered session surface; runtime conversation and preview remain together.",
+      "html": "<section class=\"ds-project\"><header><strong>Your project</strong><span>Ready</span></header><div>Your conversation and live preview share this widget.</div></section>",
+      "css": ".ds-project{border:1px solid #444444;border-radius:14px;background:#181818;color:#f0f0f0;overflow:hidden;font:14px/1.6 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif}.ds-project header{display:flex;align-items:center;justify-content:space-between;height:49px;padding:0 16px;background:#222222;border-bottom:1px solid #333333;color:#c3c3c3;font-size:13px}.ds-project strong{color:#f0f0f0;font-weight:500}.ds-project header span{font-size:11px}.ds-project>div{padding:28px}",
+      "refersTo": "project-card"
+    },
+    {
+      "name": "Chat composer",
+      "kind": "custom",
+      "description": "Inset conversation composer with a trailing send action.",
+      "html": "<form class=\"ds-composer\"><textarea aria-label=\"Message your agent\" placeholder=\"What should we change?\" rows=\"3\"></textarea><div><span>Describe a change. Make it yours.</span><button type=\"button\" aria-label=\"Send message\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 19V5 M6 11l6-6 6 6\"/></svg></button></div></form>",
+      "css": ".ds-composer{margin:12px;padding:12px;background:#252525;border:1px solid #454545;border-radius:10px;color:#f0f0f0;font:14px/1.6 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif}.ds-composer:focus-within{border-color:#ededed}.ds-composer textarea{width:100%;min-height:63px;max-height:180px;background:transparent;border:0;font:13px/1.6 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;color:#f0f0f0;caret-color:#ededed;resize:vertical}.ds-composer textarea::placeholder{color:#a6a6a6;opacity:1}.ds-composer textarea:focus{outline:none}.ds-composer>div{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px}.ds-composer span{font-size:9px;line-height:1.5;color:#afafaf}.ds-composer button{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;flex-shrink:0;border:0;border-radius:9px;background:#ededed;color:#191919;cursor:pointer;transition:background-color 160ms ease-out,color 160ms ease-out}.ds-composer button:focus-visible{outline:2px solid #ededed;outline-offset:4px}.ds-composer button:disabled{background:#464646;color:#a8a8a8;cursor:not-allowed}@media(max-width:699px){.ds-composer textarea{font-size:16px}}@media(prefers-reduced-motion:reduce){.ds-composer{transition:none}}",
+      "refersTo": "chat-composer"
+    },
+    {
+      "name": "Idea example",
+      "kind": "chip",
+      "refersTo": "example-chip",
+      "description": "A compact landing suggestion; the application inserts it into the prompt.",
+      "html": "<button class=\"ds-example\" type=\"button\">A website for my coffee shop<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 19V5 M6 11l6-6 6 6\"/></svg></button>",
+      "css": ".ds-example{display:inline-flex;align-items:center;gap:10px;padding:8px 11px;color:#b8b8b8;font:11px/1.6 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;border:1px solid #323232;border-radius:7px;background:#171717;cursor:pointer;transition:background-color 160ms ease-out,color 160ms ease-out}.ds-example svg{width:14px;height:14px;color:#898989;flex-shrink:0}.ds-example:hover{background:#242424;color:white}.ds-example:focus-visible{outline:2px solid #ededed;outline-offset:4px}@media(max-width:699px){.ds-example{font-size:10px}}@media(prefers-reduced-motion:reduce){.ds-example{transition:none}}"
+    },
+    {
+      "name": "Repository input",
+      "kind": "input",
+      "refersTo": "repository-input",
+      "description": "One repository source to the left of the prompt; preserved as read-only context after creation.",
+      "html": "<label class=\"ds-repository\"><svg width=\"17\" height=\"17\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M9 19c-4 1-4-2-6-2 M15 22v-4a3.5 3.5 0 0 0-1-2.5c3.3-.4 6.7-1.6 6.7-7A5.4 5.4 0 0 0 19.2 5c.2-.9.2-2-.2-3-1.5 0-3 1-3.5 1.5a13 13 0 0 0-7 0C8 3 6.5 2 5 2c-.4 1-.4 2.1-.2 3A5.4 5.4 0 0 0 3.3 8.5c0 5.4 3.4 6.6 6.7 7A3.5 3.5 0 0 0 9 18v4\"/></svg><input aria-label=\"GitHub repository URL\" placeholder=\"github.com/owner/repo\" autocomplete=\"off\" spellcheck=\"false\"/></label>",
+      "css": ".ds-repository{display:flex;align-items:center;gap:8px;min-height:40px;padding:8px 10px;min-width:0;border:1px solid #444;border-radius:6px;background:#181818;color:#f0f0f0;font:12px/1.6 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif}.ds-repository svg{flex-shrink:0}.ds-repository input{padding:0;width:100%;border:0;border-radius:0;background:transparent;font:12px/1.6 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;color:#f0f0f0;min-width:0;caret-color:#ededed}.ds-repository input::placeholder{color:#a6a6a6;opacity:1}.ds-repository:focus-within{outline:1px solid #d0d0d0;outline-offset:2px}.ds-repository input:focus{outline:none}@media(max-width:699px){.ds-repository input{font-size:16px}}"
+    },
+    {
+      "name": "Project-tab prompt",
+      "kind": "custom",
+      "refersTo": "prompt-composer",
+      "description": "Control sample with source tab, bare prompt, Cloud/Local footer, and Web/Mobile output. Runtime connections are measured at the repository tab, image plus, and submit control; this static sample omits dynamic geometry and application logic.",
+      "html": "<div class=\"ds-prompt-graph\"><div class=\"ds-prompt-center\"><div class=\"ds-project-tab\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M8 5h.01 M16 5h.01 M8 12h.01 M16 12h.01 M8 19h.01 M16 19h.01\"/></svg><select aria-label=\"Project source\"><option>New project</option><option>Import repository</option></select></div><div class=\"ds-prompt\"><textarea aria-label=\"Prompt\" placeholder=\"What do you want to build?\" rows=\"3\"></textarea><div class=\"ds-prompt-footer\"><div><button class=\"ds-attach\" type=\"button\" aria-label=\"Add image inputs\"><svg width=\"19\" height=\"19\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 5v14 M5 12h14\"/></svg></button><label class=\"ds-execution\"><svg width=\"17\" height=\"17\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 18a5 5 0 0 1-1-9.9 7 7 0 0 1 13.5 1.4A4.3 4.3 0 0 1 18 18H6Z\"/></svg><select aria-label=\"Where it runs\"><option>Cloud</option><option>Local</option></select></label></div><button class=\"ds-prompt-send\" type=\"button\" aria-label=\"Start building\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 19V5 M6 11l6-6 6 6\"/></svg></button></div></div></div><svg class=\"ds-connection\" viewBox=\"0 0 48 10\" aria-hidden=\"true\"><path d=\"M0 5H48\"/><circle cx=\"3\" cy=\"5\" r=\"3\"/><circle cx=\"45\" cy=\"5\" r=\"3\"/></svg><label class=\"ds-target\"><svg width=\"17\" height=\"17\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 4h18v16H3z M3 9h18 M7 6.5h.01 M10 6.5h.01\"/></svg><select aria-label=\"App type\"><option>Web</option><option>Mobile</option></select></label></div>",
+      "css": ".ds-prompt-graph{display:grid;grid-template-columns:minmax(280px,640px) 48px 110px;align-items:center;justify-content:center;font:14px/1.6 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;color:#f0f0f0}.ds-prompt-center{min-width:0}.ds-project-tab{display:flex;align-items:center;gap:8px;width:max-content;max-width:100%;height:30px;padding:0 20px 0 10px;border:1px solid #444;border-bottom:0;border-radius:6px 6px 0 0;background:#181818;font-size:12px}.ds-project-tab select,.ds-execution select,.ds-target select{font:inherit;color:inherit;background:transparent;padding:0 2px;border:0;cursor:pointer}.ds-prompt{border:1px solid #444;border-radius:0 7px 7px 7px;background:#181818;padding:12px}.ds-prompt:focus-within{border-color:#999}.ds-prompt textarea{display:block;background:transparent;border:0;width:100%;min-height:76px;max-height:280px;padding:0;resize:vertical;font:16px/1.5 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;color:#efefef;caret-color:#ededed}.ds-prompt textarea::placeholder{color:#a6a6a6;opacity:1}.ds-prompt textarea:focus{outline:none}.ds-prompt-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:8px}.ds-prompt-footer>div{display:flex;align-items:center;gap:12px}.ds-execution{display:flex;align-items:center;gap:8px;font-size:12px;color:#c4c4c4}.ds-attach,.ds-prompt-send{width:30px;height:30px;display:grid;place-items:center;border-radius:5px;cursor:pointer;transition:background-color 160ms ease-out,color 160ms ease-out}.ds-attach{border:1px solid #383838;background:transparent;color:#ddd}.ds-attach:hover{background:#292929}.ds-prompt-send{border:0;background:#eee;color:#151515}.ds-prompt-send:disabled{background:#353535;color:#9b9b9b;cursor:not-allowed}.ds-prompt-graph button:focus-visible,.ds-prompt-graph select:focus-visible{outline:2px solid #ededed;outline-offset:4px}.ds-connection{width:48px;height:10px;fill:none;overflow:visible}.ds-connection path{stroke:#929292;stroke-width:1.5;stroke-dasharray:1 8;stroke-linecap:round}.ds-connection circle{stroke:#929292;stroke-width:1;fill:#181818}.ds-target{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid #444;border-radius:6px;background:#181818;font-size:13px;min-width:0}@media(max-width:699px){.ds-prompt-graph{display:flex;flex-direction:column;align-items:stretch;gap:12px}.ds-connection{display:none}.ds-target{align-self:flex-end}}@media(prefers-reduced-motion:reduce){.ds-attach,.ds-prompt-send{transition:none}}"
+    },
+    {
+      "name": "Scripted demo browser",
+      "kind": "custom",
+      "refersTo": "demo-browser",
+      "description": "Browser chrome and a ready preview sample at two of four habits complete. Every prompt runs the same local habit tracker without real AI, authentication, voice, or backend work. Initial playback and Replay alone animate cursor typing, submit, and checking a third habit; Replay resets the original session and hides its outputs until their stages recur, preserves other sessions, and restarts after completed playback. The blue cursor persists during manual work and after completion, with a clickable Clank tag and Idle/Working dot; reduced motion retains a static cursor with Next step and no automatic checking. Its 25px pointer uses #8aa4ff with #dce4ff edge and a matching click pulse; the tag uses #111b3c text at 11px/600, 3px 7px padding, and a 4px radius. A circle-only blue mascot at the upper right opens a 312px sidebar beside the 414px-high canvas. At 699px and below, chat is 340px high below the 370px canvas, without overlap. The header has a compact blue @Clank native button (#b7c6ff text on #8aa4ff24, 1px 5px padding, 4px radius) with hover and keyboard focus. Its accessible name is \u201cFollow Clank on canvas\u201d; activation centers the cursor at the current zoom and enables follow without closing chat or interrupting playback. Sidebar Working text and its filled dot use the demo-added token; Idle stays gray. Code diff counts use demo-added and demo-removed with visible plus/minus signs. User messages are right-aligned #262626 bubbles with an 88% maximum width, 7px radius, and 7px 10px padding, without a visible \u201cyou\u201d label; assistant messages keep the \u201cclank\u201d label, without avatars. Conversation and desktop input are 13px, follow-up actions 12px, mobile input 16px, and metadata 10\u201311px. Requests retain conversation and status and create separate example rows without moving the camera. Opening the avatar or cursor tag enables follow without interrupting scripted playback. Follow centers the cursor in the canvas excluding the sidebar at the current zoom, through completion and resize; Replay preserves following. Following Clank, user panning, node dragging, explicit focus, or new work exit follow. Show session and View preview keep the sidebar open; Close and Escape restore launcher focus. Ordinary controls remain monochrome. The companion and runtime behavior are omitted from this preview specimen. The demo graph is repository \u2192 session \u2192 worktree \u2192 preview. Repository and Fork ports create drafts from main or a parent worktree; the left worktree input creates a reuse draft, and a draft output can connect there to reuse existing code and preview. New/fork worktrees appear after submission and previews only at startup; reuse and follow-ups update existing worktrees and retain already-visible previews. Only drafts reconnect. Enter on the repository, Fork, or worktree-input port creates the corresponding draft. Lineage is retained; busy fork/reuse attempts preserve the draft with an error, and one writer can edit a worktree at a time. Blank-canvas and port creation keep the camera still, with draft textarea focus after measurement and scrolling prevented. Node selection and keyboard focus color the actual tab/body borders with demo-selection, without an offset outline or glow. Submitted session bodies open their corresponding sidebar chat; context labels remain draggable. Each session retains its own history and continues on the same worktree after completion; its composer is disabled while working. Creation and session-chat opening preserve the camera. Deletion controls are paused. Staged reading, file edits, checks, preview startup, and completion update summaries, heights, and signed diff counts; reduced motion disables the transitions. The public default is Prompt + activity. Four development-only variants remain unselected exploration. Grouping, backend work, and artifacts remain deferred.",
+      "html": "<section class=\"ds-demo\"><header class=\"ds-demo-bar\"><span class=\"ds-demo-dots\" aria-hidden=\"true\"><i></i><i></i><i></i></span><span>clank / daily</span><button type=\"button\" aria-label=\"Replay demo\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 7v5h-5 M4 17v-5h5 M6 6a8 8 0 0 1 13 3 M5 15a8 8 0 0 0 13 3\"/></svg>Replay</button></header><div class=\"ds-demo-canvas\"><section class=\"ds-demo-preview\"><header>Web preview<span>Running</span></header><div class=\"ds-demo-habits\"><nav><strong>daily</strong><span>Today</span></nav><h3>Small steps.<br>Every day.</h3><p>2 of 4 habits complete</p><div class=\"ds-demo-week\" aria-label=\"This week\"><span>M<i class=\"ds-demo-completed\"></i></span><span>T<i class=\"ds-demo-completed\"></i></span><span>W<i class=\"ds-demo-completed\"></i></span><span>T<i class=\"ds-demo-completed\"></i></span><span>F<i></i></span><span>S<i></i></span><span>S<i></i></span></div><label><input type=\"checkbox\" checked><span>Walk outside</span></label><label><input type=\"checkbox\" checked><span>Read a chapter</span></label><label><input type=\"checkbox\"><span>Move for 20 minutes</span></label><label><input type=\"checkbox\"><span>Put the phone away</span></label></div></section></div><footer class=\"ds-demo-controls\"><span>Preview ready. Try checking off a habit.</span><button type=\"button\">Reset view</button></footer></section>",
+      "css": ".ds-demo{overflow:hidden;border:1px solid #383838;border-radius:10px;background:#141414;color:#afafaf;font:11px/1.6 Inter, 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif}.ds-demo-bar{height:40px;display:flex;align-items:center;gap:18px;padding:0 14px;background:#1b1b1b;border-bottom:1px solid #303030}.ds-demo-dots{display:flex;gap:5px}.ds-demo-dots i{width:6px;height:6px;border:1px solid #656565;border-radius:50%}.ds-demo button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:30px;padding:3px 7px;border:0;border-radius:4px;font:inherit;color:#c4c4c4;background:transparent;cursor:pointer;transition:background-color 160ms ease-out,color 160ms ease-out}.ds-demo-bar>button{margin-left:auto}.ds-demo button:hover{color:#fff;background:#292929}.ds-demo button:focus-visible,.ds-demo input:focus-visible{outline:2px solid #ededed;outline-offset:4px}.ds-demo-canvas{height:414px;display:grid;place-items:center;background-image:radial-gradient(#353535 1px,transparent 1px);background-size:20px 20px}.ds-demo-preview{width:280px;border:1px solid #444;border-radius:7px;background:#1b1b1b}.ds-demo-preview>header{display:flex;align-items:center;gap:8px;min-height:36px;padding:8px 10px;border-bottom:1px solid #444;font-size:12px;color:#d4d4d4}.ds-demo-preview>header>span{margin-left:auto;font-size:11px;color:#ededed}.ds-demo-habits{height:308px;border-radius:0 0 6px 6px;padding:14px 18px;color:#242424;background:#f5f5f5;color-scheme:light}.ds-demo-habits nav{display:flex;align-items:center;justify-content:space-between;font-size:11px}.ds-demo-habits nav strong{font-weight:650;font-size:14px;letter-spacing:-.04em}.ds-demo-habits nav>span,.ds-demo-habits p{color:#656565}.ds-demo-habits h3{margin:17px 0 4px;font-size:26px;line-height:1.06;font-weight:550;letter-spacing:-.04em}.ds-demo-habits p{margin:0;font-size:10px}.ds-demo-week{display:flex;justify-content:space-between;margin:12px 0 8px}.ds-demo-week>span{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:9px;color:#656565}.ds-demo-week i{display:block;border:1px solid #bdbdbd;width:16px;height:16px;border-radius:50%}.ds-demo-week .ds-demo-completed{border-color:#242424;background:#242424}.ds-demo-habits label{display:flex;align-items:center;gap:8px;min-height:28px;font-size:11px;cursor:pointer}.ds-demo-habits input{appearance:auto;width:13px;height:13px;margin:0;padding:0;accent-color:#242424}.ds-demo-habits input:checked+span{color:#737373;text-decoration:line-through}.ds-demo-controls{display:flex;align-items:center;justify-content:space-between;min-height:42px;gap:12px;padding:5px 12px;border-top:1px solid #303030;background:#181818;color:#c4c4c4}@media(max-width:699px){.ds-demo-canvas{height:370px}.ds-demo-controls{flex-direction:column;align-items:stretch;gap:2px;padding:8px}}@media(prefers-reduced-motion:reduce){.ds-demo button{transition:none}}"
+    },
+    {
+      "name": "Canvas session menu",
+      "kind": "custom",
+      "refersTo": "canvas-menu",
+      "description": "One-action menu shared by blank board and demo panes. The board places a fresh draft without moving its viewport. The demo creates an independent draft from main at the flow coordinate, keeps the camera still, waits for node measurements before focusing its textarea with scrolling prevented, and retains existing sessions. New/fork submission creates local example output nodes; reconnecting a draft to a worktree reuses its existing outputs.",
+      "html": "<div class=\"ds-canvas-menu\" role=\"menu\" aria-label=\"Canvas actions\"><button class=\"ds-canvas-menu-item\" type=\"button\" role=\"menuitem\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 5v14 M5 12h14\"/></svg>New session</button></div>",
+      "css": ".ds-canvas-menu{box-sizing:border-box;width:184px;max-width:calc(100vw - 16px);padding:4px;border:1px solid var(--builder-line);border-radius:8px;background:var(--builder-panel);color:var(--builder-text);font-family:Inter,Inter Fallback,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}.ds-canvas-menu-item{display:flex;align-items:center;gap:9px;width:100%;min-height:36px;padding:6px 9px;border:0;border-radius:4px;background:transparent;color:inherit;font-family:inherit;font-size:13px;font-weight:400;line-height:20px;text-align:left;cursor:pointer;transition:background-color 160ms ease-out,color 160ms ease-out}.ds-canvas-menu-item:hover,.ds-canvas-menu-item:focus-visible{background:var(--builder-raised)}.ds-canvas-menu-item:focus-visible{outline:1px solid var(--builder-accent);outline-offset:-1px}@media(prefers-reduced-motion:reduce){.ds-canvas-menu-item{transition:none}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Dark connected canvas",
+    "overview": "Clank uses a graphite field, white and gray controls, and the existing mascot rendered in grayscale. Compact setup controls keep the prompt central. Thin borders, restrained tonal shifts, and dotted connections organize source material without adding decorative panels.\n\nThis document covers only the landing page and builder board rendered inside `.clank-builder`, including the board's embedded sign-in and project forms. Pricing, account, onboarding, and other existing pages retain their incumbent system. Implementation evidence lives in `src/lib/builder/`, with shared font definitions in `src/app.css`; surface composition belongs in `.impeccable/landing.brief.md`.",
+    "keyCharacteristics": [
+      "Graphite surfaces with white actions and neutral gray structure.",
+      "A small project tab, bare prompt field, and compact footer controls.",
+      "Directional dotted input connections on desktop and a scrolling input strip on mobile.",
+      "A static, radially faded dot field on entry and a pannable project board.",
+      "A labelled browser-frame demo with draggable nodes and a working sample preview."
+    ],
+    "rules": [
+      {
+        "name": "The Monochrome Builder Rule",
+        "body": "Use white, gray, and graphite for builder chrome, actions, and errors. Keep the Clank mascot in CSS grayscale; user images, app previews, and existing routes retain their own content colors. The demo\u2019s Clank cursor and companion presence are the approved local blue exception, including the avatar background, @Clank header button, and chat caret. The demo also uses green for diff additions and current work labels/dots, red for diff removals, and muted orange on selected node borders. These semantic exceptions do not extend to other controls; Idle stays gray.",
+        "section": "colors"
+      },
+      {
+        "name": "The Directed Flow Rule",
+        "body": "Connect sources to their actual controls and move dots and active packets from source to destination. Keep the landing background still so motion explains work.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do preserve the recognizable Clank mascot in grayscale and the shared SVG icon geometry.",
+      "Do use brightness, neutral borders, and visible keyboard focus to distinguish controls and state.",
+      "Do keep project source in the tab and execution inside the prompt footer.",
+      "Do retain independent mobile scrolling for input material and the draft/authentication region.",
+      "Do retain the board's readable widget widths and narrow-screen Chat/Preview tabs.",
+      "Do anchor repository, image, and output connections to their corresponding controls and keep motion directional.",
+      "Do pause connection and demo motion offscreen or when hidden, and preserve manual progression under reduced motion.",
+      "Do keep the demo labelled as scripted and its node contents readable through panning and preview focus."
+    ],
+    "donts": [
+      "Don't add pink or extend color beyond Clank presence blue, green additions/current work, red removals, and muted orange node selection in the demo.",
+      "Don't apply this scoped palette to existing pricing, account, or onboarding pages.",
+      "Don't use tiny status-label sizes as the default for operational text.",
+      "Don't let canvas dragging consume normal interaction inside forms, input material, transcripts, or previews.",
+      "Don't imply real input satellites are independent draggable nodes or that image attachments sync across browsers.",
+      "Don't present the demo\u2019s separate working-copy and preview nodes as a change to the signed-in project widget."
+    ]
+  }
+}
